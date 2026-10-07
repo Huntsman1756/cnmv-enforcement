@@ -43,7 +43,7 @@ def verify_binding(
     if not m:
         return DOCUMENT_PROVEN
     idx = int(m.group(1))
-    paras = {p.index: p.text for p in pub.paragraphs}
+    paras = {p.index + 1: p.text for p in pub.paragraphs}  # 1-based XPath
     para = paras.get(idx)
     if para is None:
         return DOCUMENT_PROVEN
@@ -54,6 +54,10 @@ def verify_binding(
     )
     if not excerpt or not located:
         return DOCUMENT_PROVEN
-    if ev.raw_value and _norm(ev.raw_value) in excerpt:
+    if ev.raw_value and _norm(ev.raw_value) in excerpt and (
+        _norm(ev.raw_value) in para_n
+    ):
+        # the raw value is IN the cited location AND the excerpt —
+        # a wrong paragraph_index cannot pass this check
         return VALUE_BINDING_PROVEN
     return LOCATION_PROVEN

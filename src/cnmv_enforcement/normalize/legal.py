@@ -65,10 +65,11 @@ def normalize_article(raw: str) -> str | None:
     m = _ARTICLE_FULL_RE.match(raw)
     if m:
         return _normalized_from_match(m)
-    # '99, letra o)' / '99, letra o) bis' — comma-letter style
+    # '99, letra o)' / '99, letra o) bis' — comma-letter style (+suffix)
     lm = re.match(
-        rf"^\s*(?P<body>{_BODY})(?P<words>(?:\s+(?:{_WORD_SUFFIX}))*)\s*,?\s*"
-        r"letra\s+(?P<letter>[a-zñ])\s*\)?\s*$",
+        rf"^\s*(?P<body>{_BODY})(?P<words>(?:\s+{_WORDS})*)\s*,?\s*"
+        rf"letra\s+(?P<letter>[a-zñ])\s*\)?"
+        rf"(?P<lsuf>(?:\s+(?:{_WORD_SUFFIX}))*)\s*$",
         raw,
         re.IGNORECASE,
     )
@@ -81,7 +82,13 @@ def normalize_article(raw: str) -> str | None:
             out += "." + ".".join(
                 _WORD_SUFFIX_NORM.get(w, w) for w in words.split()
             )
-        return f"{out}.{lm.group('letter').lower()}"
+        out += f".{lm.group('letter').lower()}"
+        lsuf = re.sub(r"\s+", " ", (lm.group("lsuf") or "").strip()).lower()
+        if lsuf:
+            out += "." + ".".join(
+                _WORD_SUFFIX_NORM.get(w, w) for w in lsuf.split()
+            )
+        return out
     return None
 
 

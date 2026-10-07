@@ -453,6 +453,12 @@ def build(
     tables = flatten(
         result, pdf_status=pdf_obs, review_items=items
     )
+    # ship the pdf-status manifest INSIDE the export — the coverage basis
+    # for negative appeal claims must be reproducible from the release
+    if status_path.exists():
+        (exports_dir / "pdf_status_manifest.json").write_bytes(
+            status_path.read_bytes()
+        )
     written = write_parquet(tables, exports_dir / "parquet")
     counts = build_duckdb(exports_dir / "parquet", db_path)
 
@@ -562,7 +568,9 @@ def validate(corpus_dir: Path | None = None) -> None:
     from cnmv_enforcement.validation.gates import run_gates
 
     corpus_dir = corpus_dir or _corpus()
-    report = run_gates(corpus_dir)
+    hist = data_root() / "corpus_historical"
+    extra = [hist] if hist.exists() and any(hist.glob("BOE-A-*.xml")) else []
+    report = run_gates(corpus_dir, extra_dirs=extra)
     typer.echo(json.dumps(report, ensure_ascii=False, indent=2))
     if not report["ok"]:
         raise typer.Exit(1)

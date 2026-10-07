@@ -340,12 +340,25 @@ def get_case(case_id: str, known_at: str | None = None) -> dict:
             "WHERE cr.case_id = ?",
             [cid],
         )
+        # evidence covers case-prefixed entities AND the case's own
+        # respondents (RESP-* ids aren't case-prefixed)
+        resp_ids = [
+            r["respondent_id"]
+            for r in _rows(
+                con,
+                "SELECT respondent_id FROM case_respondents "
+                "WHERE case_id = ?",
+                [cid],
+            )
+        ]
+        ph = ",".join("?" * len(resp_ids)) if resp_ids else "NULL"
         out["evidence"] = _rows(
             con,
             "SELECT fact_type, entity_id, field_name, locator, excerpt, "
             "proof_level, artifact_sha256, observed_at "
-            "FROM evidence WHERE entity_id LIKE ? ORDER BY entity_id",
-            [f"{cid}%"],
+            f"FROM evidence WHERE (entity_id LIKE ? OR entity_id IN ({ph})) "
+            "ORDER BY entity_id",
+            [f"{cid}/%", *resp_ids],
         )
         out["status_notes"] = (
             _rows(con, "SELECT * FROM status_notes WHERE case_id = ?", [cid])

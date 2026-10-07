@@ -189,7 +189,7 @@ _ARTICLE_TOKEN_RE = re.compile(
     r"\d{1,3}(?:\.[A-Za-z\u00f1\u00d10-9]{1,10})*"
     r"(?:\s+(?:bis|ter|qu[aá]ter|quinquies|sexies|septies|octies|nonies|"
     r"decies|[b-df-hj-np-tv-xzñ](?![a-záéíóúñ])))*(?:\s+\d(?:\.[A-Za-z\u00f1])?)?"
-    r"(?:,?\s*letra\s+[a-zñ]\s*\)?)?"
+    r"(?:,?\s*letra\s+[a-zñ]\s*\)?\s*(?:bis|ter|qu[aá]ter)?)?"
 )
 _RELACION_RE = re.compile(r"en\s+relaci[oó]n\s+con\s+", re.IGNORECASE)
 _CONDUCT_SPLIT_RE = re.compile(
@@ -406,6 +406,22 @@ def split_subject_role(chunk: str) -> tuple[str, str | None]:
     )
     if m:
         name, role = m.group(1).strip(), m.group(2).strip()
+    if role is None:
+        # leading role prefix: 'su Presidente, don X' /
+        # 'sus Consejeros, don A y don B' → role + name
+        m = re.match(
+            r"^((?:su|sus)\s+[^,]{2,40}?),\s+((?:don|doña|d\.|dña)\b.+)$",
+            chunk,
+            re.IGNORECASE,
+        )
+        if m and re.search(
+            r"(?:presidente|consejer|administrador|director|secretari|"
+            r"apoderad|delegad|comisari)\b",
+            m.group(1),
+            re.IGNORECASE,
+        ):
+            role = m.group(1).strip()
+            name = m.group(2).strip()
     if role is None:
         parts = _ROLE_SPLIT_RE.split(chunk, maxsplit=1)
         name = parts[0].strip().rstrip(",")

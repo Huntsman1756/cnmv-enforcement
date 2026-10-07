@@ -46,9 +46,15 @@ def _gate(name: str):
     return deco
 
 
-def run_gates(corpus_dir: Path) -> dict:
-    """Build the corpus and check every release invariant."""
-    result = build_corpus(corpus_dir)
+def run_gates(corpus_dir: Path, extra_dirs: list[Path] | None = None) -> dict:
+    """Build the corpus and check every release invariant.
+
+    ``extra_dirs``: additional corpus dirs (e.g. historical backfill) —
+    gates must cover every corpus that feeds the dataset, not just the
+    register snapshot.
+    """
+    dirs = [corpus_dir, *(extra_dirs or [])]
+    result = build_corpus(dirs)
     report = GateReport()
 
     def gate(name: str, ok: bool, detail: str = "") -> None:
@@ -235,11 +241,27 @@ def run_gates(corpus_dir: Path) -> dict:
             d for d in defect_ids
             if not any(n.startswith(f"test_{d}_") for n in test_names)
         ]
+        # ledger must only contain registry-consistent (defect, doc) pairs
+        from cnmv_enforcement.review.ledger import load_ledger
+
+        lpath = Path("data/review/review_ledger.jsonl")
+        valid = {
+            (d["defect_id"], f)
+            for d in doc["defects"]
+            for f in d["fixtures"]
+        }
+        orphans = [
+            r.review_id
+            for r in load_ledger(lpath)
+            if r.subject_type == "defect"
+            and (r.subject_id, r.document_id) not in valid
+        ]
         gate(
             f"G16 review regression coverage "
             f"({len(defect_ids)-len(uncovered)}/{len(defect_ids)})",
-            not uncovered,
-            ",".join(uncovered),
+            not uncovered and not orphans,
+            ",".join(uncovered)
+            + (f" | {len(orphans)} ledger orphans" if orphans else ""),
         )
     else:
         gate("G16 review regression coverage", False, "registry missing")
@@ -307,14 +329,21 @@ def run_gates(corpus_dir: Path) -> dict:
         f"{len(broken)} broken refs",
     )
 
-    # G19 EVIDENCE_BINDING_HONESTY — VALUE_BINDING_PROVEN ⇒ locator + sha
-    dishonest = [
-        e.entity_id
-        for b in result.bundles
-        for e in b.evidence
-        if e.proof_level == "VALUE_BINDING_PROVEN"
-        and (not e.locator or not e.artifact_sha256)
-    ]
+    # G19 EVIDENCE_BINDING_HONESTY — recompute proof_level on the domain
+    # objects with the same function flatten() uses (proof_level is a
+    # projection, never read from the table)
+    from cnmv_enforcement.evidence.verify import verify_binding
+
+    meta = {p.boe_id: p for p in result.publications}
+    dishonest = []
+    for b in result.bundles:
+        pub = meta.get(b.case.canonical_boe_id or "")
+        for e in b.evidence:
+            if (
+                verify_binding(e, pub) == "VALUE_BINDING_PROVEN"
+                and (not e.locator or not e.artifact_sha256)
+            ):
+                dishonest.append(e.entity_id)
     gate(
         "G19 evidence binding honesty",
         not dishonest,

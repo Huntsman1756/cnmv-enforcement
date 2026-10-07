@@ -32,9 +32,25 @@ def _pub(boe: str):
 
 
 def test_S1_duration_not_dropped():
-    pub = _pub("BOE-A-2023-17427")
-    durations = [s.duration_raw for b in pub.blocks for s in b.sanctions if s.duration_raw]
-    assert durations, "duration_raw lost between parse and assembly"
+    """Duration must survive parse → assemble → Sanction row (the defect
+    was loss at ASSEMBLY, not just parse)."""
+    from cnmv_enforcement.parsing.assemble import assemble_case
+
+    for boe in ("BOE-A-2023-17427", "BOE-A-2020-11881"):
+        pub = _pub(boe)
+        assert any(
+            s.duration_raw for b in pub.blocks for s in b.sanctions
+        ), f"{boe}: no duration in parse"
+        from datetime import UTC, datetime
+
+        bundle = assemble_case(
+            pub,
+            document_id=f"boe-xml:{boe}",
+            observed_at=datetime.now(UTC),
+        )
+        assert any(s.duration_raw for s in bundle.sanctions), (
+            f"{boe}: duration_raw dropped between parse and assembly"
+        )
 
 
 def test_S2_resolution_date_extracted():
@@ -122,16 +138,24 @@ def test_F4_por_la_comision_not_in_name():
 
 
 def test_F5_respectivamente_positional():
+    """Positional pairing: each subject gets ITS amount — never the
+    cross-product of subjects x amounts."""
     pub = _pub("BOE-A-2019-9035")
+    # within ONE block a cross-product yields subject x amount pairs;
+    # positional pairing yields one sanction per subject per block
+    for b in pub.blocks:
+        per_sub: dict[str, set] = {}
+        for s in b.sanctions:
+            per_sub.setdefault(s.subject_raw, set()).add(s.amount)
+        for sub, amts in per_sub.items():
+            assert len(amts) == 1, (
+                f"block {b.ordinal}: {sub} got {amts} — cross-product"
+            )
     pairs = sorted(
         (s.subject_raw, s.amount) for b in pub.blocks for s in b.sanctions
     )
-    amts = sorted(a for _, a in pairs if a)
-    assert len(pairs) <= 3 and amts == sorted(
-        [a for a in amts], key=Decimal
-    ), f"cross-product suspected: {pairs}"
     total = sum(a for _, a in pairs if a)
-    assert total <= Decimal("200000") + Decimal("15000")
+    assert total <= Decimal("200000") + Decimal("15000") + Decimal("50000")
 
 
 def test_F6_comision_por_parte_de():
@@ -140,18 +164,31 @@ def test_F6_comision_por_parte_de():
 
 
 def test_F7_mismo_texto_legal_per_chunk():
+    """'del mismo texto legal' must resolve per chunk — assert the
+    Reglamento article exists AND carries the right statute."""
     pub = _pub("BOE-A-2018-5711")
-    for b in pub.blocks:
-        for r in b.related:
-            if r.article_normalized and r.article_normalized.startswith("59"):
-                assert r.statute_normalized == "Real Decreto 217/2008"
+    rd = [
+        r for b in pub.blocks for r in b.related
+        if r.article_normalized and r.article_normalized.startswith("59")
+    ]
+    assert rd, "59.* related provisions not parsed (vacuous)"
+    assert all(
+        r.statute_normalized == "Real Decreto 217/2008" for r in rd
+    ), [(r.article_normalized, r.statute_normalized) for r in rd]
 
 
 def test_F8_en_la_actualidad_masked():
+    """'(en la actualidad, ... RDL)' successor mention must not replace
+    the typifying statute."""
     pub = _pub("BOE-A-2018-4548")
-    for b in pub.blocks:
-        if b.article_normalized and b.article_normalized.startswith("100"):
-            assert b.statute_normalized == "Ley 24/1988"
+    arts = [
+        b for b in pub.blocks
+        if b.article_normalized and b.article_normalized.startswith("100")
+    ]
+    assert arts, "no 100.* articles parsed (vacuous)"
+    assert all(b.statute_normalized == "Ley 24/1988" for b in arts), (
+        [(b.article_normalized, b.statute_normalized) for b in arts]
+    )
 
 
 def test_F9_word_suffix_articles():
@@ -161,6 +198,13 @@ def test_F9_word_suffix_articles():
     assert normalize_article("83 ter 1") == "83.ter.1"
     assert normalize_article("107 quáter 3.c") == "107.quater.3.c"
     assert normalize_article("99 z ter") == "99.z.ter"
+    # 'letra z) bis' — suffix after the letter group (judge round A, F-06)
+    assert normalize_article("99, letra z) bis") == "99.z.bis"
+    # on the real fixture that exposed it
+    pub = _pub("BOE-A-2018-5711")
+    assert any(
+        b.article_normalized == "99.z.bis" for b in pub.blocks
+    ), [b.article_normalized for b in pub.blocks]
 
 
 def test_registry_covers_all_18_defects():

@@ -94,7 +94,7 @@ def assemble_case(
                 entity_id=entity_id,
                 field_name=field_name,
                 document_id=document_id,
-                locator=f"texto/p[{para_index}]",
+                locator=f"texto/p[{para_index + 1}]",  # XPath-true: p[1]=first
                 excerpt=excerpt[:500],
                 extraction_method=method,
                 confidence_type=ConfidenceType(method.value),
