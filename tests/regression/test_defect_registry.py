@@ -530,6 +530,7 @@ def test_D43_las_sanciones_compound():
     """'las sanciones de amonestación pública … y de multa por importe
     de N' — two sanctions: PUBLIC_REPRIMAND + MONETARY_FINE."""
     from pathlib import Path
+
     from cnmv_enforcement.parsing.boe_publication import (
         parse_publication_xml,
     )
@@ -553,6 +554,7 @@ def test_D44_sumario_pre2005_shape():
     (no 'epigrafe'). parse_sumario must yield items for BOTH shapes —
     a 2000-2004 enumeration can never silently return zero again."""
     from datetime import date
+
     from cnmv_enforcement.sources.boe.sumario import (
         cnmv_items,
         parse_sumario,

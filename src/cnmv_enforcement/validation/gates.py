@@ -480,10 +480,10 @@ def run_gates(corpus_dir: Path, extra_dirs: list[Path] | None = None) -> dict:
     from collections import Counter
 
     per_corpus: dict[str, Counter] = {}
-    for p in result.publications:
-        c = per_corpus.setdefault(p.corpus, Counter())
+    for pub_ in result.publications:
+        c = per_corpus.setdefault(pub_.corpus, Counter())
         c["documents"] += 1
-        c[p.document_kind] += 1
+        c[pub_.document_kind] += 1
     case_by_corpus: Counter = Counter(
         next(
             (p.corpus for p in result.publications
@@ -512,7 +512,7 @@ def run_gates(corpus_dir: Path, extra_dirs: list[Path] | None = None) -> dict:
         for xf in sorted(holdout_dir.glob("BOE-A-*.xml")):
             try:
                 hp = parse_publication_xml(xf.read_bytes())
-            except Exception as exc:  # noqa: BLE001 — a crash IS a fail
+            except Exception as exc:
                 hold_fails.append(f"{xf.stem}: crash {exc}")
                 continue
             if not hp.blocks or not any(b.sanctions for b in hp.blocks):
@@ -605,8 +605,8 @@ def run_gates(corpus_dir: Path, extra_dirs: list[Path] | None = None) -> dict:
         from cnmv_enforcement.sources.boe.sumario import parse_sumario
 
         y, m, d = day.split("-")
-        s = parse_sumario(f.read_bytes(), _date(int(y), int(m), int(d)))
-        if not s.items:
+        summ = parse_sumario(f.read_bytes(), _date(int(y), int(m), int(d)))
+        if not summ.items:
             shape_failures.append(f"{fixture}: parsed 0 items")
     gate(
         "G30 sumario shape coverage",
