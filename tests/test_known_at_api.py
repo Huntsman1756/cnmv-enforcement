@@ -14,10 +14,15 @@ import pytest
 DB = Path("data/runtime/cnmv-enforcement.duckdb")
 
 
+REGISTER_CORPUS = Path("data/corpus")
+
+
 @pytest.fixture(scope="module")
 def client():
     if not DB.exists():
         pytest.skip("build not run")
+    if not (REGISTER_CORPUS.exists() and any(REGISTER_CORPUS.glob("*.xml"))):
+        pytest.skip("register snapshot corpus not in checkout")
     from fastapi.testclient import TestClient
 
     from cnmv_enforcement.api.app import app
