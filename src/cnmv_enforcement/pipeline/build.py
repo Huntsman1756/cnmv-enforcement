@@ -77,11 +77,11 @@ def build_corpus(
             )
             continue
         result.publications.append(pub)
-        pub.corpus = (
-            "register_snapshot"
-            if xml_path.parent.name == "corpus"
-            else "historical_backfill"
-        )
+        pub.corpus = {
+            "corpus": "register_snapshot",
+            "corpus_h1_dev": "h1_2015_2017_dev",
+            "corpus_h1_holdout": "h1_2015_2017_holdout",
+        }.get(xml_path.parent.name, "historical_backfill")
         if pub.document_kind != "SANCTION_PUBLICATION":
             result.issues.append(
                 {

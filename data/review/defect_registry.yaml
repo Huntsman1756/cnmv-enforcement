@@ -60,6 +60,15 @@ defect_classes:
     referential integrity.
 
     '
+- id: SUCCESSOR_LIABILITY_PATTERN
+  description: Sanctions imposed on a successor entity while the infringement was
+    declared on a dissolved predecessor — 'Declarar la responsabilidad de X' + 'Imponer
+    a Y, como sucesor en la responsabilidad declarada de X' (incl. colon-list and
+    dash-amount forms and the 'Declarar que X ha incurrido en la comisión' variant).
+- id: LETTERED_CONDUCT_ITEMS
+  description: Lettered ('a)') or dashed/bulleted ('•', '–') conduct items under an
+    open block were flagged unhandled or silently skipped instead of contributing
+    conduct detail and dates.
 defects:
 - defect_id: S1
   defect_class: DURATION_FIELD_LOSS
@@ -274,3 +283,70 @@ defects:
   description: space-dot letter suffix '81.2. a)'/'227.1. b)' dropped in related-provision
     parsing (typify path was already fixed).
   fix_commit: re-judgment round 2
+- defect_id: D23
+  defect_class: COMISION_VARIANT_DROP
+  round: H1
+  fixtures:
+  - BOE-A-2022-10033
+  description: '''por comisión de una infracción'' (no ''la'') silently skipped the
+    whole Imponer block — the publication''s third infringement (don Arturo Sotillo,
+    15.000) was missing from the verified corpus.'
+  fix_commit: v0.6 H1
+- defect_id: D24
+  defect_class: SUCCESSOR_LIABILITY_PATTERN
+  round: H1
+  fixtures:
+  - BOE-A-2015-3810
+  description: dash-bullet compact format + 'Imponer a NCG Banco, como sucesor en
+    la responsabilidad declarada de Caixa Galicia' — inline sanction parsed as subject
+    header, 0 blocks.
+  fix_commit: v0.6 H1
+- defect_id: D25
+  defect_class: SUCCESSOR_LIABILITY_PATTERN
+  round: H1
+  fixtures:
+  - BOE-A-2015-9188
+  description: '''Imponer a BFA … como sucesor en la responsabilidad declarada de:''
+    colon-list + bare ''Bancaja, una multa…'' lines — per-predecessor fines were lost.'
+  fix_commit: v0.6 H1
+- defect_id: D26
+  defect_class: SUCCESSOR_LIABILITY_PATTERN
+  round: H1
+  fixtures:
+  - BOE-A-2016-1297
+  description: '''Imponer a Banco CEISS una multa de:'' + dash-amount lines ''– 250.000
+    euros (…), como sucesor en la responsabilidad declarada de Caja España.'''
+  fix_commit: v0.6 H1
+- defect_id: D27
+  defect_class: SUCCESSOR_LIABILITY_PATTERN
+  round: H1
+  fixtures:
+  - BOE-A-2015-4880
+  description: '''Declarar que Banco Banif … ha incurrido en la comisión de una infracción
+    grave…'' — alternate declaration surface form; successor sanction on Santander
+    lost the declared infringement.'
+  fix_commit: v0.6 H1
+- defect_id: D28
+  defect_class: COMISION_VARIANT_DROP
+  round: H1
+  fixtures:
+  - BOE-A-2017-15708
+  description: '''«Imponer a Renta 4 Banco, SA, por comisión de una infracción muy
+    grave…'' — ''por comisión'' (no ''la'') inside a guillemet-quoted para.'
+  fix_commit: v0.6 H1
+- defect_id: D29
+  defect_class: LETTERED_CONDUCT_ITEMS
+  round: H1
+  fixtures:
+  - BOE-A-2015-4242
+  description: lettered conduct items 'a) La comercialización por parte de Caixa Galicia…'
+    — conduct/dates per predecessor entity dropped as unhandled.
+  fix_commit: v0.6 H1
+- defect_id: D30
+  defect_class: LETTERED_CONDUCT_ITEMS
+  round: H1
+  fixtures:
+  - BOE-A-2015-9187
+  description: bulleted conduct items '• No gestionar adecuadamente los conflictos
+    de interés…' under an open block.
+  fix_commit: v0.6 H1

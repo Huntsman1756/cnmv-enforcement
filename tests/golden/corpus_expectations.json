@@ -132,8 +132,8 @@
  },
  {
   "boe_id": "BOE-A-2022-10033",
-  "blocks": 2,
-  "sanctions": 2,
+  "blocks": 3,
+  "sanctions": 3,
   "severities": [
    "SERIOUS",
    "VERY_SERIOUS"
@@ -145,8 +145,9 @@
   "statutes": [
    "Real Decreto Legislativo 4/2015"
   ],
-  "total_fine_eur": 165000,
+  "total_fine_eur": 180000,
   "subjects": [
+   "don Arturo Sotillo Alonso",
    "don José María Castillo Lacabex",
    "doña María Victoria Lacabex Retana"
   ],

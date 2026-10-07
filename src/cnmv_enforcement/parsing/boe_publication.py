@@ -74,12 +74,24 @@ _IMPOSE_START_RE = re.compile(
 )
 # historical comision variants normalized before the canonical check:
 # 'N. La comisión de una infracción…' → 'Por la comisión de una…';
-# '• De una infracción…' → 'Por la comisión de una infracción…'
+# '• De una infracción…' → 'Por la comisión de una infracción…';
+# 'X, como responsable de la comisión de…' → 'X, por la comisión de…'
 _PRE_COMISION_NORM = re.compile(
     rf"^([{_BULLETS}\s]*(?:\d{{1,2}}\s*[.)]\s*|[a-f]\)\s*)?)"
     r"(?:La\s+comisi[oó]n\s+de\s+(?=una|dos|tres|cuatro|un\s+|infracci)|"
     r"De\s+(?=una\s+infracci[oó]n))",
     re.IGNORECASE,
+)
+# 'como responsable de la comisión de' == 'por la comisión de' —
+# the imposition clause names the subject as responsible party
+_PRE_RESPONSABLE_NORM = re.compile(
+    r"como\s+responsable\s+de\s+la\s+comisi[oó]n(?=\s+de\b)",
+    re.IGNORECASE,
+)
+# 'por comisión de' (no article) == 'por la comisión de' — older
+# resolutions drop the 'la'
+_PRE_COMISION_SIN_LA = re.compile(
+    r"\bpor\s+comisi[oó]n(?=\s+de\b)", re.IGNORECASE
 )
 _POR_COMISION_BULLET_RE = re.compile(
     rf"^\s*(?:\d{{1,2}}\s*[.)]\s*|[a-f]\)\s*)?[{_BULLETS}\s]*"
@@ -106,6 +118,78 @@ _SUBJECT_FIRST2_RE = re.compile(
     r"(.*)$",
     re.IGNORECASE | re.DOTALL,
 )
+# 'Declarar la responsabilidad de <entity>[,] por la comisión de …' —
+# historical (2015–2017) operative form: the DECLARATION carries the
+# infringement; the sanction is imposed on a successor entity by a
+# separate 'Imponer a <successor>, como sucesor…' clause.
+_DECLARE_RESP_RE = re.compile(
+    rf"^\s*(?:[{_BULLETS}\s]*(?:\d{{1,2}}\s*[.)]\s*)?)*"
+    r"Declarar\s+la\s+responsabilidad\s+(?:de|del)\s+(.+?)\s*,?\s*"
+    r"(?=por\s+la\s+comisi[oó]n\b)",
+    re.IGNORECASE,
+)
+# 'Imponer a X, una multa…' / 'Imponer a X una multa de:' — sanction
+# clause inline in the same paragraph (no 'Por la comisión' anywhere);
+# the subject ends where the sanction vocabulary starts.
+_IMPOSE_INLINE_SUBJ_RE = re.compile(
+    r"Imponer\s+a\s+(.+?)\s*,?\s*(?=(?:una\s+|dos\s+|tres\s+|cuatro\s+|"
+    r"cinco\s+|seis\s+|siete\s+|ocho\s+|nueve\s+|diez\s+|la\s+|las\s+|"
+    r"los\s+)?(?:multa|sanci[oó]n|inhabilitaci|amonestaci|suspensi|"
+    r"restitu|comiso|separaci)\b|\d[\d.]*\s*(?:de\s+)?euros?\b)",
+    re.IGNORECASE,
+)
+# '– 250.000 euros (doscientos cincuenta mil euros), como sucesor en la
+# responsabilidad declarada de Caja España.' — bare amount line where
+# the sucesor clause selects the declared predecessor; the sanction
+# lands on the current Imponer subject.
+_AMOUNT_SUCC_LINE_RE = re.compile(
+    rf"^[{_BULLETS}\s]*(\d[\d.]*(?:,\d+)?)\s*(?:de\s+)?euros?\s*"
+    r"(?:\([^)]*\)\s*)?,?\s*como\s+sucesor[a-z]*\s+en\s+la\s+"
+    r"responsabilidad\s+declarad[ao]\s+de\s+(.+?)\s*[.»]?\s*$",
+    re.IGNORECASE | re.DOTALL,
+)
+# 'Bancaja, una multa por importe de un millón (1.000.000 de euros).'
+# — bare subject-first fine line (no bullet, no 'A ' prefix) under a
+# '…como sucesor en la responsabilidad declarada de:' list header.
+_BARE_SUBJ_MULTA_RE = re.compile(
+    r"^([A-ZÁÉÍÓÚÑ][^.,;]{2,80}?)\s*,\s*((?:una\s+)?multa\b.*)$",
+    re.IGNORECASE | re.DOTALL,
+)
+# standalone fine clause under an open block: 'Una multa por importe
+# de un millón (1.000.000 de euros).' — feeds the tail parser.
+_BARE_MULTA_LINE_RE = re.compile(
+    r"^\s*(?:una|la|las|dos|tres|cuatro|cinco|seis|siete|ocho|nueve|"
+    r"diez)\s+multa\b",
+    re.IGNORECASE,
+)
+_SUCC_CLAUSE_RE = re.compile(
+    r",?\s*como\s+sucesor[a-z]*\s+en\s+la\s+responsabilidad\s+"
+    r"declarad[ao]\s+de\s+(.+?)(?=,\s*(?:una\b|\d)|\s+una\b|\s*,\s*"
+    r"(?:la|las|los)\s|\.?\s*$)",
+    re.IGNORECASE,
+)
+
+
+def strip_successor_clause(subject: str) -> tuple[str, str | None]:
+    """'NCG Banco, S.A., como sucesor en la responsabilidad declarada de
+    Caixa Galicia' → ('NCG Banco, S.A.', 'Caixa Galicia')."""
+    # trailing '…declarada de(:)' — the predecessor name sits on the
+    # NEXT line ('Imponer a BFA…, como sucesor en la responsabilidad
+    # declarada de:' colon-list)
+    m = re.search(
+        r",?\s*como\s+sucesor[a-z]*\s+en\s+la\s+responsabilidad\s+"
+        r"declarad[ao]\s+de\s*:?\s*$",
+        subject,
+        re.IGNORECASE,
+    )
+    if m:
+        return subject[: m.start()].strip(" ,"), None
+    m = _SUCC_CLAUSE_RE.search(subject)
+    if not m:
+        return subject, None
+    return subject[: m.start()].strip(" ,"), m.group(1).strip(" ,.")
+
+
 _SUBJ_START = (
     r"don|doña|d\.|dña|de\s+|la\s+|las\s+|los\s+|el\s+|cada\s+|"
     r"[A-ZÁÉÍÓÚÑ]"
@@ -321,6 +405,10 @@ class ParsedSanctionLine:
     excerpt: str
     ordinal: int = 0
     duration_raw: str | None = None
+    # when this sanction pays a DECLARED predecessor's infringement
+    # ('250.000 euros, como sucesor … de Caja España') — the declared
+    # entity name; the sanction subject stays the successor
+    declared_subject: str | None = None
 
 
 @dataclass
@@ -340,6 +428,15 @@ class ParsedBlock:
     conduct_precision: str | None = None  # 'day' | 'year'
     subjects_inline: list[str] = field(default_factory=list)
     sanctions: list[ParsedSanctionLine] = field(default_factory=list)
+    # v0.6 historical grammar:
+    # - declared=True → 'Declarar la responsabilidad de X' header
+    #   (the block states an infringement, sanctions come later under a
+    #   successor 'Imponer')
+    # - declared_for → this successor-sanction block references the
+    #   declared block's infringement ('como sucesor en la
+    #   responsabilidad declarada de <declared subject>')
+    declared: bool = False
+    declared_for: ParsedBlock | None = None
 
 
 @dataclass
@@ -955,6 +1052,10 @@ def parse_publication_xml(
     context_subjects: list[str] = []
     sanction_ord = 0
     impose_ord = 0
+    # 'Imponer a <succ>, como sucesor en la responsabilidad declarada
+    # de:' — the following bare 'X, una multa…' lines each pay one
+    # declared predecessor's fine (succ_list mode)
+    succ_list: bool = False
 
     def new_blocks(
         para: ParsedParagraph, subjects: list[str], text: str | None = None
@@ -1015,16 +1116,87 @@ def parse_publication_xml(
             )
         return [make_block(tail_lines)]
 
+    def _dkey(name: str) -> str:
+        return name.lower().strip(" ,").rstrip(".")
+
+    declared_blocks: dict[str, ParsedBlock] = {}
+
+    def _link_successor(
+        blocks: list[ParsedBlock], declared: dict[str, ParsedBlock]
+    ) -> None:
+        """'Imponer a <succ>, como sucesor en la responsabilidad
+        declarada de <declared>' — the sanction's legal target is the
+        DECLARED entity's infringement, not a new one."""
+        for b in blocks:
+            for s in b.subjects_inline:
+                _, pred = strip_successor_clause(s)
+                if pred and _dkey(pred) in declared:
+                    b.declared_for = declared[_dkey(pred)]
+
     for para in pub.paragraphs:
         t = para.text
         # normalize historical comision phrasings to the canonical form
         t = _PRE_COMISION_NORM.sub(r"\g<1>Por la comisión de ", t)
+        t = _PRE_RESPONSABLE_NORM.sub("por la comisión", t)
+        t = _PRE_COMISION_SIN_LA.sub("por la comisión", t)
+        # 'Declarar que X (…), ha incurrido en la comisión de …' — same
+        # responsibility declaration, alternate surface form
+        dcl_que = re.match(
+            rf"^[{_BULLETS}\s]*Declarar\s+que\s+"
+            r"(.+?)\s*(?:\([^)]*\)\s*,?\s*)+"
+            r"ha\s+incurrido\s+en\s+la\s+comisi[oó]n\b",
+            t,
+            re.IGNORECASE,
+        )
+        if dcl_que:
+            subs = split_subjects(dcl_que.group(1))
+            # match ends after 'comisión' — the remainder is
+            # ' de una infracción…' → canonical 'Por la comisión de…'
+            ctx = "Por la comisión" + t[dcl_que.end() :]
+            blocks = new_blocks(para, subs, ctx)
+            pub.blocks.extend(blocks)
+            for b in blocks:
+                b.declared = True
+                for s in subs:
+                    declared_blocks[_dkey(s)] = b
+            current = blocks[-1]
+            continue
+        dcl = _DECLARE_RESP_RE.match(t)
+        if dcl:
+            # 'Declarar la responsabilidad de X, por la comisión de …'
+            # — the infringement is stated here; the sanction on the
+            # successor arrives under a separate 'Imponer' para.
+            subs = split_subjects(dcl.group(1))
+            # the regex stops before 'por la comisión' (lookahead) —
+            # the remainder IS the canonical comision clause
+            ctx = "Por " + t[dcl.end():].lstrip(" ,").removeprefix("por ")
+            blocks = new_blocks(para, subs, ctx)
+            pub.blocks.extend(blocks)
+            for b in blocks:
+                b.declared = True
+                for s in subs:
+                    declared_blocks[_dkey(s)] = b
+            current = blocks[-1]
+            continue
         if _IMPOSE_START_RE.match(t):
             subj_part = ""
             cm = _COMISION_RE.search(t)
             if cm:
                 subj_part = t[: cm.start()]
             else:
+                # inline sanction: 'Imponer a X, una multa por importe de
+                # N' — subject ends at the sanction marker (historical
+                # compact form); the para text stays as the tail
+                if _IMPOSE_INLINE_SUBJ_RE.search(t):
+                    sm3 = _IMPOSE_INLINE_SUBJ_RE.search(t)
+                    subs = split_subjects(sm3.group(1)) if sm3 else []
+                    if subs:
+                        context_subjects = subs
+                    blocks = new_blocks(para, subs, t)
+                    pub.blocks.extend(blocks)
+                    current = blocks[-1]
+                    _link_successor(blocks, declared_blocks)
+                    continue
                 # 'Imponer a X:' / 'Imponer a X, por:' / 'Imponer a X, por
                 # la comisión:' subjects-only headers
                 sm = re.match(
@@ -1036,6 +1208,9 @@ def parse_publication_xml(
                 )
                 if sm:
                     context_subjects = split_subjects(sm.group(1))
+                    succ_list = bool(
+                        re.search(r"declarad[ao]\s+de\s*:\s*$", t, re.I)
+                    )
                     current = None
                     continue
             subs = []
@@ -1045,9 +1220,12 @@ def parse_publication_xml(
                     subs = split_subjects(sm2.group(1))
             if subs:
                 context_subjects = subs
-            blocks = new_blocks(para, subs)
+            # pass the PRE-normalized text — 'por comisión'/'como
+            # responsable' variants must reach parse_comision too
+            blocks = new_blocks(para, subs, t)
             pub.blocks.extend(blocks)
             current = blocks[-1]
+            _link_successor(blocks, declared_blocks)
             continue
         if _POR_COMISION_BULLET_RE.match(t):
             # standalone infringement+sanction bullet; inherits header subject
@@ -1055,6 +1233,38 @@ def parse_publication_xml(
             pub.blocks.extend(blocks)
             current = blocks[-1]
             continue
+        # 'Bancaja, una multa por importe de un millón (…).' — a bare
+        # subject-first fine under a 'como sucesor … declarada de:'
+        # list: the fine lands on the successor (context_subjects),
+        # the named entity is the DECLARED predecessor
+        if succ_list and context_subjects:
+            mbare = _BARE_SUBJ_MULTA_RE.match(t)
+            if mbare:
+                pred_name = mbare.group(1).strip()
+                seg = mbare.group(2).strip()
+                amount, amount_raw = parse_amount(seg)
+                sanction_ord += 1
+                if current is None:
+                    # host block for the list — severity/statute come
+                    # from the declared block it succeeds
+                    blocks = new_blocks(para, context_subjects, "")
+                    pub.blocks.extend(blocks)
+                    current = blocks[-1]
+                current.sanctions.append(
+                    ParsedSanctionLine(
+                        subject_raw=context_subjects[0],
+                        sanction_raw=seg,
+                        sanction_type=SanctionType.MONETARY_FINE,
+                        amount=amount,
+                        currency="EUR" if amount is not None else None,
+                        amount_raw=amount_raw,
+                        paragraph_index=para.index,
+                        excerpt=t,
+                        ordinal=sanction_ord,
+                        declared_subject=pred_name,
+                    )
+                )
+                continue
         if current is None:
             if (
                 para.css_class == "parrafo"
@@ -1069,6 +1279,39 @@ def parse_publication_xml(
                     f"sanction-like bullet outside any impose block "
                     f"(para {para.index}): {t[:80]}"
                 )
+            continue
+        # '– 250.000 euros (…), como sucesor en la responsabilidad
+        # declarada de X.' — amount line; the fine lands on the open
+        # block's subject, bound to predecessor X's declaration
+        msucc = _AMOUNT_SUCC_LINE_RE.match(t)
+        if msucc:
+            n = parse_es_number(msucc.group(1))
+            sanction_ord += 1
+            current.sanctions.append(
+                ParsedSanctionLine(
+                    subject_raw=(
+                        context_subjects[0] if context_subjects else ""
+                    ),
+                    sanction_raw=t.lstrip(_BULLETS).strip(),
+                    sanction_type=SanctionType.MONETARY_FINE,
+                    amount=n,
+                    currency="EUR" if n is not None else None,
+                    amount_raw=msucc.group(1) + " euros",
+                    paragraph_index=para.index,
+                    excerpt=t,
+                    ordinal=sanction_ord,
+                    declared_subject=msucc.group(2).rstrip(".» ").strip(),
+                )
+            )
+            continue
+        # standalone fine clause under an open block: 'Una multa por
+        # importe de un millón (1.000.000 de euros).'
+        if _BARE_MULTA_LINE_RE.match(t):
+            lines = parse_sanction_tail(
+                t, context_subjects, para.index, t, sanction_ord
+            )
+            current.sanctions.extend(lines)
+            sanction_ord += len(lines)
             continue
         # subject-first bullet: '– A <subj>: <sanction>' or historical
         # '• A <subj>[, multa] por importe de N euros' (no colon)
@@ -1219,8 +1462,41 @@ def parse_publication_xml(
             continue
         # 'N. Resolución del Consejo …' — the underlying sanctioning
         # resolutions the publication covers; metadata, not a sanction line
-        if re.match(r"^\s*\d{1,2}\.\s*Resoluci[oó]n\b", t):
+        if re.match(r"^\s*\d{1,2}\.\s*(?:Resoluci[oó]n|Orden\b|Acuerdo\b)", t):
             pub.underlying_resolutions.append(t)
+            continue
+        # 'Declarar que X …' — an operative declaration (obligations,
+        # determinations), not a responsibility attribution: consume as
+        # a documented act, never a sanction
+        if re.match(
+            rf"^[{_BULLETS}\s]*Declarar\s+(?:que|al|a\s+la|a\s+los|"
+            r"los|las)\b",
+            t, re.IGNORECASE,
+        ) and not _DECLARE_RESP_RE.match(t):
+            pub.underlying_resolutions.append(t)
+            continue
+        # lettered or bulleted conduct items under an open block:
+        # 'a) La comercialización…' / '• No gestionar…' — conduct detail
+        # belonging to the block; never a respondent, never an issue
+        mlet = re.match(
+            r"^\s*(?:([a-f])\)|[•·●\-–—])\s*(.+)$", t, re.IGNORECASE
+        )
+        if mlet and current is not None:
+            item = mlet.group(2).strip()
+            current.conduct_raw = (
+                (current.conduct_raw + " " + item).strip()
+                if current.conduct_raw
+                else item
+            )
+            # lettered items often carry the real conduct dates —
+            # merge them into the conduct window
+            cs, ce, cp = extract_conduct_period(item)
+            if cs and (current.conduct_start is None or cs < current.conduct_start):
+                current.conduct_start = cs
+            if ce and (current.conduct_end is None or ce > current.conduct_end):
+                current.conduct_end = ce
+            if cp == "day":
+                current.conduct_precision = "day"
             continue
         # safety net: a bullet/numbered-looking line under an open block
         # that matched nothing must surface, never drop silently

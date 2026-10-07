@@ -11,6 +11,7 @@ from __future__ import annotations
 from decimal import Decimal
 from pathlib import Path
 
+from cnmv_enforcement.domain.enums import Severity
 from cnmv_enforcement.parsing.boe_publication import parse_publication_xml, split_subjects
 from cnmv_enforcement.parsing.dates import extract_conduct_period
 
@@ -258,3 +259,103 @@ def test_D22_related_dot_letter():
     pub = _pub("BOE-A-2018-14109")
     arts = {r.article_normalized for b in pub.blocks for r in b.related}
     assert {"81.2.a", "81.2.b", "227.1.a", "227.1.b"} <= arts, arts
+
+
+# ── H1 cohort: 2015–2017 historical grammar ──────────────────────────
+
+
+def _h1_pub(boe_id):
+    p = Path(f"data/corpus_h1_dev/{boe_id}.xml")
+    if not p.exists():
+        pytest.skip("h1 dev corpus absent")
+    return parse_publication_xml(p.read_bytes())
+
+
+def test_D23_por_comision_sin_la():
+    """'por comisión de' (no 'la') must produce the third block of
+    BOE-A-2022-10033 — the verified corpus silently dropped it."""
+    pub = _pub("BOE-A-2022-10033")
+    assert len(pub.blocks) == 3
+    b3 = pub.blocks[2]
+    assert b3.severity == Severity.SERIOUS
+    assert b3.article_normalized == "295.5"
+    assert any(
+        "Arturo Sotillo" in l.subject_raw for l in b3.sanctions
+    )
+
+
+def test_D24_impose_inline_sucesor():
+    pub = _h1_pub("BOE-A-2015-3810")
+    assert len(pub.blocks) == 2
+    assert pub.blocks[0].declared
+    succ = pub.blocks[1]
+    assert succ.declared_for is pub.blocks[0]
+    assert succ.sanctions[0].amount == 80000
+
+
+def test_D25_sucesor_colon_list():
+    """'…como sucesor en la responsabilidad declarada de:' + bare
+    'X, una multa…' lines — each predecessor's fine binds its declared
+    block."""
+    pub = _h1_pub("BOE-A-2015-9188")
+    amts = {
+        l.declared_subject: l.amount
+        for b in pub.blocks
+        for l in b.sanctions
+        if l.declared_subject
+    }
+    assert amts.get("Bancaja") == 1000000
+    assert amts.get("Caja Madrid") == 1000000
+    assert amts.get("Caixa Laietana") == 100000
+
+
+def test_D26_dash_amount_sucesor():
+    pub = _h1_pub("BOE-A-2016-1297")
+    pairs = {
+        l.declared_subject: l.amount
+        for b in pub.blocks
+        for l in b.sanctions
+        if l.declared_subject
+    }
+    assert pairs == {
+        "Caja España": 250000,
+        "Caja Duero": 100000,
+        "CEISS": 750000,
+    }
+
+
+def test_D27_declarar_que_ha_incurrido():
+    pub = _h1_pub("BOE-A-2015-4880")
+    decl = [b for b in pub.blocks if b.declared]
+    assert decl, "no Declarar-que block"
+    # the successor sanction on Santander links the Banif declaration
+    succ = [
+        b
+        for b in pub.blocks
+        if b.declared_for or any(l.declared_subject for l in b.sanctions)
+    ]
+    assert succ and any(
+        l.amount == 50000 for b in succ for l in b.sanctions
+    )
+
+
+def test_D28_por_comision_quoted():
+    pub = _h1_pub("BOE-A-2017-15708")
+    assert len(pub.blocks) == 1
+    b = pub.blocks[0]
+    assert b.severity == Severity.VERY_SERIOUS
+    assert b.sanctions[0].amount == 500000
+    assert "Renta 4 Banco" in b.sanctions[0].subject_raw
+
+
+def test_D29_lettered_conduct_items():
+    pub = _h1_pub("BOE-A-2015-4242")
+    assert not pub.parse_issues, pub.parse_issues
+    # lettered items merged into conduct windows
+    b = pub.blocks[0]
+    assert b.conduct_start is not None
+
+
+def test_D30_dashed_conduct_items():
+    pub = _h1_pub("BOE-A-2015-9187")
+    assert not pub.parse_issues, pub.parse_issues

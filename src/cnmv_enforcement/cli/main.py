@@ -411,6 +411,11 @@ def build(
     hist = data_root() / "corpus_historical"
     if hist.exists() and any(hist.glob("BOE-A-*.xml")):
         dirs.append(hist)
+    # v0.6 H1 dev corpus — 2015–2017 backfill development split (the
+    # holdout dir is NEVER built into the dataset)
+    h1dev = data_root() / "corpus_h1_dev"
+    if h1dev.exists() and any(h1dev.glob("BOE-A-*.xml")):
+        dirs.append(h1dev)
     result = build_corpus(dirs)
     status_path = runtime_root() / "cnmv_pdf_status.json"
     pdf_obs = (

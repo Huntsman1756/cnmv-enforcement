@@ -40,6 +40,7 @@ from cnmv_enforcement.parsing.boe_publication import (
     ParsedPublication,
     classify_subject,
     split_subject_role,
+    strip_successor_clause,
 )
 from cnmv_enforcement.parsing.text import normalize_key
 
@@ -109,6 +110,10 @@ def assemble_case(
     respondents: dict[str, Respondent] = {}
 
     def respondent_for(name_raw: str) -> Respondent:
+        # successor clause is legal-identity context, not a name —
+        # 'NCG Banco, S.A., como sucesor en la responsabilidad
+        # declarada de Caixa Galicia' → respondent 'NCG Banco, S.A.'
+        name_raw, _pred = strip_successor_clause(name_raw)
         # strip the role clause for identity — 'don X, en su condición de
         # consejero de Y' is the same respondent as 'don X'; the verbatim
         # name stays in raw_display_name, the role in role_raw
@@ -136,8 +141,87 @@ def assemble_case(
             )
         return respondents[rid]
 
+    # map a successor-sanction block onto the infringement ordinal of
+    # the 'Declarar la responsabilidad de X' block it succeeds —
+    # 'Imponer a <succ>, como sucesor en la responsabilidad declarada
+    # de <X>' means the sanction answers for X's infringement
+    declared_iid: dict[int, str] = {}
+    declared_name_iid: dict[str, str] = {}
+
+    def _emit_sanction(line, resp, sid, iid, block) -> None:
+        # per-line successor link overrides the block-level one —
+        # 'Bancaja, una multa…' under a succ-list binds Bancaja's
+        # declared infringement, not the block's
+        if line.declared_subject is not None:
+            iid = declared_name_iid.get(
+                line.declared_subject.lower().strip(' ,').rstrip('.'), iid
+            )
+        s = Sanction(
+            sanction_id=sid,
+            case_id=case_id,
+            respondent_id=resp.respondent_id,
+            infringement_id=iid,
+            ordinal=line.ordinal,
+            sanction_type=line.sanction_type,
+            severity=block.severity,
+            amount=line.amount,
+            currency=line.currency,
+            amount_raw=line.amount_raw,
+            duration_raw=line.duration_raw,
+        )
+        bundle.sanctions.append(s)
+        ev(
+            "sanction", sid, "subject", line.paragraph_index,
+            line.excerpt, raw_value=line.subject_raw,
+        )
+        ev(
+            "sanction", sid, "sanction_text", line.paragraph_index,
+            line.excerpt, raw_value=line.sanction_raw,
+        )
+        if line.amount is not None:
+            ev(
+                "sanction",
+                sid,
+                "amount",
+                line.paragraph_index,
+                line.excerpt,
+                ExtractionMethod.NORMALIZED,
+                raw_value=line.amount_raw or str(line.amount),
+            )
+
     for block in pub.blocks:
+        if block.declared_for is not None:
+            # successor sanction — the infringement row already exists
+            # from the 'Declarar' block; bind sanctions to its iid.
+            # severity/article/statute live on the DECLARATION
+            src = block.declared_for
+            iid = declared_iid[id(src)]
+            for line in block.sanctions:
+                resp = respondent_for(line.subject_raw)
+                sid = sanction_id_for(case_id, line.ordinal)
+                _emit_sanction(line, resp, sid, iid, src)
+            continue
         iid = infringement_id_for(case_id, block.ordinal)
+        declared_iid[id(block)] = iid
+        if block.declared:
+            # 'Declarar la responsabilidad de X' — X is a case
+            # respondent even when the sanction lands on a successor;
+            # no sanction row exists for it
+            for s in block.subjects_inline:
+                respondent_for(s)
+                declared_name_iid[s.lower().strip(' ,').rstrip('.')] = iid
+        # a pure successor-host block ('Imponer a <succ> una multa de:'
+        # + per-predecessor amount lines) creates NO infringement —
+        # every sanction binds per-line to its declared block
+        pure_succ_host = bool(block.sanctions) and all(
+            ln.declared_subject is not None for ln in block.sanctions
+        )
+        if pure_succ_host:
+            for line in block.sanctions:
+                resp = respondent_for(line.subject_raw)
+                sid = sanction_id_for(case_id, line.ordinal)
+                _emit_sanction(line, resp, sid, iid, block)
+            continue
         (
             rule_version_id,
             rule_status,
@@ -198,39 +282,7 @@ def assemble_case(
         for line in block.sanctions:
             resp = respondent_for(line.subject_raw)
             sid = sanction_id_for(case_id, line.ordinal)
-            sev = block.severity
-            s = Sanction(
-                sanction_id=sid,
-                case_id=case_id,
-                respondent_id=resp.respondent_id,
-                infringement_id=iid,
-                ordinal=line.ordinal,
-                sanction_type=line.sanction_type,
-                severity=sev,
-                amount=line.amount,
-                currency=line.currency,
-                amount_raw=line.amount_raw,
-                duration_raw=line.duration_raw,
-            )
-            bundle.sanctions.append(s)
-            ev(
-                "sanction", sid, "subject", line.paragraph_index,
-                line.excerpt, raw_value=line.subject_raw,
-            )
-            ev(
-                "sanction", sid, "sanction_text", line.paragraph_index,
-                line.excerpt, raw_value=line.sanction_raw,
-            )
-            if line.amount is not None:
-                ev(
-                    "sanction",
-                    sid,
-                    "amount",
-                    line.paragraph_index,
-                    line.excerpt,
-                    ExtractionMethod.NORMALIZED,
-                    raw_value=line.amount_raw or str(line.amount),
-                )
+            _emit_sanction(line, resp, sid, iid, block)
 
     bundle.respondents = list(respondents.values())
     for rid, respo in respondents.items():
