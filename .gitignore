@@ -43,3 +43,4 @@ Thumbs.db
 playwright-report/
 test-results/
 data/corpus/
+web/tsconfig.tsbuildinfo
