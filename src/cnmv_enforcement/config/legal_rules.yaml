@@ -75,32 +75,32 @@ rules:
   - {rule_id: trlmv-282.15, family: TRLMV, article: "282.15", conduct_code: MARKET_ABUSE.INSIDER_DEALING}
   - {rule_id: trlmv-282.16, family: TRLMV, article: "282.16", conduct_code: DISCLOSURE.PERIODIC_REPORTING}
   - {rule_id: trlmv-282.19, family: TRLMV, article: "282.19", conduct_code: DISCLOSURE.SIGNIFICANT_HOLDINGS}
-  - {rule_id: trlmv-283.1,  family: TRLMV, article: "283.1",  conduct_code: UNKNOWN}
+  - {rule_id: trlmv-283.1,  family: TRLMV, article: "283.1",  conduct_code: OTHER}
   - {rule_id: trlmv-283.3,  family: TRLMV, article: "283.3",  conduct_code: INVESTMENT_SERVICES.CONDUCT_OF_BUSINESS}
   - {rule_id: trlmv-283.8,  family: TRLMV, article: "283.8",  conduct_code: INVESTMENT_SERVICES.CONDUCT_OF_BUSINESS}
   - {rule_id: trlmv-283.11, family: TRLMV, article: "283.11", conduct_code: INVESTMENT_SERVICES.CONDUCT_OF_BUSINESS}
   - {rule_id: trlmv-283.12, family: TRLMV, article: "283.12", conduct_code: INVESTMENT_SERVICES.CONDUCT_OF_BUSINESS}
-  - {rule_id: trlmv-284.1,  family: TRLMV, article: "284.1",  conduct_code: UNKNOWN}
-  - {rule_id: trlmv-284.5,  family: TRLMV, article: "284.5",  conduct_code: UNKNOWN}
-  - {rule_id: trlmv-292.4,  family: TRLMV, article: "292.4",  conduct_code: UNKNOWN}
-  - {rule_id: trlmv-295.4,  family: TRLMV, article: "295.4",  conduct_code: UNKNOWN}
-  - {rule_id: trlmv-295.5,  family: TRLMV, article: "295.5",  conduct_code: UNKNOWN}
-  - {rule_id: trlmv-295.13, family: TRLMV, article: "295.13", conduct_code: UNKNOWN}
-  - {rule_id: trlmv-295.14, family: TRLMV, article: "295.14", conduct_code: UNKNOWN}
-  - {rule_id: trlmv-295.15, family: TRLMV, article: "295.15", conduct_code: UNKNOWN}
-  - {rule_id: trlmv-295.18, family: TRLMV, article: "295.18", conduct_code: UNKNOWN}
-  - {rule_id: trlmv-296.5,  family: TRLMV, article: "296.5",  conduct_code: UNKNOWN}
-  - {rule_id: trlmv-296.12, family: TRLMV, article: "296.12", conduct_code: UNKNOWN}
-  - {rule_id: trlmv-296.14, family: TRLMV, article: "296.14", conduct_code: UNKNOWN}
+  - {rule_id: trlmv-284.1,  family: TRLMV, article: "284.1",  conduct_code: INVESTMENT_SERVICES.BEST_EXECUTION}
+  - {rule_id: trlmv-284.5,  family: TRLMV, article: "284.5",  conduct_code: INVESTMENT_SERVICES.CONDUCT_OF_BUSINESS}
+  - {rule_id: trlmv-292.4,  family: TRLMV, article: "292.4",  conduct_code: INVESTMENT_SERVICES.CONDUCT_OF_BUSINESS}
+  - {rule_id: trlmv-295.4,  family: TRLMV, article: "295.4",  conduct_code: MARKET_ABUSE.MARKET_MANIPULATION}
+  - {rule_id: trlmv-295.5,  family: TRLMV, article: "295.5",  conduct_code: MARKET_ABUSE.INSIDER_DEALING}
+  - {rule_id: trlmv-295.13, family: TRLMV, article: "295.13", conduct_code: MARKET_ABUSE.MARKET_MANIPULATION}
+  - {rule_id: trlmv-295.14, family: TRLMV, article: "295.14", conduct_code: OTHER}
+  - {rule_id: trlmv-295.15, family: TRLMV, article: "295.15", conduct_code: MARKET_ABUSE.UNLAWFUL_DISCLOSURE}
+  - {rule_id: trlmv-295.18, family: TRLMV, article: "295.18", conduct_code: MARKET_ABUSE.INSIDER_DEALING}
+  - {rule_id: trlmv-296.5,  family: TRLMV, article: "296.5",  conduct_code: INVESTMENT_SERVICES.ORGANISATIONAL_REQUIREMENTS}
+  - {rule_id: trlmv-296.12, family: TRLMV, article: "296.12", conduct_code: INVESTMENT_SERVICES.CONDUCT_OF_BUSINESS}
+  - {rule_id: trlmv-296.14, family: TRLMV, article: "296.14", conduct_code: INVESTMENT_SERVICES.CONDUCT_OF_BUSINESS}
 
   # --- Ley 6/2023 (LMV vigente) ---
   - {rule_id: lmv23-282.1.b,  family: LMV_2023, article: "282.1.b",  conduct_code: DISCLOSURE.INSIDE_INFORMATION}
-  - {rule_id: lmv23-290.1.n,  family: LMV_2023, article: "290.1.n",  conduct_code: UNKNOWN}
+  - {rule_id: lmv23-290.1.n,  family: LMV_2023, article: "290.1.n",  conduct_code: INVESTMENT_SERVICES.CONDUCT_OF_BUSINESS}
   - {rule_id: lmv23-292.1.b,  family: LMV_2023, article: "292.1.b",  conduct_code: INVESTMENT_SERVICES.CONDUCT_OF_BUSINESS}
   - {rule_id: lmv23-292.1.f,  family: LMV_2023, article: "292.1.f",  conduct_code: INVESTMENT_SERVICES.CONDUCT_OF_BUSINESS}
   - {rule_id: lmv23-293.1.a,  family: LMV_2023, article: "293.1.a",  conduct_code: DISCLOSURE.INSIDE_INFORMATION}
-  - {rule_id: lmv23-297.1.c,  family: LMV_2023, article: "297.1.c",  conduct_code: UNKNOWN}
-  - {rule_id: lmv23-297.1.e,  family: LMV_2023, article: "297.1.e",  conduct_code: UNKNOWN}
+  - {rule_id: lmv23-297.1.c,  family: LMV_2023, article: "297.1.c",  conduct_code: MARKET_ABUSE.MARKET_MANIPULATION}
+  - {rule_id: lmv23-297.1.e,  family: LMV_2023, article: "297.1.e",  conduct_code: MARKET_ABUSE.MARKET_MANIPULATION}
 
   # --- LIIC ---
   - {rule_id: liic-80,    family: LIIC_2003, article: "80",    conduct_code: COLLECTIVE_INVESTMENT.INVESTMENT_POLICY}
@@ -109,10 +109,10 @@ rules:
   - {rule_id: liic-81.z,  family: LIIC_2003, article: "81.z",  conduct_code: COLLECTIVE_INVESTMENT.RISK_MANAGEMENT}
 
   # --- Ley 22/2014 / Ley 5/2015 ---
-  - {rule_id: lesi14-93,   family: LESI_2014, article: "93",   conduct_code: UNKNOWN}
-  - {rule_id: lesi14-93.a, family: LESI_2014, article: "93.a", conduct_code: UNKNOWN}
-  - {rule_id: lesi14-93.p, family: LESI_2014, article: "93.p", conduct_code: UNKNOWN}
-  - {rule_id: lesi14-94.o, family: LESI_2014, article: "94.o", conduct_code: UNKNOWN}
-  - {rule_id: lesi14-94.ñ, family: LESI_2014, article: "94.ñ", conduct_code: UNKNOWN}
-  - {rule_id: lefe-92,     family: LESI_2015, article: "92",   conduct_code: UNKNOWN}
-  - {rule_id: lefe-92.1.h, family: LESI_2015, article: "92.1.h", conduct_code: UNKNOWN}
+  - {rule_id: lesi14-93,   family: LESI_2014, article: "93",   conduct_code: COLLECTIVE_INVESTMENT.RISK_MANAGEMENT}
+  - {rule_id: lesi14-93.a, family: LESI_2014, article: "93.a", conduct_code: COLLECTIVE_INVESTMENT.RISK_MANAGEMENT}
+  - {rule_id: lesi14-93.p, family: LESI_2014, article: "93.p", conduct_code: COLLECTIVE_INVESTMENT.DISCLOSURE}
+  - {rule_id: lesi14-94.o, family: LESI_2014, article: "94.o", conduct_code: COLLECTIVE_INVESTMENT.RISK_MANAGEMENT}
+  - {rule_id: lesi14-94.ñ, family: LESI_2014, article: "94.ñ", conduct_code: COLLECTIVE_INVESTMENT.RISK_MANAGEMENT}
+  - {rule_id: lefe-92,     family: LESI_2015, article: "92",   conduct_code: INVESTMENT_SERVICES.CONDUCT_OF_BUSINESS}
+  - {rule_id: lefe-92.1.h, family: LESI_2015, article: "92.1.h", conduct_code: INVESTMENT_SERVICES.CONDUCT_OF_BUSINESS}
