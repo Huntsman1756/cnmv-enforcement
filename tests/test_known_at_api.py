@@ -79,6 +79,45 @@ def test_known_at_malformed_is_400(client):
     assert r.status_code == 400
 
 
+def test_known_at_appeal_state_follows_observation_axis(client):
+    """The PDF-appeal state must appear only when the pdf observation
+    existed by T — gated on observed_at (latest run content), not on
+    first_observed_at (the axis would leak a later run's notes)."""
+    import duckdb
+
+    con = duckdb.connect(str(DB), read_only=True)
+    row = con.execute(
+        "SELECT case_id, observed_at FROM case_status "
+        "WHERE observed_at IS NOT NULL LIMIT 1"
+    ).fetchone()
+    con.close()
+    if not row:
+        pytest.skip("no case_status rows")
+    cid = row[0]  # observed_at only used implicitly
+    # a T strictly before the pdf run must not show the appeal state
+    early = client.get(f"/cases/{cid}?known_at=2000-01-01").json()
+    assert early.get("appeal_observation_status") in (None, "INCONCLUSIVE")
+    # at/after the run it may appear
+    late = client.get(f"/cases/{cid}?known_at=2100-01-01").json()
+    assert late.get("appeal_observation_status") in (
+        "OBSERVED",
+        "NOT_OBSERVED_WITHIN_VERIFIED_COVERAGE",
+        "INCONCLUSIVE",
+    )
+
+
+def test_known_at_tz_offset_normalized(client):
+    """An offset-aware known_at must compare as an instant, not a string:
+    '...T09:00+02:00' (=07:00Z) is EARLIER than 'T08:00Z' observations."""
+    r = client.get(
+        "/cases/CNMV-BOE-A-2026-16921"
+        "?known_at=2000-01-01T09:00:00%2B02:00"  # '+' must be %-encoded
+    )
+    assert r.status_code == 200
+    d = r.json()
+    assert d["sanctions"] == []  # 2000-01-01 07:00Z — nothing observed
+
+
 def test_current_mode_declared(client):
     r = client.get("/cases/CNMV-BOE-A-2026-16921")
     d = r.json()

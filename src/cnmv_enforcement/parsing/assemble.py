@@ -107,7 +107,6 @@ def assemble_case(
         )
 
     respondents: dict[str, Respondent] = {}
-    respondent_ord: dict[str, int] = {}
 
     def respondent_for(name_raw: str) -> Respondent:
         # strip the role clause for identity — 'don X, en su condición de
@@ -132,7 +131,6 @@ def assemble_case(
                 role_raw=role,
             )
             respondents[rid] = resp
-            respondent_ord[rid] = len(respondent_ord)
             bundle.case_respondents.append(
                 CaseRespondent(case_id=case_id, respondent_id=rid, role=role)
             )
@@ -172,7 +170,15 @@ def assemble_case(
         bundle.infringements.append(infr)
         ev(
             "infringement", iid, "severity", block.paragraph_index,
-            block.header_text, raw_value=block.severity.value,
+            block.header_text,
+            # the verbatim source token — the enum is English and can
+            # never satisfy VALUE_BINDING; the Spanish severity word is
+            # what actually appears in the paragraph
+            raw_value={
+                Severity.VERY_SERIOUS: "muy grave",
+                Severity.SERIOUS: "grave",
+                Severity.MINOR: "leve",
+            }.get(block.severity),
         )
         if block.article_raw:
             ev(
@@ -192,7 +198,7 @@ def assemble_case(
         for line in block.sanctions:
             resp = respondent_for(line.subject_raw)
             sid = sanction_id_for(case_id, line.ordinal)
-            sev = block.severity if block.severity != Severity.UNKNOWN else Severity.UNKNOWN
+            sev = block.severity
             s = Sanction(
                 sanction_id=sid,
                 case_id=case_id,

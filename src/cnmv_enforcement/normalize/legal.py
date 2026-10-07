@@ -27,7 +27,7 @@ _BODY = r"\d{1,3}(?:\.[A-Za-z\u00f1\u00d10-9]{1,10})*"
 # conjunctions in article lists ('67 y 71', '45 y 48')
 _WORDS = rf"(?:{_WORD_SUFFIX}|[b-df-hj-np-tv-xzñ](?![a-záéíóúñ]))"
 # apartado digit + optional letter: '83 ter 1', '107 quáter 3.c'
-_APART = r"(?:\s+\d(?:\.[A-Za-z\u00f1])?)?"
+_APART = r"(?:\s+\d{1,2}(?:\.[A-Za-z\u00f1])?)?"
 
 _ARTICLE_TOKEN_RE = re.compile(
     rf"(?P<body>{_BODY})(?P<words>(?:\s+{_WORDS})*)(?P<apart>{_APART})",

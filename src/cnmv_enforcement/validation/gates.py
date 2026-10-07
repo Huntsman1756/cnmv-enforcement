@@ -220,7 +220,6 @@ def run_gates(corpus_dir: Path, extra_dirs: list[Path] | None = None) -> dict:
 
     # ── v0.5 gates ─────────────────────────────────────────────────────
     # G16 REVIEW_REGRESSION_COVERAGE — 18 defects / 18 covered
-    import sys
 
     import yaml
 
@@ -228,7 +227,6 @@ def run_gates(corpus_dir: Path, extra_dirs: list[Path] | None = None) -> dict:
     if reg.exists():
         doc = yaml.safe_load(reg.read_text(encoding="utf-8"))
         defect_ids = {d["defect_id"] for d in doc["defects"]}
-        _ = sys.modules.get("tests.regression.test_defect_registry")
         test_names = set()
         tdir = Path("tests/regression")
         for f in tdir.glob("test_*.py"):
@@ -361,49 +359,64 @@ def run_gates(corpus_dir: Path, extra_dirs: list[Path] | None = None) -> dict:
         if pstatus_path.exists()
         else {}
     )
-    from cnmv_enforcement.storage.tables import _appeal_status, _pdf_basis_id
+    from cnmv_enforcement.storage.tables import _pdf_basis_id
 
     basis = _pdf_basis_id(pstatus) if pstatus else None
-    unbased = []
-    unverified_neg = []
+    # independent recompute — do NOT reuse _appeal_status (a bug inside
+    # it must trip this gate): a strong negative requires an entry with
+    # retrieval=OK AND zero appeal note-kinds AND a basis id
+    appeal_kinds = {
+        "JUDICIAL_APPEAL_OBSERVED",
+        "JUDGMENT_OBSERVED",
+        "RENUNCIATION_TO_APPEAL",
+    }
+    negatives = []
     for b in result.bundles:
-        obs = pstatus.get(b.case.canonical_boe_id or "")
-        st = _appeal_status(obs)
-        if st == "NOT_OBSERVED_WITHIN_VERIFIED_COVERAGE" and not basis:
-            unbased.append(b.case.case_id)
-        if st == "NOT_OBSERVED_WITHIN_VERIFIED_COVERAGE" and (
-            not obs or obs.get("retrieval") != "OK"
-        ):
-            unverified_neg.append(b.case.case_id)
+        obs = pstatus.get(b.case.canonical_boe_id or "") or {}
+        kinds = {n.get("kind") for n in obs.get("notes", [])}
+        if not obs or obs.get("retrieval") != "OK":
+            expected = "INCONCLUSIVE"
+        elif kinds & appeal_kinds:
+            expected = "OBSERVED"
+        else:
+            expected = "NEGATIVE"
+        if expected == "NEGATIVE":
+            negatives.append((b.case.case_id, bool(obs), bool(basis)))
     gate(
         "G20 coverage negative claims",
-        not unbased and not unverified_neg,
-        f"unbased={len(unbased)} unverified={len(unverified_neg)}",
+        all(ok and basis for _, ok, basis in negatives),
+        f"{len(negatives)} negatives, "
+        f"{sum(1 for _, ok, bas in negatives if not (ok and bas))} "
+        "without verified coverage",
     )
 
     # G21 AS_KNOWN_AT_NO_FUTURE_LEAKAGE — no observation timestamp may
-    # postdate the build itself (evidence dated into the future would be
-    # invisible to every AS_KNOWN_AT query); end-to-end leakage is
-    # covered by tests/test_known_at.py + API tests
+    # postdate the build itself (evidence or PDF-derived events dated
+    # into the future would be invisible to every AS_KNOWN_AT query);
+    # end-to-end leakage is covered by tests/test_known_at*.py
 
-    built = result.built_at
+    built = result.built_at.replace(tzinfo=None)
     future = [
         e.entity_id
         for b in result.bundles
         for e in b.evidence
         if e.observed_at
-        and abs(
-            (
-                e.observed_at.replace(tzinfo=None)
-                - built.replace(tzinfo=None)
-            ).total_seconds()
-        )
+        and (e.observed_at.replace(tzinfo=None) - built).total_seconds()
+        > 3600
+    ]
+    future_events = [
+        ev.event_id
+        for b in result.bundles
+        for ev in b.events
+        if ev.observed_at
+        and (ev.observed_at.replace(tzinfo=None) - built).total_seconds()
         > 3600
     ]
     gate(
         "G21 known_at no future leakage",
-        not future,
-        f"{len(future)} evidence records >1h outside the build instant",
+        not future and not future_events,
+        f"{len(future)} evidence + {len(future_events)} events "
+        ">1h after the build instant",
     )
 
     # G22 REPRODUCIBLE_DATASET — golden fixture integrity

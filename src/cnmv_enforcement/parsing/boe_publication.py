@@ -220,6 +220,9 @@ _SANCTION_SPLIT_RE = re.compile(
 _AMOUNT_RES = [
     # (10.000 €) — parenthesized digits + €
     re.compile(r"\((\d[\d.]*(?:,\d+)?)\s*€\s*\)"),
+    # 'seiscientos cincuenta mil (650.000) euros' — written amount +
+    # parenthesized digits
+    re.compile(r"\((\d[\d.]*(?:,\d+)?)\)\s*(?:de\s+)?euros?", re.IGNORECASE),
     # 5.000.000 (cinco millones) de euros | 5.000.000 de euros |
     # 15.000 (quince mil) euros | 50.000 euros
     re.compile(
@@ -461,6 +464,7 @@ def split_subjects(raw: str) -> list[str]:
     parts = re.split(
         r",\s+(?=a\s+|de\s+|el\s+|la\s+|don\b|doña\b|d\.\s|dña\b)|"
         r"\s+y\s+a\s+|\s+e\s+a\s+|"
+        r"\s+[ye]\s+(?=sus?\b(?:\s+\S+){0,3}\s*,?\s*(?:don|doña|d\.|dña)\b)|"
         r"\s+[ye]\s+(?=don\b|doña\b|d\.\s|dña\b)",
         masked,
         flags=re.IGNORECASE,
@@ -710,6 +714,15 @@ def _related_refs(
             if not m:
                 break
             raw = m.group(0)
+            # space/dot-letter suffix: '81.2. a)' / '227.1. b)' — same
+            # form the typify path already captures
+            lt = re.match(
+                r"\s*\.?\s*([a-zñ])\s*\)",
+                segment[m.end() :],
+                re.IGNORECASE,
+            )
+            if lt:
+                raw = f"{raw.rstrip(' .)')}.{lt.group(1).lower()}"
             refs.append(
                 LegalReference(
                     statute_raw=stat_raw_use,
@@ -719,7 +732,7 @@ def _related_refs(
                     relation="RELATED",
                 )
             )
-            pos = m.end()
+            pos = m.end() + (lt.end() if lt else 0)
             sep = re.match(
                 r"\s*(?:,|y\b|e\b)\s*(?:los\s+|el\s+|las\s+|la\s+)?",
                 segment[pos:],
@@ -1256,6 +1269,16 @@ def parse_publication_xml(
             b.statute_normalized = sn
             if not b.statute_raw or b.statute_raw == ")":
                 b.statute_raw = raw
+        # chain-head inheritance: 'art. 99.i, en relación con el art.
+        # 83 ter 1., de la Ley 24/1988' — the chain's first statute
+        # governs the typified article too
+        if b.statute_normalized is None:
+            for r in b.related:
+                if r.statute_normalized:
+                    b.statute_normalized = r.statute_normalized
+                    if not b.statute_raw or b.statute_raw == ")":
+                        b.statute_raw = r.statute_raw
+                    break
         if b.statute_normalized is None:
             b.statute_normalized = last_stat
         if b.statute_normalized:

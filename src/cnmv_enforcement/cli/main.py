@@ -664,17 +664,56 @@ def case(
             typer.echo(f"invalid --known-at: {known_at!r} (use ISO 8601)")
             raise typer.Exit(2) from exc
         cid = case_row["case_id"]
+        resp_ids = {
+            r[0]
+            for r in con.execute(
+                "SELECT respondent_id FROM case_respondents "
+                "WHERE case_id = ?",
+                [cid],
+            ).fetchall()
+        }
+        ph = ",".join("?" * len(resp_ids)) if resp_ids else "NULL"
         evs = con.execute(
-            "SELECT entity_id FROM evidence WHERE entity_id LIKE ? "
+            "SELECT entity_id FROM evidence WHERE "
+            f"(entity_id LIKE ? OR entity_id IN ({ph})) "
             "AND observed_at <= ?",
-            [f"{cid}/%", ts],
+            [f"{cid}/%", *resp_ids, ts],
         ).fetchall()
         known_ids = {r[0] for r in evs}
         case_known = bool(known_ids)
         case_row["history_mode"] = "AS_KNOWN_AT"
         case_row["known_at"] = ts
+        # derived/epistemic fields must not leak post-T observations
+        case_row["appeal_observation_status"] = None
+        case_row["coverage_basis_id"] = None
+        if case_known:
+            st = con.execute(
+                "SELECT c.appeal_observation_status, c.coverage_basis_id "
+                "FROM cases c JOIN case_status cs USING(case_id) "
+                "WHERE c.case_id = ? AND cs.observed_at <= ?",
+                [cid, ts],
+            ).fetchone()
+            if st:
+                case_row["appeal_observation_status"], case_row[
+                    "coverage_basis_id"
+                ] = st
         if not case_known:
             case_row["observation_note"] = "NO_OBSERVATION_HISTORY"
+            case_row["administrative_appeal_observed"] = None
+            case_row["administrative_finality_observed"] = None
+            case_row["judicial_review_mentioned"] = None
+        ph2 = ",".join("?" * len(known_ids)) or "NULL"
+        case_row["n_sanctions"] = (con.execute(
+            "SELECT COUNT(*) FROM sanctions WHERE case_id = ? "
+            f"AND sanction_id IN ({ph2})",
+            [cid, *known_ids],
+        ).fetchone() or (0,))[0]
+        case_row["n_infringements"] = (con.execute(
+            "SELECT COUNT(*) FROM infringements WHERE case_id = ? "
+            f"AND infringement_id IN ({ph2})",
+            [cid, *known_ids],
+        ).fetchone() or (0,))[0]
+        case_row["n_respondents"] = len(resp_ids) if case_known else 0
         typer.echo(
             json.dumps(case_row, ensure_ascii=False, indent=2, default=str)
         )

@@ -198,13 +198,17 @@ def list_cases(
 def _parse_known_at(raw: str) -> str:
     """Normalize known_at to an ISO instant — date-only input means
     end-of-day (the knowledge existing *by* that date)."""
-    from datetime import date, datetime, time
+    from datetime import UTC, date, datetime, time
 
     try:
         if len(raw.strip()) == 10:
             d = date.fromisoformat(raw.strip())
-            return datetime.combine(d, time(23, 59, 59)).isoformat()
-        return datetime.fromisoformat(raw.strip()).isoformat()
+            return datetime.combine(d, time.max).isoformat()
+        dt = datetime.fromisoformat(raw.strip().replace("Z", "+00:00"))
+        # normalize to UTC — stored timestamps are lexical UTC
+        if dt.tzinfo is not None:
+            dt = dt.astimezone(UTC).replace(tzinfo=None)
+        return dt.isoformat()
     except ValueError:
         raise HTTPException(400, f"invalid known_at: {raw!r} (use ISO 8601)") from None
 
@@ -225,13 +229,23 @@ def get_case(case_id: str, known_at: str | None = None) -> dict:
         if known_at:
             ts = _parse_known_at(known_at)
             # AS_KNOWN_AT — only observations with observed_at <= T
+            resp_ids = [
+                r["respondent_id"]
+                for r in _rows(
+                    con,
+                    "SELECT respondent_id FROM case_respondents "
+                    "WHERE case_id = ?",
+                    [cid],
+                )
+            ]
+            ph = ",".join("?" * len(resp_ids)) if resp_ids else "NULL"
             evs = _rows(
                 con,
                 "SELECT fact_type, entity_id, field_name, locator, excerpt, "
                 "proof_level, artifact_sha256, observed_at FROM evidence "
-                "WHERE entity_id LIKE ? AND observed_at <= ? "
-                "ORDER BY entity_id",
-                [f"{cid}/%", ts],
+                f"WHERE (entity_id LIKE ? OR entity_id IN ({ph})) "
+                "AND observed_at <= ? ORDER BY entity_id",
+                [f"{cid}/%", *resp_ids, ts],
             )
             evs_ids = {e["entity_id"] for e in evs}
             case_known = bool(evs)
@@ -246,11 +260,10 @@ def get_case(case_id: str, known_at: str | None = None) -> dict:
                     con,
                     "SELECT sn.* FROM status_notes sn "
                     "JOIN case_status cs ON sn.case_id = cs.case_id "
-                    "WHERE sn.case_id = ? AND cs.first_observed_at <= ?",
+                    "WHERE sn.case_id = ? AND cs.observed_at <= ?",
                     [cid, ts],
                 )
                 if _table_exists(con, "status_notes")
-                and _column_exists(con, "case_status", "first_observed_at")
                 else []
             )
             out["evidence"] = evs
@@ -294,20 +307,24 @@ def get_case(case_id: str, known_at: str | None = None) -> dict:
             out["n_sanctions"] = len(out["sanctions"])
             out["n_infringements"] = len(out["infringements"])
             out["n_respondents"] = len(out["respondents"])
-            for field in (
-                "appeal_observation_status",
-                "coverage_basis_id",
-                "administrative_appeal_observed",
-                "administrative_finality_observed",
-                "judicial_review_mentioned",
-            ):
+            # XML-derived booleans live on the case document's own
+            # observation axis — visible iff the case is; PDF-derived
+            # epistemic fields are re-joined only under observed_at <= T
+            if not case_known:
+                for field in (
+                    "administrative_appeal_observed",
+                    "administrative_finality_observed",
+                    "judicial_review_mentioned",
+                ):
+                    out[field] = None
+            for field in ("appeal_observation_status", "coverage_basis_id"):
                 out[field] = None
             if case_known and _table_exists(con, "case_status"):
                 st = _rows(
                     con,
                     "SELECT c.appeal_observation_status, c.coverage_basis_id "
                     "FROM cases c JOIN case_status cs USING(case_id) "
-                    "WHERE c.case_id = ? AND cs.first_observed_at <= ?",
+                    "WHERE c.case_id = ? AND cs.observed_at <= ?",
                     [cid, ts],
                 )
                 if st:

@@ -168,6 +168,11 @@ def write_release(
         )
     if coverage_path and coverage_path.exists():
         lines.append(f"{manifest['coverage_sha256']}  coverage.json")
+    pdfm = parquet_dir.parent / "pdf_status_manifest.json"
+    if pdfm.exists():
+        # the coverage basis for negative appeal claims is a release
+        # artifact — it must be hash-pinned like the tables
+        lines.append(f"{file_sha256(pdfm)}  pdf_status_manifest.json")
     lines.append(f"{file_sha256(mpath)}  dataset_manifest.json")
     sums_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
     return mpath

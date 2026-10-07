@@ -39,8 +39,11 @@ def verify_binding(
         # document not in the parsed corpus (e.g. CNMV-PDF notes) —
         # document provenance only
         return DOCUMENT_PROVEN
+    # the binding must target THIS artifact's bytes — a hash mismatch
+    # means the locator was generated against different bytes
+    sha_ok = not ev.artifact_sha256 or ev.artifact_sha256 == pub.raw_sha256
     m = _PARA_LOCATOR.match(ev.locator or "")
-    if not m:
+    if not sha_ok or not m:
         return DOCUMENT_PROVEN
     idx = int(m.group(1))
     paras = {p.index + 1: p.text for p in pub.paragraphs}  # 1-based XPath

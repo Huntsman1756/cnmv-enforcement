@@ -10,7 +10,7 @@ USER_AGENT = (
     "public enforcement data research)"
 )
 
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2  # v0.5: case_status.first_observed_at, evidence proof fields, review_items
 PARSER_VERSION = "0.1.0"
 
 

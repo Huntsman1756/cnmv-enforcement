@@ -207,17 +207,54 @@ def test_F9_word_suffix_articles():
     ), [b.article_normalized for b in pub.blocks]
 
 
-def test_registry_covers_all_18_defects():
+def test_registry_covers_all_defects():
     import sys
 
     import yaml
 
     doc = yaml.safe_load(REGISTRY.read_text(encoding="utf-8"))
     ids = {d["defect_id"] for d in doc["defects"]}
-    assert len(ids) == 18
+    assert len(ids) >= 18
     mod = sys.modules[__name__]
     tests = {n for n in dir(mod) if n.startswith("test_")}
     for did in ids:
         assert any(
             t.startswith(f"test_{did}_") for t in tests
         ), f"no regression test for defect {did}"
+
+
+def test_D19_written_paren_amount():
+    """'seiscientos cincuenta mil (650.000) euros' → 650000."""
+    pub = _pub("BOE-A-2018-3230")
+    s = [s for b in pub.blocks for s in b.sanctions if "650.000" in (s.sanction_raw or "")]
+    assert s and s[0].amount == Decimal("650000"), [(x.amount, x.sanction_raw) for x in s]
+
+
+def test_D20_chain_head_statute():
+    """Typified article inherits the chain's first statute — 'art. 99.i,
+    en relación con el art. 83 ter 1., de la Ley 24/1988' → Ley 24/1988."""
+    pub = _pub("BOE-A-2018-9009")
+    b = [b for b in pub.blocks if b.article_normalized == "99.i"]
+    assert b and b[0].statute_normalized == "Ley 24/1988", (
+        [(x.article_normalized, x.statute_normalized) for x in pub.blocks]
+    )
+
+
+def test_D21_y_su_role_split():
+    """'X y su consejero delegado, don Y' — the fused entity+role chunk
+    must split into entity and role'd person (judge round 2, N1)."""
+    subs = split_subjects(
+        "Universal UP2ME, S.L. y su consejero delegado, "
+        "don Jordi Busoms Julia"
+    )
+    assert len(subs) == 2
+    assert any("don Jordi Busoms" in s for s in subs)
+    assert any("Universal UP2ME" in s for s in subs)
+
+
+def test_D22_related_dot_letter():
+    """'81.2. a)' / '227.1. b)' — space-dot letters in related refs must
+    not be dropped (judge round 2, N3)."""
+    pub = _pub("BOE-A-2018-14109")
+    arts = {r.article_normalized for b in pub.blocks for r in b.related}
+    assert {"81.2.a", "81.2.b", "227.1.a", "227.1.b"} <= arts, arts
