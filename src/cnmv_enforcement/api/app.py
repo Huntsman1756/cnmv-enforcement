@@ -81,26 +81,34 @@ def coverage() -> dict:
 def stats() -> dict:
     con = _con()
     try:
+        # sums are emitted as canonical decimal strings — the exact value,
+        # never a float. Individual amounts are integers (< 2^53) and
+        # remain numeric.
+        total = _one(
+            con,
+            "SELECT SUM(amount) FROM sanctions "
+            "WHERE sanction_type = 'MONETARY_FINE'",
+        )
         out = {
             "cases": _one(con, "SELECT COUNT(*) FROM cases"),
             "infringements": _one(con, "SELECT COUNT(*) FROM infringements"),
             "sanctions": _one(con, "SELECT COUNT(*) FROM sanctions"),
             "respondents": _one(con, "SELECT COUNT(*) FROM respondents"),
-            "total_fine_eur": _one(
-                con,
-                "SELECT SUM(amount) FROM sanctions "
-                "WHERE sanction_type = 'MONETARY_FINE'",
-            ),
+            "total_fine_eur": str(total) if total is not None else None,
         }
         out["by_severity"] = _rows(
             con,
             "SELECT severity, COUNT(*) n FROM infringements GROUP BY 1",
         )
-        out["by_sanction_type"] = _rows(
-            con,
-            "SELECT sanction_type, COUNT(*) n, SUM(amount) total "
-            "FROM sanctions GROUP BY 1",
-        )
+        out["by_sanction_type"] = [
+            {"sanction_type": r["sanction_type"], "n": r["n"],
+             "total": str(r["total"]) if r["total"] is not None else None}
+            for r in _rows(
+                con,
+                "SELECT sanction_type, COUNT(*) n, SUM(amount) total "
+                "FROM sanctions GROUP BY 1",
+            )
+        ]
         out["by_statute"] = _rows(
             con,
             "SELECT statute_normalized, COUNT(*) n FROM infringements "

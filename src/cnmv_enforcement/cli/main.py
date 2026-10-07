@@ -438,6 +438,42 @@ def build(
             "from": str(min(p.publication_date for p in pubs if p.publication_date)),
             "to": str(max(p.publication_date for p in pubs if p.publication_date)),
         }
+    # corpus reconciliation: N input docs = M cases + K non-case docs,
+    # per corpus — never an unexplained count delta
+    from collections import Counter
+
+    per_corpus: dict[str, Counter] = {}
+    for p in result.publications:
+        c = per_corpus.setdefault(p.corpus, Counter())
+        c["documents"] += 1
+        c[p.document_kind] += 1
+    # map bundles to corpus via publications
+    pub_by_id = {p.boe_id: p for p in result.publications}
+    case_corpus: Counter = Counter(
+        pub_by_id[b.case.canonical_boe_id].corpus
+        if b.case.canonical_boe_id in pub_by_id
+        else "?"
+        for b in result.bundles
+    )
+    ledger.historical_backfill = {
+        "reconciliation": {
+            corpus: {
+                "documents": counts["documents"],
+                "cases": case_corpus.get(corpus, 0),
+                "non_case_documents": counts["documents"]
+                - case_corpus.get(corpus, 0),
+                "kinds": {
+                    k: v for k, v in counts.items() if k != "documents"
+                },
+            }
+            for corpus, counts in per_corpus.items()
+        },
+        "note": (
+            "backfill corpus = BOE dept-1040 items whose titles match "
+            "sanction-publication markers, enumerated 2018-01→2021-10 via "
+            "the resumable sumario manifest — NOT exhaustive history"
+        ),
+    }
     for issue in result.issues:
         ledger.unresolved_or_ambiguous.append(
             f"{issue['boe_id']}: {issue['kind']} {issue.get('detail','')}"
@@ -447,10 +483,28 @@ def build(
         json.dumps(ledger.to_dict(), ensure_ascii=False, indent=2),
         encoding="utf-8",
     )
+    from cnmv_enforcement.storage.manifest import write_release
+
+    manifest_path = write_release(
+        exports_dir / "parquet",
+        coverage_path=coverage_path,
+        inputs={
+            "corpus_dirs": [str(d) for d in dirs],
+            "pdf_status": str(status_path)
+            if (status_path := runtime_root() / "cnmv_pdf_status.json").exists()
+            else None,
+            "legal_rules": str(
+                Path(__file__).resolve().parents[1]
+                / "config"
+                / "legal_rules.yaml"
+            ),
+        },
+    )
     typer.echo(json.dumps(counts, indent=1))
     typer.echo(f"parquet -> {exports_dir / 'parquet'} ({len(written)} tables)")
     typer.echo(f"duckdb  -> {db_path}")
     typer.echo(f"coverage -> {coverage_path}")
+    typer.echo(f"manifest -> {manifest_path}")
 
 
 # ---------------------------------------------------------------- validation

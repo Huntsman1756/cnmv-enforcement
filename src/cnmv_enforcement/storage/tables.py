@@ -16,8 +16,10 @@ from cnmv_enforcement.pipeline.build import BuildResult
 
 
 def _d(v: Any) -> Any:
+    # Decimal passes through untouched — PyArrow maps it to a DECIMAL
+    # logical type, keeping exact amounts in the canonical export.
     if isinstance(v, Decimal):
-        return float(v)
+        return v
     if hasattr(v, "isoformat"):
         return v.isoformat()
     if hasattr(v, "value"):  # StrEnum
