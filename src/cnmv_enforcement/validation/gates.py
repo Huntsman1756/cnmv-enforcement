@@ -442,14 +442,21 @@ def run_gates(corpus_dir: Path, extra_dirs: list[Path] | None = None) -> dict:
     # G23 HISTORICAL_ENUMERATION_REPRODUCIBLE — every non-fixture corpus
     # doc present in the dataset must trace to an enumerated manifest
     # entry; the manifests themselves are frozen JSONL.
-    hist_manifest = Path("data/runtime")
-    manifests = [
-        hist_manifest / n
-        for n in ("boe_history.jsonl", "boe_history_gap.jsonl",
-                  "boe_history_2015_2017.jsonl")
-        if (hist_manifest / n).exists()
-    ]
-    if manifests:
+    # committed frozen manifests are authoritative; data/runtime is
+    # a working fallback for in-progress enumerations
+    manifests = sorted(
+        Path("coverage/history").glob("boe_history*.jsonl")
+    ) or sorted(Path("data/runtime").glob("boe_history*.jsonl"))
+    has_historical = any(
+        p.corpus != "register_snapshot" for p in result.publications
+    )
+    if not manifests:
+        gate(
+            "G23 historical enumeration reproducible",
+            not has_historical,
+            "historical corpus present but no enumeration manifest",
+        )
+    else:
         enum_ids = set()
         for mp in manifests:
             for ln in mp.read_text(encoding="utf-8").splitlines():
