@@ -416,6 +416,9 @@ def build(
     h1dev = data_root() / "corpus_h1_dev"
     if h1dev.exists() and any(h1dev.glob("BOE-A-*.xml")):
         dirs.append(h1dev)
+    h2dev = data_root() / "corpus_h2_dev"
+    if h2dev.exists() and any(h2dev.glob("BOE-A-*.xml")):
+        dirs.append(h2dev)
     result = build_corpus(dirs)
     status_path = runtime_root() / "cnmv_pdf_status.json"
     pdf_obs = (
@@ -587,6 +590,7 @@ def validate(corpus_dir: Path | None = None) -> None:
         for d in (
             data_root() / "corpus_historical",
             data_root() / "corpus_h1_dev",
+            data_root() / "corpus_h2_dev",
         )
         if d.exists() and any(d.glob("BOE-A-*.xml"))
     ]

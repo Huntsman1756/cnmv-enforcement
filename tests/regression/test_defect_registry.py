@@ -11,7 +11,9 @@ from __future__ import annotations
 from decimal import Decimal
 from pathlib import Path
 
-from cnmv_enforcement.domain.enums import Severity
+import pytest
+
+from cnmv_enforcement.domain.enums import SanctionType, Severity
 from cnmv_enforcement.parsing.boe_publication import parse_publication_xml, split_subjects
 from cnmv_enforcement.parsing.dates import extract_conduct_period
 
@@ -388,3 +390,129 @@ def test_D32_sanction_kind_wrappers():
             for l in b.sanctions:
                 assert l.sanction_type == SanctionType.MONETARY_FINE
         assert any(l.amount == expect for b in pub.blocks for l in b.sanctions)
+
+
+# ── H2 cohort: 2010–2014 historical grammar ──────────────────────────
+
+
+def _h2_pub(boe_id):
+    for base in (
+        "data/corpus_h2_dev",
+        "data/corpus_h2_holdout",
+        "data/corpus_h1_dev",
+        "data/corpus_h1_holdout",
+    ):
+        p = Path(f"{base}/{boe_id}.xml")
+        if p.exists():
+            return parse_publication_xml(p.read_bytes())
+    pytest.skip("corpus absent")
+
+
+def test_D33_curly_quote_wrappers():
+    """'‘‘…’' and '«…»' quoted entity names parse atomically."""
+    pub = _h2_pub("BOE-A-2010-466")
+    assert len(pub.blocks) == 1
+    subj = pub.blocks[0].sanctions[0].subject_raw
+    assert "Banesto Bolsa" in subj and "’’" not in subj
+
+
+def test_D33b_guillemet_atomic_entity():
+    """'Construcciones y Auxiliar de Ferrocarriles, S.A.' — the ' y '
+    and ',' inside «…» must not split the entity."""
+    pub = _h2_pub("BOE-A-2016-9688")
+    subs = [l.subject_raw for b in pub.blocks for l in b.sanctions]
+    assert any("Ferrocarriles, S.A." in s for s in subs)
+    assert not any(s == "Auxiliar de Ferrocarriles" for s in subs)
+
+
+def test_D34_numbered_operative_items():
+    pub = _h2_pub("BOE-A-2011-11421")
+    assert len(pub.blocks) >= 3
+    assert any(
+        "Guinovart" in l.subject_raw
+        for b in pub.blocks for l in b.sanctions
+    )
+
+
+def test_D35_sanction_before_comision():
+    pub = _h2_pub("BOE-A-2010-7244")
+    assert len(pub.blocks) == 1
+    s = pub.blocks[0].sanctions[0]
+    assert s.amount == 150000
+    assert "Enrique Bañuelos" in s.subject_raw
+    assert "multa" not in s.subject_raw
+
+
+def test_D36_organ_members_enumeration():
+    """'los miembros del Consejo…: don A, don B…' — every member is a
+    subject; the role header never becomes a respondent."""
+    pub = _h2_pub("BOE-A-2015-3206")
+    subs = [l.subject_raw for b in pub.blocks for l in b.sanctions]
+    assert len(subs) >= 5  # Codere + 4 members incl. first
+    assert any("Vela Sastre" in s for s in subs)  # first member kept
+    pub2 = _h2_pub("BOE-A-2016-9688")
+    subs2 = [l.subject_raw for b in pub2.blocks for l in b.sanctions]
+    assert any("Legarda" in s for s in subs2)
+
+
+def test_D37_letra_articulo_reversal():
+    pub = _h2_pub("BOE-A-2012-10687")
+    assert all(b.article_normalized for b in pub.blocks)
+    assert any(b.article_normalized == "99.o" for b in pub.blocks)
+    assert all(b.statute_normalized == "Ley 24/1988" for b in pub.blocks)
+
+
+def test_D38_colon_header_no_phantom():
+    pub = _h2_pub("BOE-A-2013-13220")
+    assert all(b.severity != Severity.UNKNOWN for b in pub.blocks)
+    pub2 = _h2_pub("BOE-A-2013-13221")
+    assert all(
+        l.sanction_type == SanctionType.MONETARY_FINE or l.amount is None
+        for b in pub2.blocks for l in b.sanctions
+    )
+
+
+def test_D39_por_importe_colon_header():
+    pub = _h2_pub("BOE-A-2012-9548")
+    sancs = [l for b in pub.blocks for l in b.sanctions]
+    assert all(l.amount is not None for l in sancs)
+    assert {l.amount for l in sancs} == {75000, 19000, 2000, 4000}
+
+
+def test_D40_succ_scope_per_item_binding():
+    """'Declarar…por:' + numbered succ items — each 'La Comisión…'
+    block binds ITS declared infringement, not the last one."""
+    pub = _h1_pub("BOE-A-2015-4242")
+    b5 = next(b for b in pub.blocks if b.ordinal == 5)
+    b6 = next(b for b in pub.blocks if b.ordinal == 6)
+    assert b5.declared_for is pub.blocks[0]
+    assert b6.declared_for is pub.blocks[1]
+    assert [l.amount for l in b5.sanctions] == [Decimal("1000000")]
+    assert [l.amount for l in b6.sanctions] == [Decimal("800000")]
+    assert not pub.parse_issues
+
+
+def test_D41_compound_surname_y():
+    """'don Jaime Botín-Sanz de Sautuola y García de los Ríos' — ONE
+    person; the 'y' inside the surname must never split."""
+    pub = _h2_pub("BOE-A-2014-1732")
+    subs = [l.subject_raw for b in pub.blocks for l in b.sanctions]
+    assert any("García de los Ríos" in s for s in subs)
+    assert not any(s.strip() == "García de los Ríos" for s in subs)
+
+
+def test_D42_de_su_consejo_and_al_miembro():
+    pub = _h2_pub("BOE-A-2010-7246")
+    subs = [l.subject_raw for b in pub.blocks for l in b.sanctions]
+    assert not any(
+        s.strip().lower().startswith("los miembros") and "don" not in s
+        for s in subs
+    )
+    pub2 = _h2_pub("BOE-A-2014-3117")
+    assert all(
+        l.subject_raw.strip() for b in pub2.blocks for l in b.sanctions
+    )
+    assert any(
+        "Salama Millet" in l.subject_raw
+        for b in pub2.blocks for l in b.sanctions
+    )

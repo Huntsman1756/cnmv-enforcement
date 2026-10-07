@@ -69,6 +69,21 @@ defect_classes:
   description: Lettered ('a)') or dashed/bulleted ('•', '–') conduct items under an
     open block were flagged unhandled or silently skipped instead of contributing
     conduct detail and dates.
+- id: QUOTED_ENTITY_WRAPPERS
+  description: Older BOE wraps entity names in curly quotes ('‘‘X’’') or guillemets
+    ('«X»'); the quotes contaminated subject identity and the ' y '/'，' inside quoted
+    names broke splitting.
+- id: NUMBERED_OPERATIVE_ITEMS
+  description: 2010-era dispositivos enumerate sanction clauses as '1. Imponer a…',
+    '2. A X…' — the numeric prefix defeated the Imponer/A-subject anchors.
+- id: SANCTION_BEFORE_COMISION
+  description: '''Imponer a X una multa, por la comisión de…'' — the sanction clause
+    precedes ''por la comisión''; the amount sits in the trailing ''por un importe
+    de … (N euros)''.'
+- id: ORGAN_MEMBERS_ENUMERATION
+  description: '''los miembros del Consejo de Administración de X: don A, don B…''
+    — the organ-member role header became a phantom subject and fused with the first
+    member.'
 defects:
 - defect_id: S1
   defect_class: DURATION_FIELD_LOSS
@@ -368,3 +383,98 @@ defects:
   description: 'sanction-kind wrappers missed: ''sanción, a cada uno de ellos, de
     multa'' and ''sanción consistente en multa'' → UNKNOWN type with stray amounts.'
   fix_commit: v0.6 H1
+- defect_id: D33
+  defect_class: QUOTED_ENTITY_WRAPPERS
+  round: H2
+  fixtures:
+  - BOE-A-2010-466
+  - BOE-A-2016-9688
+  description: curly '‘‘…’’' quote wrappers blocked the Imponer anchor; ' y '/'，'
+    inside «…» entity names split the name mid-token.
+  fix_commit: v0.6 H2
+- defect_id: D34
+  defect_class: NUMBERED_OPERATIVE_ITEMS
+  round: H2
+  fixtures:
+  - BOE-A-2011-11421
+  - BOE-A-2013-1860
+  description: '''«1. Imponer…'', ''2. A los miembros…'' — numbered operative items;
+    also ''A los/Al'' subject-first forms.'
+  fix_commit: v0.6 H2
+- defect_id: D35
+  defect_class: SANCTION_BEFORE_COMISION
+  round: H2
+  fixtures:
+  - BOE-A-2010-7244
+  description: '''Imponer a don X una multa, por la comisión…, por un importe de ciento
+    cincuenta mil euros (150.000 euros)'' — sanction clause + amount split around
+    the comisión period.'
+  fix_commit: v0.6 H2
+- defect_id: D36
+  defect_class: ORGAN_MEMBERS_ENUMERATION
+  round: H2
+  fixtures:
+  - BOE-A-2015-3206
+  - BOE-A-2016-9688
+  - BOE-A-2013-1860
+  description: '''los miembros del Consejo de Administración de X:'' phantom subject
+    + first-member fusion (don Eugenio dropped in old parser); trailing ''don X, «Company,
+    S.A.»'' company affiliation kept in name.'
+  fix_commit: v0.6 H2
+- defect_id: D37
+  defect_class: ARTICLE_LOSS
+  round: H2
+  fixtures:
+  - BOE-A-2012-10687
+  - BOE-A-2012-10949
+  - BOE-A-2012-1864
+  description: '''tipificada en la letra o) artículo 99'' — reversed letter/article
+    order (2010–2012): typifying article lost, related ''artículo 83 ter'' promoted
+    instead.'
+  fix_commit: v0.6 H2
+- defect_id: D38
+  defect_class: SUBJECT_FIRST_RESPECTIVELY
+  round: H2
+  fixtures:
+  - BOE-A-2013-13220
+  - BOE-A-2013-13221
+  description: '''N. Imponer a X (en liquidación):'' colon-header produced a phantom
+    UNKNOWN infringement; ''sanciones de multa'' (plural) escaped _sanction_kind →
+    UNKNOWN with stray amount.'
+  fix_commit: v0.6 H2
+- defect_id: D39
+  defect_class: SANCTION_BEFORE_COMISION
+  round: H2
+  fixtures:
+  - BOE-A-2012-9548
+  description: '''una sanción de multa por importe de:'' colon-list header emitted
+    as a None-amount sanction before the amount list lines.'
+  fix_commit: v0.6 H2
+- defect_id: D40
+  defect_class: SUCCESSOR_LIABILITY_PATTERN
+  round: H2
+  fixtures:
+  - BOE-A-2015-4242
+  description: colon-scoped 'Declarar la responsabilidad de X por:' + 'N. Como sucesor
+    … por:' + 'Como responsable de:' + 'Y por/de la Comisión de…' per-item sanctions
+    — successor items must bind per-item to their declared infringement blocks.
+  fix_commit: v0.6 H2
+- defect_id: D41
+  defect_class: ENTITY_NAME_SPLIT_ERROR
+  round: H2
+  fixtures:
+  - BOE-A-2014-1732
+  description: compound surname 'Botín-Sanz de Sautuola y García de los Ríos' split
+    at ' y ' into two subjects — the 'y' inside a person's surname must never split
+    (holdout-caught).
+  fix_commit: v0.6 H2
+- defect_id: D42
+  defect_class: ORGAN_MEMBERS_ENUMERATION
+  round: H2
+  fixtures:
+  - BOE-A-2010-7246
+  - BOE-A-2014-3117
+  description: '''los miembros de su Consejo de Administración'' (possessive) and
+    ''Imponer al miembro del Consejo de X: Don Daniel'' (singular + colon) — phantom
+    role subject + empty-subject sanction (holdout-caught).'
+  fix_commit: v0.6 H2
