@@ -71,11 +71,20 @@ documents / status_notes / parse_issues logically identical.
 
 ```text
 tests:        136 passed (4 duckdb-dependent skip in CI-only runs)
-gates:        21/21 (14 original + G16–G22)
+gates:        21/21 — 14 named invariants + G16–G22
+              (v0.4 reported "15/15" = 14 gate entries + the report's
+              own top-level "ok" — same 14 gate names, byte-identical
+              block; no gate was dropped)
 defects:      22 registered / 22 regression-covered
 review items: 25 (all sha-bound)
 evidence:     2213 — VB 1430 / LOC 489 / DOC 294
 appeals:      28 OBSERVED / 59 NOT_OBSERVED_VERIFIED / 73 INCONCLUSIVE
+              (NB unit: OBSERVED = cases with ANY appeal-family note —
+              JUDICIAL_APPEAL_OBSERVED ∪ JUDGMENT_OBSERVED ∪
+              RENUNCIATION_TO_APPEAL. v0.4's "14 observed appeals" was
+              firmness_status=APPEAL_OBSERVED — a mutually-exclusive
+              firmness class. Note-level counts: 23 appeal-filed notes,
+              28 renunciation notes, judgments included.)
 corpus:       8e8446796b0f (v0.4: f50c4d336e09 — diff explained above)
 clean-checkout: 136 tests + 21/21 gates from frozen inputs
 ```
