@@ -117,13 +117,31 @@ export default function CaseDetail() {
       </div>
 
       <h2>Evidence ({c.evidence.length} records)</h2>
+      {c.appeal_observation_status && (
+        <div className="panel" style={{ marginBottom: 8 }}>
+          <span className={`tag ${c.appeal_observation_status === "OBSERVED" ? "warn" : c.appeal_observation_status === "NOT_OBSERVED_WITHIN_VERIFIED_COVERAGE" ? "" : "dim"}`}>
+            appeal: {c.appeal_observation_status}
+          </span>
+          {c.coverage_basis_id && (
+            <span className="faint small"> basis {c.coverage_basis_id}</span>
+          )}
+        </div>
+      )}
       <details className="ev">
         <summary>show all evidence records</summary>
         {c.evidence.map((e, i) => (
           <div className="excerpt" key={i}>
-            <strong>[{e.fact_type}]</strong> {e.entity_id}
+            <strong>[{e.fact_type}]</strong> {e.entity_id} — {e.field_name}
+            {e.proof_level && (
+              <span className={`tag ${e.proof_level === "VALUE_BINDING_PROVEN" ? "" : "dim"}`} style={{ marginLeft: 8 }}>
+                {e.proof_level}
+              </span>
+            )}
             <br />
-            <span className="faint">{e.locator}</span>
+            <span className="faint">
+              {e.representation ?? "XML"} · {e.locator}
+              {e.artifact_sha256 ? ` · sha256:${e.artifact_sha256.slice(0, 12)}` : ""}
+            </span>
             <br />
             {e.excerpt}
           </div>

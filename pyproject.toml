@@ -67,7 +67,13 @@ ignore = [
 "src/cnmv_enforcement/parsing/**" = ["RUF001", "RUF002", "RUF003"]
 "src/cnmv_enforcement/sources/**" = ["RUF001", "RUF002", "RUF003"]
 "src/cnmv_enforcement/cli/**" = ["PLC0415", "ISC004"]
-"src/cnmv_enforcement/coverage/**" = ["ISC004"]
+"src/cnmv_enforcement/coverage/**" = ["ISC004", "PLC0415"]
+"src/cnmv_enforcement/evidence/**" = ["PLC0415"]
+"src/cnmv_enforcement/review/**" = ["PLC0415"]
+"src/cnmv_enforcement/storage/**" = ["PLC0415"]
+"src/cnmv_enforcement/validation/**" = ["PLC0415"]
+"src/cnmv_enforcement/pipeline/**" = ["PLC0415"]
+"tests/**" = ["N802", "C416", "PLC0415"]
 
 [tool.mypy]
 python_version = "3.12"

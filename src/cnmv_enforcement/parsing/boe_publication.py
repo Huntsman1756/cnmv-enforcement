@@ -356,6 +356,7 @@ class ParsedPublication:
     parse_issues: list[str] = field(default_factory=list)
     document_kind: str = "SANCTION_PUBLICATION"  # | SUBSEQUENT_EVENT | OTHER
     corpus: str = "register_snapshot"  # | historical_backfill
+    raw_sha256: str | None = None  # sha256 of the source artifact bytes
 
 
 def _severity_from(text: str) -> Severity:

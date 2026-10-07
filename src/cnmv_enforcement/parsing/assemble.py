@@ -86,6 +86,7 @@ def assemble_case(
         para_index: int,
         excerpt: str,
         method: ExtractionMethod = ExtractionMethod.DIRECT,
+        raw_value: str | None = None,
     ) -> None:
         bundle.evidence.append(
             FactEvidence(
@@ -98,6 +99,10 @@ def assemble_case(
                 extraction_method=method,
                 confidence_type=ConfidenceType(method.value),
                 observed_at=observed_at,
+                representation="XML",
+                locator_type="PARAGRAPH",
+                artifact_sha256=pub.raw_sha256,
+                raw_value=raw_value,
             )
         )
 
@@ -165,7 +170,10 @@ def assemble_case(
             rule_resolution_status=rule_status,
         )
         bundle.infringements.append(infr)
-        ev("infringement", iid, "severity", block.paragraph_index, block.header_text)
+        ev(
+            "infringement", iid, "severity", block.paragraph_index,
+            block.header_text, raw_value=block.severity.value,
+        )
         if block.article_raw:
             ev(
                 "infringement",
@@ -174,11 +182,12 @@ def assemble_case(
                 block.paragraph_index,
                 block.header_text,
                 ExtractionMethod.NORMALIZED,
+                raw_value=block.article_raw,
             )
         if block.conduct_raw:
             ev(
                 "infringement", iid, "conduct", block.paragraph_index,
-                block.conduct_raw,
+                block.conduct_raw, raw_value=block.conduct_raw,
             )
         for line in block.sanctions:
             resp = respondent_for(line.subject_raw)
@@ -198,8 +207,14 @@ def assemble_case(
                 duration_raw=line.duration_raw,
             )
             bundle.sanctions.append(s)
-            ev("sanction", sid, "subject", line.paragraph_index, line.excerpt)
-            ev("sanction", sid, "sanction_text", line.paragraph_index, line.excerpt)
+            ev(
+                "sanction", sid, "subject", line.paragraph_index,
+                line.excerpt, raw_value=line.subject_raw,
+            )
+            ev(
+                "sanction", sid, "sanction_text", line.paragraph_index,
+                line.excerpt, raw_value=line.sanction_raw,
+            )
             if line.amount is not None:
                 ev(
                     "sanction",
@@ -208,6 +223,7 @@ def assemble_case(
                     line.paragraph_index,
                     line.excerpt,
                     ExtractionMethod.NORMALIZED,
+                    raw_value=line.amount_raw or str(line.amount),
                 )
 
     bundle.respondents = list(respondents.values())

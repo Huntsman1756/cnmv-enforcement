@@ -1,0 +1,207 @@
+# Permanent registry of the 18 material defects found in the two
+# adversarial-review rounds (FINAL_REVIEW.md). These are REAL, verified
+# parser/data corruption instances — reconstructed from commit diffs,
+# fixture parses and golden corrections, not a wishlist.
+#
+# Each defect is regression-covered by an explicit test naming its
+# defect_id; the review ledger seeds a CORRECTED review_item per defect.
+schema_version: 1
+
+defect_classes:
+  - id: PHANTOM_RESPONDENT
+    description: >
+      Textual splitting created respondents that do not exist in the
+      source (paren text, dative clauses inside descriptive sentences).
+  - id: RESPONDENT_MERGE_LOSS
+    description: >
+      A genuine 'X y Y' subject list was kept as one merged respondent —
+      under-counted respondents and merged identity.
+  - id: ENTITY_NAME_SPLIT_ERROR
+    description: >
+      A corporate name containing 'y'/'de' was split into phantom
+      respondents — fan-out of the same sanction onto fragments.
+  - id: SUBJECT_TEXT_CONTAMINATION
+    description: >
+      Sanction or boilerplate text leaked into respondent names
+      ('separación del cargo con…', ', por la comisión').
+  - id: RESPECTIVAMENTE_ALIGNMENT_ERROR
+    description: >
+      'respectivamente' wording produced a subject × sanction
+      cross-product instead of positional pairing.
+  - id: COMISION_VARIANT_DROP
+    description: >
+      A 'por la comisión de…' wording variant was not recognised,
+      producing untyped/zero blocks or lost infringements.
+  - id: STATUTE_MISATTRIBUTION
+    description: >
+      A provision was attributed to the wrong legal instrument
+      (same-text-legal leakage, successor-law pollution, connector loss).
+  - id: ARTICLE_SUFFIX_LOSS
+    description: >
+      Article sub-letters/word suffixes/apartados were dropped —
+      wrong provision identity ('99, letra o)' → 99).
+  - id: CONDUCT_DATE_LOSS
+    description: >
+      Conduct-period expressions were dropped or collapsed
+      (cross-month lists, 'y el' forms) — fabricated or missing windows.
+  - id: RESOLUTION_DATE_LOSS
+    description: >
+      The sanctioning-resolution date was not extracted for the
+      dominant official wording.
+  - id: DURATION_FIELD_LOSS
+    description: >
+      Parsed disqualification/suspension durations were dropped between
+      parse and assembly — became NULL in the dataset.
+  - id: DUPLICATE_KEY_CORRUPTION
+    description: >
+      The same respondent appeared as duplicate primary-key rows —
+      broken referential integrity.
+
+defects:
+  # ── Round A (judge A, commit af31e32) ──────────────────────────────
+  - defect_id: S1
+    defect_class: DURATION_FIELD_LOSS
+    round: A
+    fixtures: [BOE-A-2023-17427, BOE-A-2020-11881]
+    description: >
+      duration_raw extracted by the parser but omitted at assembly —
+      disqualification/suspension durations became NULL.
+    fix_commit: af31e32
+  - defect_id: S2
+    defect_class: RESOLUTION_DATE_LOSS
+    round: A
+    fixtures: [BOE-A-2026-16921]
+    description: >
+      'Resolución del Consejo de la Comisión Nacional del Mercado de
+      Valores' wording missed → sanctioning_resolution_date NULL in
+      89/91 docs.
+    fix_commit: af31e32
+  - defect_id: S3
+    defect_class: PHANTOM_RESPONDENT
+    round: A
+    fixtures: [BOE-A-2022-17410]
+    description: >
+      split_subjects split inside parenthesised role text — phantom
+      subject + doubled fine.
+    fix_commit: af31e32
+  - defect_id: S4
+    defect_class: RESPONDENT_MERGE_LOSS
+    round: A
+    fixtures: [BOE-A-2025-16708]
+    description: >
+      'don X y don Y' multi-word subjects kept merged — merged
+      respondents, under-counted fines.
+    fix_commit: af31e32
+  - defect_id: S5
+    defect_class: PHANTOM_RESPONDENT
+    round: A
+    fixtures: [BOE-A-2022-12643]
+    description: >
+      Dative 'a X' inside descriptive clauses created garbage
+      respondents.
+    fix_commit: af31e32
+  - defect_id: S6
+    defect_class: ARTICLE_SUFFIX_LOSS
+    round: A
+    fixtures: [BOE-A-2022-9282]
+    description: >
+      '282.16. a)' / '93. p)' / 'b) y c)' lettered articles lost their
+      letters — wrong provision identity.
+    fix_commit: af31e32
+  - defect_id: S7
+    defect_class: STATUTE_MISATTRIBUTION
+    round: A
+    fixtures: [BOE-A-2024-13096]
+    description: >
+      'Reglamento (UE) número 596/2014' not normalised → related
+      provisions inherited the typifying statute.
+    fix_commit: af31e32
+  - defect_id: S8
+    defect_class: CONDUCT_DATE_LOSS
+    round: A
+    fixtures: [BOE-A-2020-12185]
+    description: >
+      Cross-month day lists ('9 de marzo y 29 de mayo de 2020',
+      '8 y 9 junio') dropped conduct dates.
+    fix_commit: af31e32
+  - defect_id: S9
+    defect_class: DUPLICATE_KEY_CORRUPTION
+    round: A
+    fixtures: [BOE-A-2026-16921]
+    description: >
+      respondents table emitted duplicate primary-key rows.
+    fix_commit: af31e32
+  # ── Round B (judge B scoped re-judgment, commit e3dcedb) ──────────
+  - defect_id: F1
+    defect_class: CONDUCT_DATE_LOSS
+    round: B
+    fixtures: [BOE-A-2022-17410]
+    description: >
+      'entre el 4 de marzo y el 18 de mayo de 2022' extracted only the
+      end — fabricated conduct_start = conduct_end.
+    fix_commit: e3dcedb
+  - defect_id: F2
+    defect_class: ENTITY_NAME_SPLIT_ERROR
+    round: B
+    fixtures: [BOE-A-2020-12185]
+    description: >
+      'Banco Financiero y de Ahorro, S.A.' split into three respondents,
+      each carrying the same €600,000 fine — triple-counted fine.
+    fix_commit: e3dcedb
+  - defect_id: F3
+    defect_class: SUBJECT_TEXT_CONTAMINATION
+    round: B
+    fixtures: [BOE-A-2020-11881]
+    description: >
+      'separación' missing from subject-first lookahead —
+      'don Daniel Puerta Arranz, separación del cargo con' captured as
+      a respondent.
+    fix_commit: e3dcedb
+  - defect_id: F4
+    defect_class: SUBJECT_TEXT_CONTAMINATION
+    round: B
+    fixtures: [BOE-A-2018-4548]
+    description: >
+      'Imponer a X, por la comisión:' header kept ', por la comisión'
+      inside the respondent name.
+    fix_commit: e3dcedb
+  - defect_id: F5
+    defect_class: RESPECTIVAMENTE_ALIGNMENT_ERROR
+    round: B
+    fixtures: [BOE-A-2019-9035, BOE-A-2018-14109]
+    description: >
+      'respectivamente' produced subject × amount cross-product
+      (5 sanctions/€400k instead of 2/€200k on 9035).
+    fix_commit: e3dcedb
+  - defect_id: F6
+    defect_class: COMISION_VARIANT_DROP
+    round: B
+    fixtures: [BOE-A-2020-8441]
+    description: >
+      'por la comisión por parte de cada una de las siguientes
+      entidades de una infracción' unrecognised — untyped block.
+    fix_commit: e3dcedb
+  - defect_id: F7
+    defect_class: STATUTE_MISATTRIBUTION
+    round: B
+    fixtures: [BOE-A-2018-5711]
+    description: >
+      'del mismo texto legal' forced the block statute onto articles
+      explicitly instrumented elsewhere (art. 59 RD 217/2008).
+    fix_commit: e3dcedb
+  - defect_id: F8
+    defect_class: STATUTE_MISATTRIBUTION
+    round: B
+    fixtures: [BOE-A-2018-4548]
+    description: >
+      '(en la actualidad, artículo 295.4 del RDL 4/2015)' polluted the
+      typifying statute — successor law mistaken for typification.
+    fix_commit: e3dcedb
+  - defect_id: F9
+    defect_class: ARTICLE_SUFFIX_LOSS
+    round: B
+    fixtures: [BOE-A-2018-14109, BOE-A-2018-4548]
+    description: >
+      '99, letra o)', '83 ter 1', '107 quáter 3.c', '99 z ter' —
+      letter/apartado loss.
+    fix_commit: e3dcedb

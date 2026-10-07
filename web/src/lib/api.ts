@@ -67,7 +67,13 @@ export interface CaseDetail extends CaseRow {
     field_name: string;
     locator: string;
     excerpt: string;
+    proof_level?: string | null;
+    artifact_sha256?: string | null;
+    representation?: string | null;
   }[];
+  appeal_observation_status?: string | null;
+  coverage_basis_id?: string | null;
+  history_mode?: string | null;
   status_notes: { kind: string; page: number; verbatim: string }[];
   events: {
     event_type: string;

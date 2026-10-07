@@ -23,6 +23,7 @@ _TABLES = [
     "parse_issues",
     "case_status",
     "status_notes",
+    "review_items",
 ]
 
 

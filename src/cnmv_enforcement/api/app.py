@@ -178,8 +178,13 @@ def list_cases(
         con.close()
 
 
+# ── temporal semantics (ownership-radar doctrine) ─────────────────────
+# known_at answers "what had the project OBSERVED by T?" — it gates on
+# evidence/observation axes (observed_at), never on effective dates.
+# A case is visible at T only if some observation of it existed by then.
+
 @app.get("/cases/{case_id}")
-def get_case(case_id: str) -> dict:
+def get_case(case_id: str, known_at: str | None = None) -> dict:
     con = _con()
     try:
         c = _rows(
@@ -191,6 +196,73 @@ def get_case(case_id: str) -> dict:
             raise HTTPException(404, "case not found")
         cid = c[0]["case_id"]
         out = dict(c[0])
+        if known_at:
+            ts = known_at
+            # AS_KNOWN_AT — only observations with observed_at <= T
+            evs = _rows(
+                con,
+                "SELECT fact_type, entity_id, field_name, locator, excerpt, "
+                "proof_level, artifact_sha256, observed_at FROM evidence "
+                "WHERE entity_id LIKE ? AND observed_at <= ? "
+                "ORDER BY entity_id",
+                [f"{cid}%", ts],
+            )
+            evs_ids = {e["entity_id"] for e in evs}
+            out["events"] = _rows(
+                con,
+                "SELECT * FROM events WHERE case_id = ? "
+                "AND observed_at <= ? ORDER BY event_date",
+                [cid, ts],
+            )
+            out["status_notes"] = (
+                _rows(
+                    con,
+                    "SELECT sn.* FROM status_notes sn "
+                    "JOIN case_status cs ON sn.case_id = cs.case_id "
+                    "WHERE sn.case_id = ? AND cs.observed_at <= ?",
+                    [cid, ts],
+                )
+                if _table_exists(con, "status_notes")
+                else []
+            )
+            out["evidence"] = evs
+            # entities only where at least one observation existed by T
+            out["sanctions"] = [
+                s for s in _rows(
+                    con,
+                    "SELECT s.*, r.normalized_name respondent_name "
+                    "FROM sanctions s LEFT JOIN respondents r "
+                    "USING(respondent_id) WHERE s.case_id = ? "
+                    "ORDER BY s.ordinal",
+                    [cid],
+                )
+                if s["sanction_id"] in evs_ids
+            ]
+            out["infringements"] = [
+                i for i in _rows(
+                    con,
+                    "SELECT * FROM infringements WHERE case_id = ? "
+                    "ORDER BY ordinal",
+                    [cid],
+                )
+                if i["infringement_id"] in evs_ids
+            ]
+            out["respondents"] = [
+                r for r in _rows(
+                    con,
+                    "SELECT r.*, cr.role case_role FROM respondents r "
+                    "JOIN case_respondents cr USING(respondent_id) "
+                    "WHERE cr.case_id = ?",
+                    [cid],
+                )
+                if r["respondent_id"] in evs_ids
+            ]
+            out["history_mode"] = "AS_KNOWN_AT"
+            out["known_at"] = ts
+            if not evs:
+                out["observation_note"] = "NO_OBSERVATION_HISTORY"
+            return out
+        out["history_mode"] = "CURRENT_KNOWLEDGE_RECONSTRUCTED"
         out["infringements"] = _rows(
             con,
             "SELECT * FROM infringements WHERE case_id = ? ORDER BY ordinal",
@@ -212,7 +284,8 @@ def get_case(case_id: str) -> dict:
         )
         out["evidence"] = _rows(
             con,
-            "SELECT fact_type, entity_id, field_name, locator, excerpt "
+            "SELECT fact_type, entity_id, field_name, locator, excerpt, "
+            "proof_level, artifact_sha256, observed_at "
             "FROM evidence WHERE entity_id LIKE ? ORDER BY entity_id",
             [f"{cid}%"],
         )

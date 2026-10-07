@@ -32,6 +32,36 @@ class FactEvidence(BaseModel):
     confidence_type: ConfidenceType
     observed_at: datetime = Field(description="UTC instant the evidence was observed")
 
+    # ── v0.5 evidence binding ──────────────────────────────────────
+    representation: str | None = Field(
+        default=None,
+        description="Source representation: XML, PDF_TEXT, REGISTER_HTML…",
+    )
+    locator_type: str | None = Field(
+        default=None,
+        description="PARAGRAPH | CHAR_SPAN | XPATH | PAGE — the kind of "
+        "locator the proof binds against",
+    )
+    artifact_sha256: str | None = Field(
+        default=None,
+        description="SHA-256 of the raw artifact bytes the locator "
+        "resolves against — the binding belongs to these bytes, "
+        "not the URL",
+    )
+    proof_level: str | None = Field(
+        default=None,
+        description=(
+            "DOCUMENT_PROVEN | LOCATION_PROVEN | VALUE_BINDING_PROVEN | "
+            "NORMALIZED_VALUE_DERIVED — never conflate: the document "
+            "being right does not prove the field binding"
+        ),
+    )
+    raw_value: str | None = Field(
+        default=None,
+        description="Verbatim source value whose presence inside the "
+        "excerpt upgrades the binding to VALUE_BINDING_PROVEN",
+    )
+
 
 class ArtifactRef(BaseModel):
     """Reference to an immutable raw artifact (manifest row)."""

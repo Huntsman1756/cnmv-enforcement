@@ -66,7 +66,11 @@ def build_corpus(
             continue
         seen.add(boe_id)
         try:
-            pub = parse_publication_xml(xml_path.read_bytes())
+            raw = xml_path.read_bytes()
+            pub = parse_publication_xml(raw)
+            import hashlib
+
+            pub.raw_sha256 = hashlib.sha256(raw).hexdigest()
         except Exception as exc:  # hard parse failure — recorded, not silent
             result.issues.append(
                 {"boe_id": boe_id, "kind": "PARSE_FAILED", "detail": str(exc)}

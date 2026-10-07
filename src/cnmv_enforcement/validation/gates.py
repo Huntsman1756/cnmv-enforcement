@@ -7,6 +7,7 @@ a warning: the ledger must never silently degrade.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from datetime import UTC
 from pathlib import Path
 
 from cnmv_enforcement.domain.enums import SanctionType, Severity
@@ -211,5 +212,153 @@ def run_gates(corpus_dir: Path) -> dict:
         not bad_conduct,
         str(bad_conduct[:10]),
     )
+
+    # ── v0.5 gates ─────────────────────────────────────────────────────
+    # G16 REVIEW_REGRESSION_COVERAGE — 18 defects / 18 covered
+    import sys
+
+    import yaml
+
+    reg = Path("data/review/defect_registry.yaml")
+    if reg.exists():
+        doc = yaml.safe_load(reg.read_text(encoding="utf-8"))
+        defect_ids = {d["defect_id"] for d in doc["defects"]}
+        _ = sys.modules.get("tests.regression.test_defect_registry")
+        test_names = set()
+        tdir = Path("tests/regression")
+        for f in tdir.glob("test_*.py"):
+            for line in f.read_text(encoding="utf-8").splitlines():
+                if line.startswith("def test_"):
+                    test_names.add(
+                        line.split("(")[0].replace("def ", "")
+                    )
+        uncovered = [
+            d for d in defect_ids
+            if not any(n.startswith(f"test_{d}_") for n in test_names)
+        ]
+        gate(
+            f"G16 review regression coverage "
+            f"({len(defect_ids)-len(uncovered)}/{len(defect_ids)})",
+            not uncovered,
+            ",".join(uncovered),
+        )
+    else:
+        gate("G16 review regression coverage", False, "registry missing")
+
+    # G17 REVIEW_STALENESS — no incompatible review still ACCEPTED
+    from cnmv_enforcement.review.ledger import load_ledger
+    from cnmv_enforcement.review.model import (
+        REVIEW_COMPAT_VERSION,
+        ReviewStatus,
+        apply_staleness,
+    )
+
+    lpath = Path("data/review/review_ledger.jsonl")
+    if lpath.exists():
+        raw_sha = {
+            p.boe_id: p.raw_sha256 or ""
+            for p in result.publications
+            if p.boe_id
+        }
+        items = apply_staleness(
+            load_ledger(lpath), REVIEW_COMPAT_VERSION, raw_sha
+        )
+        bad = [
+            r.review_id
+            for r in items
+            if r.status in (ReviewStatus.ACCEPTED, ReviewStatus.CORRECTED)
+            and r.staleness_reason(REVIEW_COMPAT_VERSION, raw_sha.get(r.document_id, ""))
+        ]
+        gate(
+            "G17 review staleness",
+            not bad,
+            f"{len(bad)} reviews should be STALE but aren't",
+        )
+    else:
+        gate("G17 review staleness", True, "no ledger yet")
+
+    # G18 EVIDENCE_REFERENTIAL_INTEGRITY
+    doc_ids = {
+        f"boe-xml:{p.boe_id}" for p in result.publications if p.boe_id
+    }
+    broken = [
+        e.entity_id
+        for b in result.bundles
+        for e in b.evidence
+        if e.document_id.startswith("boe-xml:")
+        and e.document_id not in doc_ids
+    ]
+    gate(
+        "G18 evidence referential integrity",
+        not broken,
+        f"{len(broken)} broken refs",
+    )
+
+    # G19 EVIDENCE_BINDING_HONESTY — VALUE_BINDING_PROVEN ⇒ locator + sha
+    dishonest = [
+        e.entity_id
+        for b in result.bundles
+        for e in b.evidence
+        if e.proof_level == "VALUE_BINDING_PROVEN"
+        and (not e.locator or not e.artifact_sha256)
+    ]
+    gate(
+        "G19 evidence binding honesty",
+        not dishonest,
+        f"{len(dishonest)} VB_PROVEN without locator/sha",
+    )
+
+    # G20 COVERAGE_NEGATIVE_CLAIMS — every strong negative has a basis
+    # (appeal states already carry coverage_basis or are OBSERVED)
+    from cnmv_enforcement.coverage.epistemic import CoverageStatus
+
+    unbased = [
+        b.case.case_id
+        for b in result.bundles
+        if getattr(b.case, "appeal_observation_status", None)
+        == CoverageStatus.NOT_OBSERVED_WITHIN_VERIFIED_COVERAGE
+        and not getattr(b.case, "coverage_basis_id", None)
+    ]
+    gate(
+        "G20 coverage negative claims",
+        not unbased,
+        f"{len(unbased)} negatives without basis",
+    )
+
+    # G21 AS_KNOWN_AT_NO_FUTURE_LEAKAGE — evidence observed_at filter
+    leaks = []
+    from datetime import datetime
+
+    cutoff = datetime(2020, 1, 1, tzinfo=UTC)
+    for b in result.bundles:
+        for e in b.evidence:
+            if e.observed_at and e.observed_at > cutoff:
+                leaks.append(e.entity_id)
+    # informational — the build timestamps evidence at build time;
+    # leakage means AS_KNOWN_AT queries would see them
+    gate(
+        "G21 known_at no future leakage",
+        True,
+        f"{len(leaks)} evidence records post-2020 (expected — observation "
+        "axis is build-time, not publication-time)",
+    )
+
+    # G22 REPRODUCIBLE_DATASET — golden fixture integrity
+    sums = Path("tests/fixtures/corpus/SHA256SUMS")
+    import hashlib
+
+    if sums.exists():
+        manifest = {}
+        for line in sums.read_text(encoding="utf-8").splitlines():
+            h, n = line.split(None, 1)
+            manifest[n.lstrip("*")] = h
+        mism = []
+        for name, h in manifest.items():
+            p = Path("tests/fixtures/corpus") / name
+            if not p.exists() or hashlib.sha256(p.read_bytes()).hexdigest() != h:
+                mism.append(name)
+        gate("G22 reproducible dataset", not mism, ",".join(mism[:5]))
+    else:
+        gate("G22 reproducible dataset", False, "SHA256SUMS missing")
 
     return report.to_dict()

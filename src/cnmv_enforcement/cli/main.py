@@ -404,7 +404,41 @@ def build(
         if status_path.exists()
         else None
     )
-    tables = flatten(result, pdf_status=pdf_obs)
+    # ── review ledger: seed + staleness ───────────────────────────
+    from cnmv_enforcement.config import PARSER_VERSION, SCHEMA_VERSION
+    from cnmv_enforcement.review.ledger import (
+        append_ledger,
+        load_ledger,
+    )
+    from cnmv_enforcement.review.model import (
+        REVIEW_COMPAT_VERSION,
+        apply_staleness,
+        seed_from_defect_registry,
+    )
+
+    registry = data_root() / "review" / "defect_registry.yaml"
+    ledger_path = data_root() / "review" / "review_ledger.jsonl"
+    raw_sha_by_boe = {
+        p.boe_id: p.raw_sha256 or ""
+        for p in result.publications
+        if p.boe_id
+    }
+    if registry.exists():
+        append_ledger(
+            ledger_path,
+            seed_from_defect_registry(
+                str(registry),
+                raw_sha_by_boe,
+                PARSER_VERSION,
+                str(SCHEMA_VERSION),
+            ),
+        )
+    items = apply_staleness(
+        load_ledger(ledger_path), REVIEW_COMPAT_VERSION, raw_sha_by_boe
+    )
+    tables = flatten(
+        result, pdf_status=pdf_obs, review_items=items
+    )
     written = write_parquet(tables, exports_dir / "parquet")
     counts = build_duckdb(exports_dir / "parquet", db_path)
 
@@ -570,8 +604,16 @@ def stats(db: Path | None = None) -> None:
 
 
 @app.command()
-def case(case_id_or_boe: str, db: Path | None = None) -> None:
-    """Inspect one case by case_id or BOE-A id."""
+def case(
+    case_id_or_boe: str,
+    db: Path | None = None,
+    known_at: str | None = None,
+) -> None:
+    """Inspect one case by case_id or BOE-A id.
+
+    ``--known-at T`` restricts the view to observations the project had
+    by T (AS_KNOWN_AT — observed_at <= T on the knowledge axis).
+    """
     import duckdb
 
     db = db or runtime_root() / "cnmv-enforcement.duckdb"
@@ -585,6 +627,42 @@ def case(case_id_or_boe: str, db: Path | None = None) -> None:
         raise typer.Exit(1)
     cols = [d[0] for d in con.description]
     case_row = dict(zip(cols, c, strict=True))
+    if known_at:
+        cid = case_row["case_id"]
+        evs = con.execute(
+            "SELECT entity_id FROM evidence WHERE entity_id LIKE ? "
+            "AND observed_at <= ?",
+            [f"{cid}%", known_at],
+        ).fetchall()
+        known_ids = {r[0] for r in evs}
+        case_row["history_mode"] = "AS_KNOWN_AT"
+        case_row["known_at"] = known_at
+        if not known_ids:
+            case_row["observation_note"] = "NO_OBSERVATION_HISTORY"
+        typer.echo(
+            json.dumps(case_row, ensure_ascii=False, indent=2, default=str)
+        )
+        for t in ("infringements", "sanctions", "respondents"):
+            typer.echo(f"--- {t} (known by {known_at})")
+            key = (
+                "infringement_id" if t == "infringements" else
+                "sanction_id" if t == "sanctions" else "respondent_id"
+            )
+            rows = con.execute(
+                f"SELECT * FROM {t} WHERE case_id = ?" if t != "respondents"
+                else "SELECT r.* FROM respondents r JOIN case_respondents "
+                "USING(respondent_id) WHERE r.respondent_id IN "
+                "(SELECT respondent_id FROM case_respondents WHERE case_id = ?)",
+                [cid],
+            ).fetchall()
+            rcols = [d[0] for d in con.description]
+            for r in rows:
+                drow = dict(zip(rcols, r, strict=True))
+                if drow.get(key) in known_ids:
+                    typer.echo(
+                        json.dumps(drow, ensure_ascii=False, default=str)
+                    )
+        return
     typer.echo(json.dumps(case_row, ensure_ascii=False, indent=2, default=str))
     for t, _key in [
         ("infringements", "infringement_id"),

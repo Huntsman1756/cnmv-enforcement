@@ -27,14 +27,47 @@ def _d(v: Any) -> Any:
     return v
 
 
+def _verify_proof(ev: Any, pub: Any) -> str:
+    from cnmv_enforcement.evidence.verify import verify_binding
+
+    return verify_binding(ev, pub)
+
+
+def _pdf_basis_id(pdf_status: dict[str, dict] | None) -> str | None:
+    """Coverage basis for the CNMV-PDF status run — identifies the
+    verified surface (manifest hash + observed bounds)."""
+    if not pdf_status:
+        return None
+    from cnmv_enforcement.coverage.epistemic import coverage_basis_id
+
+    dates = sorted(
+        str(o.get("observed_at") or "") for o in pdf_status.values()
+    )
+    import hashlib
+    import json
+
+    manifest_sha = hashlib.sha256(
+        json.dumps(pdf_status, sort_keys=True, default=str).encode("utf-8")
+    ).hexdigest()
+    return coverage_basis_id(
+        "cnmv_verdocumento",
+        "pdf-status-run",
+        dates[0][:10] if dates else None,
+        dates[-1][:10] if dates else None,
+        manifest_sha,
+    )
+
+
 def flatten(
     result: BuildResult,
     pdf_status: dict[str, dict] | None = None,
+    review_items: list | None = None,
 ) -> dict[str, list[dict]]:
     """→ table_name → rows.
 
     ``pdf_status``: ``{boe_id: {sha256, notes, status}}`` observations from
     the CNMV-PDF status run — folded into ``case_status`` rows when given.
+    ``review_items``: review-ledger rows (authoritative project metadata).
     """
     tables: dict[str, list[dict]] = {
         "cases": [],
@@ -49,14 +82,28 @@ def flatten(
         "parse_issues": [],
         "case_status": [],
         "status_notes": [],
+        "review_items": [],
     }
     meta: dict[str, ParsedPublication] = {
         p.boe_id or "": p for p in result.publications
     }
     seen_respondents: set[str] = set()
+    basis_id = _pdf_basis_id(pdf_status) if pdf_status else None
     for bundle in result.bundles:
         c = bundle.case
         pub = meta.get(c.canonical_boe_id or "")
+        obs = (pdf_status or {}).get(c.canonical_boe_id or "")
+        note_kinds = {n.get("kind") for n in obs.get("notes", [])} if obs else set()
+        if obs and note_kinds & {
+            "JUDICIAL_APPEAL_OBSERVED",
+            "JUDGMENT_OBSERVED",
+            "RENUNCIATION_TO_APPEAL",
+        }:
+            appeal_status = "OBSERVED"
+        elif obs:
+            appeal_status = "NOT_OBSERVED_WITHIN_VERIFIED_COVERAGE"
+        else:
+            appeal_status = "INCONCLUSIVE"
         tables["cases"].append(
             {
                 "case_id": c.case_id,
@@ -79,9 +126,15 @@ def flatten(
                 "n_infringements": len(bundle.infringements),
                 "n_sanctions": len(bundle.sanctions),
                 "n_respondents": len(bundle.respondents),
+                "appeal_observation_status": appeal_status,
+                "coverage_basis_id": (
+                    basis_id
+                    if appeal_status
+                    != "INCONCLUSIVE"
+                    else None
+                ),
             }
         )
-        obs = (pdf_status or {}).get(c.canonical_boe_id or "")
         if obs:
             tables["case_status"].append(
                 {
@@ -242,8 +295,17 @@ def flatten(
                     "extraction_method": _d(ev.extraction_method),
                     "confidence_type": _d(ev.confidence_type),
                     "observed_at": _d(ev.observed_at),
+                    "representation": ev.representation,
+                    "locator_type": ev.locator_type,
+                    "artifact_sha256": ev.artifact_sha256,
+                    "proof_level": _verify_proof(ev, pub),
+                    "raw_value": ev.raw_value,
                 }
             )
     for issue in result.issues:
         tables["parse_issues"].append(dict(issue))
+    if review_items:
+        from cnmv_enforcement.review.ledger import ledger_table
+
+        tables["review_items"] = ledger_table(review_items)
     return tables

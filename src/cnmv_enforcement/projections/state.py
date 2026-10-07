@@ -31,11 +31,17 @@ class CaseStatusObservation:
     basis: list[str] = field(default_factory=list)
     cnmv_notes: list[dict] = field(default_factory=list)
     observed_at: datetime | None = None
+    # epistemic claim on the appeal axis specifically — never
+    # "no appeal", only what the verified surface showed
+    appeal_observation_status: str = "INCONCLUSIVE"
+    coverage_basis_id: str | None = None
 
     def to_dict(self) -> dict:
         return {
             "case_id": self.case_id,
             "firmness_status": self.firmness_status,
+            "appeal_observation_status": self.appeal_observation_status,
+            "coverage_basis_id": self.coverage_basis_id,
             "basis": self.basis,
             "cnmv_notes": self.cnmv_notes,
             "observed_at": self.observed_at.isoformat()
@@ -49,12 +55,19 @@ def project_case_status(
     pub: ParsedPublication | None = None,
     pdf_notes: list[PdfStatusNote] | None = None,
     observed_at: datetime | None = None,
+    *,
+    pdf_covered: bool = False,
+    coverage_basis_id: str | None = None,
 ) -> CaseStatusObservation:
     """Project the observed firmness status for one case.
 
     Ordering of precedence for the headline status (most informative wins):
     judgment observed > appeal observed > firm stated / renunciation >
     appeal possible > unknown.
+
+    ``pdf_covered`` = the CNMV-PDF status run verified this case's PDF —
+    without it a missing appeal note is INCONCLUSIVE, never a negative
+    claim.
     """
     basis: list[str] = []
     status = FirmnessStatus.UNKNOWN
@@ -106,9 +119,26 @@ def project_case_status(
             note_map.get(note.kind, FirmnessStatus.UNKNOWN),
             f"cnmv pdf p{note.page}: {note.verbatim[:80]}",
         )
+    # appeal axis epistemic state
+    if status in (
+        FirmnessStatus.APPEAL_OBSERVED,
+        FirmnessStatus.JUDGMENT_OBSERVED,
+        FirmnessStatus.RENUNCIATION_OBSERVED,
+    ):
+        appeal_status = "OBSERVED"
+    elif pdf_covered:
+        appeal_status = "NOT_OBSERVED_WITHIN_VERIFIED_COVERAGE"
+    else:
+        appeal_status = "INCONCLUSIVE"
     return CaseStatusObservation(
         case_id=case_id,
         firmness_status=status,
+        appeal_observation_status=appeal_status,
+        coverage_basis_id=(
+            coverage_basis_id
+            if appeal_status != "INCONCLUSIVE"
+            else None
+        ),
         basis=basis,
         cnmv_notes=[
             {"kind": n.kind, "page": n.page, "verbatim": n.verbatim}
