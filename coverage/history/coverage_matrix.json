@@ -20,32 +20,36 @@
   "review_items": 0,
   "inconclusive_items": 0,
   "identifier_manifest_sha256": "aad0512cafb3fb09989430a7e493c2f267bad79a94789c45a59ac0c47e028196",
-  "coverage_status": "REPRODUCIBLY_ENUMERATED",
-  "limitations": []
+  "coverage_status": "PARTIAL",
+  "limitations": [
+   "notification era: BOE-B service-of-process docs carry no sanction content (DOCUMENT_PROVEN ceiling)"
+  ]
  },
  {
-  "period": "2004-2009-sample",
+  "period": "2004-2009",
   "enumeration_method": "boe_sumario_dept1040",
   "enumeration_status": "ENUMERATED",
-  "days_enumerated": 366,
-  "enumeration_errors": 51,
-  "documents_enumerated": 83,
-  "sanction_like_items": 5,
-  "documents_downloaded": 5,
+  "days_enumerated": 2192,
+  "enumeration_errors": 310,
+  "documents_enumerated": 424,
+  "sanction_like_items": 58,
+  "documents_downloaded": 58,
   "documents_failed": 0,
-  "sanction_publications": 5,
+  "sanction_publications": 58,
   "subsequent_events": 0,
-  "corrections": 3,
-  "other_documents": 75,
+  "corrections": 6,
+  "other_documents": 360,
   "cases": 0,
   "respondents": 0,
   "sanctions": 0,
   "infringements": 0,
   "review_items": 0,
   "inconclusive_items": 0,
-  "identifier_manifest_sha256": "3733d80f46e41a2f4722f8e5a35e78a1490eef5e769949e3e8c9c8cd8c764015",
-  "coverage_status": "REPRODUCIBLY_ENUMERATED",
-  "limitations": []
+  "identifier_manifest_sha256": "799f782e748a0a032f872eaeacef66a9c622f134d14987cf15c0f272939fc6a7",
+  "coverage_status": "PARSED",
+  "limitations": [
+   "holdout 14/14 PASS; corpus = 44 dev + 14 holdout sanction pubs"
+  ]
  },
  {
   "period": "2010-2014",
