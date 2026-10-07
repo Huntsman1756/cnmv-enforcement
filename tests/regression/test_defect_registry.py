@@ -518,6 +518,14 @@ def test_D42_de_su_consejo_and_al_miembro():
     )
 
 
+def _h4_pub(boe_id):
+    for base in ("data/corpus_h4_dev", "data/corpus_h4_holdout"):
+        p = Path(f"{base}/{boe_id}.xml")
+        if p.exists():
+            return parse_publication_xml(p.read_bytes())
+    pytest.skip("h4 corpus absent")
+
+
 def test_D43_las_sanciones_compound():
     """'las sanciones de amonestación pública … y de multa por importe
     de N' — two sanctions: PUBLIC_REPRIMAND + MONETARY_FINE."""
@@ -563,3 +571,24 @@ def test_D44_sumario_pre2005_shape():
     # dept-1040 exists in the pre-2005 era — the CNMV filter works on
     # the flat departamento→item shape (2005-01-03 had no CNMV day item)
     assert len(cnmv_items(s2000)) >= 1
+
+
+def test_D45_lettered_operative_items():
+    """'a) Imponer…', 'b) Una sanción de suspensión' — lettered
+    operative prefixes; 'importe de 300.506,05' comma-decimal."""
+    pub = _h4_pub("BOE-A-2006-22625")
+    assert len(pub.blocks) == 3
+    assert all(
+        l.amount for b in pub.blocks for l in b.sanctions
+    )
+    pub2 = _h4_pub("BOE-A-2007-4456")
+    types = {
+        l.sanction_type for b in pub2.blocks for l in b.sanctions
+    }
+    assert SanctionType.MONETARY_FINE in types
+    assert SanctionType.SUSPENSION in types
+    pub3 = _h4_pub("BOE-A-2007-14936")
+    assert any(
+        l.amount == Decimal("300506.05")
+        for b in pub3.blocks for l in b.sanctions
+    )

@@ -81,6 +81,7 @@ def build_corpus(
             "corpus": "register_snapshot",
             "corpus_h1_dev": "h1_2015_2017_dev",
             "corpus_h2_dev": "h2_2010_2014_dev",
+            "corpus_h4_dev": "h4_2004_2009_dev",
             "corpus_h1_holdout": "h1_2015_2017_holdout",
         }.get(xml_path.parent.name, "historical_backfill")
         if pub.document_kind != "SANCTION_PUBLICATION":

@@ -1,0 +1,318 @@
+{
+  "phase": "H4-first-parse",
+  "docs": 44,
+  "clean": 40,
+  "issue": 0,
+  "zero_block": 3,
+  "zero_sanction": 1,
+  "per_doc": [
+    {
+      "boe_id": "BOE-A-2004-10461",
+      "blocks": 3,
+      "sanctions": 4,
+      "issues": [],
+      "status": "clean"
+    },
+    {
+      "boe_id": "BOE-A-2004-10463",
+      "blocks": 4,
+      "sanctions": 5,
+      "issues": [],
+      "status": "clean"
+    },
+    {
+      "boe_id": "BOE-A-2004-10552",
+      "blocks": 1,
+      "sanctions": 1,
+      "issues": [],
+      "status": "clean"
+    },
+    {
+      "boe_id": "BOE-A-2004-10553",
+      "blocks": 1,
+      "sanctions": 1,
+      "issues": [],
+      "status": "clean"
+    },
+    {
+      "boe_id": "BOE-A-2005-12452",
+      "blocks": 1,
+      "sanctions": 1,
+      "issues": [],
+      "status": "clean"
+    },
+    {
+      "boe_id": "BOE-A-2005-12453",
+      "blocks": 1,
+      "sanctions": 1,
+      "issues": [],
+      "status": "clean"
+    },
+    {
+      "boe_id": "BOE-A-2005-12454",
+      "blocks": 1,
+      "sanctions": 1,
+      "issues": [],
+      "status": "clean"
+    },
+    {
+      "boe_id": "BOE-A-2005-12455",
+      "blocks": 1,
+      "sanctions": 1,
+      "issues": [],
+      "status": "clean"
+    },
+    {
+      "boe_id": "BOE-A-2006-22622",
+      "blocks": 3,
+      "sanctions": 3,
+      "issues": [],
+      "status": "clean"
+    },
+    {
+      "boe_id": "BOE-A-2006-22623",
+      "blocks": 1,
+      "sanctions": 1,
+      "issues": [],
+      "status": "clean"
+    },
+    {
+      "boe_id": "BOE-A-2006-22625",
+      "blocks": 0,
+      "sanctions": 0,
+      "issues": [],
+      "status": "zero-block"
+    },
+    {
+      "boe_id": "BOE-A-2006-22626",
+      "blocks": 2,
+      "sanctions": 2,
+      "issues": [],
+      "status": "clean"
+    },
+    {
+      "boe_id": "BOE-A-2006-22627",
+      "blocks": 2,
+      "sanctions": 2,
+      "issues": [],
+      "status": "clean"
+    },
+    {
+      "boe_id": "BOE-A-2006-22628",
+      "blocks": 2,
+      "sanctions": 2,
+      "issues": [],
+      "status": "clean"
+    },
+    {
+      "boe_id": "BOE-A-2006-22629",
+      "blocks": 2,
+      "sanctions": 2,
+      "issues": [],
+      "status": "clean"
+    },
+    {
+      "boe_id": "BOE-A-2006-4101",
+      "blocks": 1,
+      "sanctions": 1,
+      "issues": [],
+      "status": "clean"
+    },
+    {
+      "boe_id": "BOE-A-2006-4102",
+      "blocks": 1,
+      "sanctions": 1,
+      "issues": [],
+      "status": "clean"
+    },
+    {
+      "boe_id": "BOE-A-2006-4103",
+      "blocks": 1,
+      "sanctions": 1,
+      "issues": [],
+      "status": "clean"
+    },
+    {
+      "boe_id": "BOE-A-2006-4104",
+      "blocks": 1,
+      "sanctions": 1,
+      "issues": [],
+      "status": "clean"
+    },
+    {
+      "boe_id": "BOE-A-2006-4105",
+      "blocks": 1,
+      "sanctions": 1,
+      "issues": [],
+      "status": "clean"
+    },
+    {
+      "boe_id": "BOE-A-2006-4107",
+      "blocks": 1,
+      "sanctions": 1,
+      "issues": [],
+      "status": "clean"
+    },
+    {
+      "boe_id": "BOE-A-2006-4108",
+      "blocks": 1,
+      "sanctions": 1,
+      "issues": [],
+      "status": "clean"
+    },
+    {
+      "boe_id": "BOE-A-2006-4109",
+      "blocks": 1,
+      "sanctions": 1,
+      "issues": [],
+      "status": "clean"
+    },
+    {
+      "boe_id": "BOE-A-2006-4110",
+      "blocks": 1,
+      "sanctions": 1,
+      "issues": [],
+      "status": "clean"
+    },
+    {
+      "boe_id": "BOE-A-2006-8625",
+      "blocks": 1,
+      "sanctions": 1,
+      "issues": [],
+      "status": "clean"
+    },
+    {
+      "boe_id": "BOE-A-2006-8626",
+      "blocks": 1,
+      "sanctions": 1,
+      "issues": [],
+      "status": "clean"
+    },
+    {
+      "boe_id": "BOE-A-2006-8627",
+      "blocks": 1,
+      "sanctions": 1,
+      "issues": [],
+      "status": "clean"
+    },
+    {
+      "boe_id": "BOE-A-2007-14932",
+      "blocks": 1,
+      "sanctions": 1,
+      "issues": [],
+      "status": "clean"
+    },
+    {
+      "boe_id": "BOE-A-2007-14934",
+      "blocks": 1,
+      "sanctions": 1,
+      "issues": [],
+      "status": "clean"
+    },
+    {
+      "boe_id": "BOE-A-2007-14935",
+      "blocks": 1,
+      "sanctions": 1,
+      "issues": [],
+      "status": "clean"
+    },
+    {
+      "boe_id": "BOE-A-2007-14936",
+      "blocks": 0,
+      "sanctions": 0,
+      "issues": [],
+      "status": "zero-block"
+    },
+    {
+      "boe_id": "BOE-A-2007-14937",
+      "blocks": 0,
+      "sanctions": 0,
+      "issues": [],
+      "status": "zero-block"
+    },
+    {
+      "boe_id": "BOE-A-2007-17832",
+      "blocks": 2,
+      "sanctions": 2,
+      "issues": [],
+      "status": "clean"
+    },
+    {
+      "boe_id": "BOE-A-2007-4456",
+      "blocks": 1,
+      "sanctions": 0,
+      "issues": [],
+      "status": "zero-sanction"
+    },
+    {
+      "boe_id": "BOE-A-2007-4724",
+      "blocks": 1,
+      "sanctions": 1,
+      "issues": [],
+      "status": "clean"
+    },
+    {
+      "boe_id": "BOE-A-2007-4725",
+      "blocks": 1,
+      "sanctions": 1,
+      "issues": [],
+      "status": "clean"
+    },
+    {
+      "boe_id": "BOE-A-2007-4726",
+      "blocks": 2,
+      "sanctions": 2,
+      "issues": [],
+      "status": "clean"
+    },
+    {
+      "boe_id": "BOE-A-2007-4727",
+      "blocks": 2,
+      "sanctions": 2,
+      "issues": [],
+      "status": "clean"
+    },
+    {
+      "boe_id": "BOE-A-2007-5035",
+      "blocks": 1,
+      "sanctions": 1,
+      "issues": [],
+      "status": "clean"
+    },
+    {
+      "boe_id": "BOE-A-2008-20816",
+      "blocks": 1,
+      "sanctions": 1,
+      "issues": [],
+      "status": "clean"
+    },
+    {
+      "boe_id": "BOE-A-2008-20817",
+      "blocks": 3,
+      "sanctions": 4,
+      "issues": [],
+      "status": "clean"
+    },
+    {
+      "boe_id": "BOE-A-2008-6711",
+      "blocks": 1,
+      "sanctions": 2,
+      "issues": [],
+      "status": "clean"
+    },
+    {
+      "boe_id": "BOE-A-2008-6713",
+      "blocks": 3,
+      "sanctions": 3,
+      "issues": [],
+      "status": "clean"
+    },
+    {
+      "boe_id": "BOE-A-2009-7513",
+      "blocks": 1,
+      "sanctions": 1,
+      "issues": [],
+      "status": "clean"
+    }
+  ]
+}

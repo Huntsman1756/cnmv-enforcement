@@ -69,7 +69,7 @@ _XML_PARSER = etree.XMLParser(resolve_entities=False, no_network=True, recover=F
 
 _BULLETS = r"«\"'\-–—−•·●•–—−‘’‚„“”"
 _IMPOSE_START_RE = re.compile(
-    rf"^(?:[{_BULLETS}\s]|\d{{1,2}}\s*[.)]\s*)*Imponer\b",
+    rf"^(?:[{_BULLETS}\s]|(?:\d{{1,2}}|[a-zñ])\s*[.)]\s*)*Imponer\b",
     re.IGNORECASE,
 )
 # historical comision variants normalized before the canonical check:
@@ -157,9 +157,11 @@ _BARE_SUBJ_MULTA_RE = re.compile(
 )
 # standalone fine clause under an open block: 'Una multa por importe
 # de un millón (1.000.000 de euros).' — feeds the tail parser.
+# 2006–2007 lettered form: 'b) Una sanción de suspensión…' too.
 _BARE_MULTA_LINE_RE = re.compile(
-    r"^\s*(?:una|la|las|dos|tres|cuatro|cinco|seis|siete|ocho|nueve|"
-    r"diez)\s+multa\b",
+    r"^\s*(?:[{«\"'\-–—−•·●‘’‚„“”}\s]|(?:\d{1,2}|[a-zñ])\s*[.)]\s*)*"
+    r"(?:una|la|las|dos|tres|cuatro|cinco|seis|siete|ocho|nueve|"
+    r"diez)\s+(?:multa|sanci[oó]n)\b",
     re.IGNORECASE,
 )
 _SUCC_CLAUSE_RE = re.compile(
@@ -265,6 +267,7 @@ _TYPIFY_ART_RE = re.compile(
     r"\s+){0,2}graves?\s+en\s+(?:el|los|la|las)\s+)"
     r"|de\s+las\s+previstas\s+en\s+(?:el|los|la|las)\s+"
     r"|previst[ao]s?\s+en\s+(?:el|los|la|las)\s+"
+    r"|de\s+las\s+recogidas\s+en\s+(?:el|los|la|las)\s+"
     r"|del?\s+)"
     r"art[ií]culo\s+(?:del?\s+|de\s+la\s+)?(?P<article>\d)",
     re.IGNORECASE,
@@ -287,6 +290,7 @@ _CONDUCT_SPLIT_RE = re.compile(
 # sanction clause at the end of an impose/por-comisión sentence
 _SANCTION_TAIL_RE = re.compile(
     r"\b(?:de\s+|la\s+|las\s+|los\s+)?"
+    r"(?:siguientes?\s+)?"
     r"(?P<count>una|un|uno|dos|tres|cuatro|cinco|seis|siete|ocho|nueve|diez|\d{1,2})?\s*"
     r"(?P<kind>(?:sanciones?|multas?|sanci[oó]n(?:es)?"
     r"(?:\s*,?\s*a\s+cada\s+un[ao]"
@@ -313,6 +317,11 @@ _SANCTION_SPLIT_RE = re.compile(
     r"separaci[oó]n|confiscaci[oó]n|comiso|restituci[oó]n))"
     rf"|[,;]\s+(?=(?:{_COUNT_RE}|\d+)?\s*(?:sanci[oó]n(?:es)?\s+de\s+|"
     r"multas?|inhabilitaci[oó]n|amonestaci[oó]n|suspensi[oó]n|"
+    r"separaci[oó]n|confiscaci[oó]n|comiso|restituci[oó]n))"
+    # lettered sanction items: 'a) Una multa…' / 'b) Una sanción…'
+    # (the kind-word lookahead keeps 'letra b)' legal refs intact)
+    rf"|[.:]\s*[a-zñ]\)\s*(?=(?:{_COUNT_RE}|\d+)?\s*(?:sanci[oó]n|"
+    r"multas?|inhabilitaci[oó]n|amonestaci[oó]n|suspensi[oó]n|"
     r"separaci[oó]n|confiscaci[oó]n|comiso|restituci[oó]n))",
     re.IGNORECASE,
 )
@@ -329,6 +338,12 @@ _AMOUNT_RES = [
         re.IGNORECASE,
     ),
     re.compile(r"(\d[\d.]*(?:,\d+)?)\s*€", re.IGNORECASE),
+    # 'importe de 300.506,05 (trescientos mil quinientos seis con cinco
+    # euros)' — comma-decimal, 'euros' only inside the words paren;
+    # anchored on 'importe de' so it can't misread dates/refs
+    re.compile(
+        r"importe\s+de\s+(\d[\d.]*,\d{1,2})\s*\(", re.IGNORECASE
+    ),
 ]
 _WORDS_EUROS_RE = re.compile(
     r"([a-záéíóúüñ\s-]{4,60}?)\s*\(?\s*euros?\)?",
@@ -777,6 +792,8 @@ def parse_sanction_tail(
     pos_i = 0
     for raw_seg in _SANCTION_SPLIT_RE.split(zone):
         seg = raw_seg.strip().lstrip(",;").strip()
+        # 'a)'/'b)'/'1.' item prefixes inside the sanction zone
+        seg = re.sub(r"^(?:\d{1,2}|[a-zñ])\s*[.)]\s*", "", seg)
         if not seg:
             continue
         m = _SANCTION_TAIL_RE.match(seg)
@@ -787,12 +804,23 @@ def parse_sanction_tail(
         kind = m.group("kind")
         st = _sanction_kind(kind)
         amount, amount_raw = parse_amount(tail + " " + kind)
-        # 'una sanción de multa por importe de:' — a colon-list header,
-        # not a sanction: its amounts are the following list items
+        # 'una sanción de multa por importe de:' / 'las siguientes
+        # sanciones:' — colon-list headers, not sanctions: the items
+        # that follow carry the amounts. The bare-kind check covers
+        # headers whose ':' was eaten by the item split.
         if (
-            st == SanctionType.MONETARY_FINE
-            and amount is None
-            and re.search(r"de\s*:\s*[»’”]?\s*$", seg)
+            amount is None
+            and (
+                re.search(r"(?:de|sanciones?)\s*:\s*[»’”]?\s*$", seg)
+                or re.fullmatch(
+                    r"(?:las?|los)?\s*(?:siguientes?\s+)?"
+                    r"(?:sanciones?|multas?)\s*"
+                    r"(?:de\s+(?:multa|inhabilitaci[oó]n|suspensi[oó]n|"
+                    r"separaci[oó]n|amonestaci[oó]n))?\s*[:.]?",
+                    seg.strip(),
+                    re.IGNORECASE,
+                )
+            )
         ):
             continue
         duration_raw = None
@@ -1260,11 +1288,19 @@ def parse_publication_xml(
         t = _PRE_COMISION_NORM.sub(r"\g<1>Por la comisión de ", t)
         t = _PRE_RESPONSABLE_NORM.sub("por la comisión", t)
         t = _PRE_COMISION_SIN_LA.sub("por la comisión", t)
-        # 'tipificada en la letra o) artículo 99' — 2010–2012 reverses
-        # letter/article order: normalize to 'artículo 99, letra o)'
+        # old PDF text extraction breaks words at line wraps:
+        # 'artícu-lo 100' — rejoin when the right fragment is 1–2
+        # lowercase chars (keeps 'López-García', 'de los' intact)
         t = re.sub(
-            r"letra\s+([a-zñ])\s*\)\s*art[ií]culo\s+(\d{1,3})",
-            r"artículo \2, letra \1)",
+            r"([a-záéíóúñ]{3,})-([a-záéíóúñ]{1,2}\b)", r"\1\2", t
+        )
+        # 'tipificada en la letra o) artículo 99' — 2010–2012 and
+        # 'la letra n) del artículo 100' — 2006: reversed letter/
+        # article order → normalize to 'artículo 99, letra o)'
+        t = re.sub(
+            r"letra\s+([a-zñ])\s*\)\s*(del?\s+|de\s+la\s+)?"
+            r"art[ií]culo\s+(\d{1,3})",
+            r"\2artículo \3, letra \1)",
             t,
             flags=re.IGNORECASE,
         )

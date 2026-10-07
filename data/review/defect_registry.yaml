@@ -87,6 +87,10 @@ defect_classes:
 - id: ENUMERATION_SHAPE_LOSS
   description: BOE sumario source-shape assumption silently dropped items (missing
     structural layer).
+- id: LETTERED_OPERATIVE_ITEMS
+  description: 2006–2007 dispositivos enumerate sanction clauses as 'a) Imponer a…',
+    'b) Una sanción de…' — lettered prefixes (not digits) plus 'las siguientes sanciones:'
+    headers and comma-decimal amounts 'importe de 300.506,05'.
 defects:
 - defect_id: S1
   defect_class: DURATION_FIELD_LOSS
@@ -500,3 +504,15 @@ defects:
     'epigrafe' layer) — parse_sumario iterated only epigrafe.item and silently enumerated
     0 items for 2000–2004.
   fix_commit: v0.6 H3
+- defect_id: D45
+  defect_class: LETTERED_OPERATIVE_ITEMS
+  round: H4
+  fixtures:
+  - BOE-A-2006-22625
+  - BOE-A-2007-14936
+  - BOE-A-2007-14937
+  - BOE-A-2007-4456
+  description: lettered 'a) Imponer'/'b) Una sanción' items; 'las siguientes sanciones:'
+    plural header; 'importe de 300.506,05' comma-decimal without adjacent 'euros'
+    (€ inside word-form paren).
+  fix_commit: v0.6 H4
