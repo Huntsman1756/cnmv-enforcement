@@ -99,6 +99,11 @@ def _release_meta() -> dict:
     return out
 
 
+@app.get("/health")
+def health() -> dict:
+    return {"status": "ok", "release": _release_meta()["dataset_release"]}
+
+
 @app.get("/metadata")
 def metadata() -> dict:
     """Dataset identity: which release is being served."""
