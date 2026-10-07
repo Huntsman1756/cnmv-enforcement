@@ -41,3 +41,12 @@ in `data/corpus` — a pinned corpus yields a reproducible image.
 
 Full-history enumeration (1961→present) is a multi-hour polite batch —
 run it chunked by year; the JSONL manifest is resumable.
+
+## TLS / exposure
+
+The shipped `docker-compose.yml` serves plain HTTP on :8080 — it is a
+single-host reference deployment. For public exposure terminate TLS in
+front (reverse proxy, Caddy, or your LB) and forward `X-Forwarded-*`;
+nginx already sets the security headers. The API on :8765 is read-only
+and carries no auth state — restrict it to the proxy host if exposed
+publicly.
