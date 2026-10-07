@@ -15,7 +15,7 @@ import hashlib
 import json
 import re
 import subprocess
-from datetime import datetime
+from datetime import UTC, datetime
 from decimal import Decimal
 from pathlib import Path
 from typing import Any
@@ -123,7 +123,7 @@ def build_manifest(
         "generator_version": __version__,
         "canonical_serialization": _CANONICAL_SPEC,
         "code_commit": _git_commit(),
-        "built_at": (built_at or datetime.now()).isoformat() + "Z",
+        "built_at": (built_at or datetime.now(UTC)).isoformat(),
         "release": _release_tag(parquet_dir),
         "inputs": inputs or {},
         "tables": tables,
