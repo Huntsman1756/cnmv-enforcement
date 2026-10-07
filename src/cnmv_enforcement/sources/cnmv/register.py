@@ -46,7 +46,7 @@ class RegisterIntegrityError(Exception):
 class RegisterRow:
     register_entry_date: date | None
     title: str
-    document_url: str
+    document_url: str | None
     boe_date: date | None = None
     page_index: int = 0
 
@@ -98,12 +98,19 @@ def parse_register_page(html: str, page_index: int) -> tuple[list[RegisterRow], 
     return rows, declared
 
 
+def _decode_page(content: bytes) -> str:
+    try:
+        return content.decode("utf-8")
+    except UnicodeDecodeError:
+        return content.decode("iso-8859-1")
+
+
 def collect_register(client: HttpClient) -> RegisterSnapshot:
     """Walk all pages of the register and return the observed snapshot."""
     snap = RegisterSnapshot()
     first = client.get(f"{CNMV_REGISTER_URL}?lang=es&page=0")
     snap.observed_at_pages.append(first)
-    rows, declared = parse_register_page(first.content.decode("utf-8"), 0)
+    rows, declared = parse_register_page(_decode_page(first.content), 0)
     snap.rows.extend(rows)
     snap.declared_pages = declared
     if declared <= 0:
@@ -112,7 +119,7 @@ def collect_register(client: HttpClient) -> RegisterSnapshot:
         res = client.get(f"{CNMV_REGISTER_URL}?lang=es&page={page}")
         snap.observed_at_pages.append(res)
         page_rows, _page_declared = parse_register_page(
-            res.content.decode("utf-8"), page
+            _decode_page(res.content), page
         )
         if not page_rows:
             raise RegisterIntegrityError(f"page {page}: zero rows")

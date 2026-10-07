@@ -1,0 +1,1 @@
+{"root":["./src/app.tsx","./src/main.tsx","./src/components/bars.tsx","./src/components/tags.tsx","./src/lib/api.ts","./src/pages/casedetail.tsx","./src/pages/cases.tsx","./src/pages/coverage.tsx","./src/pages/laws.tsx","./src/pages/overview.tsx","./src/pages/respondents.tsx"],"version":"5.9.3"}

@@ -59,7 +59,7 @@ def run_gates(corpus_dir: Path) -> dict:
     gate(
         "all documents parsed",
         not failed,
-        "; ".join(i["boe_id"] for i in failed[:10]),
+        "; ".join(i["boe_id"] or "?" for i in failed[:10]),
     )
     zero_block = [
         p.boe_id for p in result.publications if not p.blocks
@@ -67,7 +67,7 @@ def run_gates(corpus_dir: Path) -> dict:
     gate(
         "every publication yields >=1 infringement block",
         not zero_block,
-        ", ".join(zero_block[:10]),
+        ", ".join(b or "?" for b in zero_block[:10]),
     )
     zero_sanc = [
         p.boe_id
@@ -77,19 +77,19 @@ def run_gates(corpus_dir: Path) -> dict:
     gate(
         "every publication yields >=1 sanction",
         not zero_sanc,
-        ", ".join(zero_sanc[:10]),
+        ", ".join(b or "?" for b in zero_sanc[:10]),
     )
 
     # -- field completeness ------------------------------------------------
     missing_sev = [
-        f"{b.case_id}/i{i.ordinal}"
+        f"{b.case.case_id}/i{i.ordinal}"
         for b in result.bundles
         for i in b.infringements
         if i.severity == Severity.UNKNOWN
     ]
     gate("every infringement has severity", not missing_sev, ", ".join(missing_sev[:10]))
     missing_art = [
-        f"{b.case_id}/i{i.ordinal}"
+        f"{b.case.case_id}/i{i.ordinal}"
         for b in result.bundles
         for i in b.infringements
         if not i.article_normalized
@@ -100,7 +100,7 @@ def run_gates(corpus_dir: Path) -> dict:
         str(missing_art[:10]),
     )
     missing_stat = [
-        f"{b.case_id}/i{i.ordinal}"
+        f"{b.case.case_id}/i{i.ordinal}"
         for b in result.bundles
         for i in b.infringements
         if not i.statute_normalized
@@ -163,12 +163,12 @@ def run_gates(corpus_dir: Path) -> dict:
 
     # -- uniqueness ----------------------------------------------------------
     seen: set = set()
-    dupes = [
-        s.sanction_id
-        for b in result.bundles
-        for s in b.sanctions
-        if (s.sanction_id in seen or seen.add(s.sanction_id))
-    ]
+    dupes: list = []
+    for b in result.bundles:
+        for s in b.sanctions:
+            if s.sanction_id in seen:
+                dupes.append(s.sanction_id)
+            seen.add(s.sanction_id)
     gate("sanction ids unique", not dupes, ", ".join(dupes[:10]))
 
     # -- evidence ------------------------------------------------------------

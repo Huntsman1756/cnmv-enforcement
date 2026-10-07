@@ -57,7 +57,7 @@ class HttpClient:
         max_retries: int = MAX_RETRIES,
     ) -> None:
         self._client = httpx.Client(
-            headers={"User-Agent": user_agent, "Accept-Encoding": "gzip, br"},
+            headers={"User-Agent": user_agent, "Accept-Encoding": "gzip, deflate, br"},
             timeout=timeout,
             follow_redirects=True,
         )

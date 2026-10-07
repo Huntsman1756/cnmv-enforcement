@@ -21,6 +21,8 @@ _TABLES = [
     "evidence",
     "documents",
     "parse_issues",
+    "case_status",
+    "status_notes",
 ]
 
 
@@ -40,9 +42,10 @@ def build_duckdb(parquet_dir: Path, db_path: Path) -> dict[str, int]:
                 f'CREATE TABLE "{name}" AS SELECT * FROM read_parquet(?)',
                 [str(pq)],
             )
-            counts[name] = con.execute(
+            row = con.execute(
                 f'SELECT COUNT(*) FROM "{name}"'
-            ).fetchone()[0]
+            ).fetchone()
+            counts[name] = row[0] if row else 0
         con.execute(
             "CREATE TABLE meta AS SELECT "
             "current_timestamp AS built_at_utc, "

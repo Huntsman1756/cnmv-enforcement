@@ -11,6 +11,7 @@ import json
 from decimal import Decimal
 from typing import Any
 
+from cnmv_enforcement.parsing.boe_publication import ParsedPublication
 from cnmv_enforcement.pipeline.build import BuildResult
 
 
@@ -24,8 +25,15 @@ def _d(v: Any) -> Any:
     return v
 
 
-def flatten(result: BuildResult) -> dict[str, list[dict]]:
-    """→ table_name → rows."""
+def flatten(
+    result: BuildResult,
+    pdf_status: dict[str, dict] | None = None,
+) -> dict[str, list[dict]]:
+    """→ table_name → rows.
+
+    ``pdf_status``: ``{boe_id: {sha256, notes, status}}`` observations from
+    the CNMV-PDF status run — folded into ``case_status`` rows when given.
+    """
     tables: dict[str, list[dict]] = {
         "cases": [],
         "respondents": [],
@@ -37,9 +45,11 @@ def flatten(result: BuildResult) -> dict[str, list[dict]]:
         "evidence": [],
         "documents": [],
         "parse_issues": [],
+        "case_status": [],
+        "status_notes": [],
     }
-    meta: dict[str, dict] = {
-        p.boe_id: p for p in result.publications
+    meta: dict[str, ParsedPublication] = {
+        p.boe_id or "": p for p in result.publications
     }
     for bundle in result.bundles:
         c = bundle.case
@@ -68,6 +78,57 @@ def flatten(result: BuildResult) -> dict[str, list[dict]]:
                 "n_respondents": len(bundle.respondents),
             }
         )
+        obs = (pdf_status or {}).get(c.canonical_boe_id or "")
+        if obs:
+            tables["case_status"].append(
+                {
+                    "case_id": c.case_id,
+                    "firmness_status": obs.get("status"),
+                    "n_cnmv_notes": len(obs.get("notes", [])),
+                    "pdf_sha256": obs.get("sha256"),
+                    "observed_at": obs.get("observed_at"),
+                }
+            )
+            for note in obs.get("notes", []):
+                tables["status_notes"].append(
+                    {
+                        "case_id": c.case_id,
+                        "kind": note.get("kind"),
+                        "page": note.get("page"),
+                        "verbatim": note.get("verbatim"),
+                    }
+                )
+                if note.get("kind") in {
+                    "JUDICIAL_APPEAL_OBSERVED",
+                    "JUDGMENT_OBSERVED",
+                }:
+                    tables["events"].append(
+                        {
+                            "event_id": (
+                                f"{c.case_id}/PDF-{note['kind'][:4]}-"
+                                f"{len(tables['events'])}"
+                            ),
+                            "case_id": c.case_id,
+                            "event_type": (
+                                "JUDICIAL_APPEAL_FILED"
+                                if note["kind"] == "JUDICIAL_APPEAL_OBSERVED"
+                                else "JUDGMENT"
+                            ),
+                            "event_date": None,
+                            "observed_at": obs.get("observed_at"),
+                            "source_document_id": (
+                                f"cnmv-pdf:{c.canonical_boe_id}"
+                            ),
+                            "event_payload": json.dumps(
+                                {
+                                    "verbatim": note.get("verbatim"),
+                                    "page": note.get("page"),
+                                    "note": "filing date not stated in note",
+                                },
+                                ensure_ascii=False,
+                            ),
+                        }
+                    )
         if pub:
             tables["documents"].append(
                 {

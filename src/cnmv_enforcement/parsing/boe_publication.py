@@ -952,7 +952,7 @@ def parse_publication_xml(
             stat_seg = para.text[tok.end() : tok.end() + 220]
             stat_seg = _STATUTE_TAIL_CUT_RE.split(stat_seg, maxsplit=1)[0]
             sn = normalize_statute(stat_seg)
-            if sn:
+            if sn and art_n:
                 preamble_art_stat[art_n] = (stat_seg[:120], sn)
     last_stat: str | None = None
     for b in pub.blocks:

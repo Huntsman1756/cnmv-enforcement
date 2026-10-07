@@ -40,15 +40,13 @@ def probe() -> None:
     """Probe live source structure (register pages, BOE API reach)."""
     from cnmv_enforcement.sources.cnmv.register import (
         collect_register,
-        parse_register_page,
     )
     from cnmv_enforcement.sources.http import HttpClient
 
     client = HttpClient()
     snap = collect_register(client)
-    first = parse_register_page(
-        snap.observed_at_pages[0].content.decode("utf-8"), 0
-    )[0]
+    first = snap.rows[0]
+    dates = [r.register_entry_date for r in snap.rows if r.register_entry_date]
     typer.echo(
         json.dumps(
             {
@@ -58,10 +56,7 @@ def probe() -> None:
                     "title": first.title[:120],
                     "register_entry_date": str(first.register_entry_date),
                 },
-                "date_range": [
-                    str(min(r.register_entry_date for r in snap.rows)),
-                    str(max(r.register_entry_date for r in snap.rows)),
-                ],
+                "date_range": [str(min(dates)), str(max(dates))],
             },
             ensure_ascii=False,
             indent=2,
@@ -92,15 +87,17 @@ def enumerate(out: Path | None = None) -> None:
         from cnmv_enforcement.parsing.dates import parse_long_es
 
         day = parse_long_es(m.group(1))
+        if day is None:
+            continue
         if day not in day_cache:
             day_cache[day] = fetch_sumario(client, day)
-        res = resolve_row(row, day_cache[day].items)
+        res = resolve_row(row, day_cache[day][0].items)
         results.append(
             {
                 "row": row.title,
                 "boe_id": res.boe_id,
                 "method": res.method,
-                "score": res.score,
+                "score": str(res.score),
             }
         )
     unresolved = [r for r in results if not r["boe_id"]]
@@ -109,7 +106,7 @@ def enumerate(out: Path | None = None) -> None:
         f"{len(unresolved)} unresolved"
     )
     for r in unresolved:
-        typer.echo(f"  UNRESOLVED: {r['row'][:110]}")
+        typer.echo(f"  UNRESOLVED: {str(r.get('row'))[:110]}")
     if out:
         out.write_text(
             json.dumps(results, ensure_ascii=False, indent=2), encoding="utf-8"
@@ -138,7 +135,7 @@ def fetch(
 
     corpus_dir = corpus_dir or _corpus()
     corpus_dir.mkdir(parents=True, exist_ok=True)
-    store = RawStore()
+    store = RawStore(data_root() / "raw")
     client = HttpClient()
     snap = collect_register(client)
     day_cache: dict = {}
@@ -152,9 +149,11 @@ def fetch(
             )
             continue
         day = parse_long_es(m.group(1))
+        if day is None:
+            continue
         if day not in day_cache:
             day_cache[day] = fetch_sumario(client, day)
-        res = resolve_row(row, day_cache[day].items)
+        res = resolve_row(row, day_cache[day][0].items)
         if not res.boe_id:
             index.append(
                 {
@@ -167,7 +166,13 @@ def fetch(
             continue
         xml_url = BOE_XML_URL.format(boe_id=res.boe_id)
         fetched = client.get(xml_url)
-        store.store_fetch(fetched, kind="boe_xml")
+        store.store(
+            fetched,
+            authority="BOE",
+            document_type="publication_resolution",
+            canonical_locator=res.boe_id,
+            kind="boe_xml",
+        )
         (corpus_dir / f"{res.boe_id}.xml").write_bytes(fetched.content)
         index.append(
             {
@@ -186,6 +191,104 @@ def fetch(
 
 
 # ---------------------------------------------------------------- pipeline
+@app.command()
+def pdf_status(
+    limit: int | None = None,
+    snapshot: Path | None = None,
+) -> None:
+    """Fetch CNMV 'verdocumento' PDFs, extract status notes, diff snapshots.
+
+    CNMV may regenerate these PDFs with later firmness/status notes — each
+    run is a temporal observation. A changed sha256 or new status note is
+    reported as a diff, and the snapshot file is updated.
+    """
+    import hashlib
+    import re
+
+    from cnmv_enforcement.acquisition.rawstore import RawStore
+    from cnmv_enforcement.parsing.cnmv_pdf import extract_pdf_text
+    from cnmv_enforcement.parsing.dates import parse_long_es
+    from cnmv_enforcement.projections.state import FirmnessStatus
+    from cnmv_enforcement.sources.boe.resolve import resolve_row
+    from cnmv_enforcement.sources.boe.sumario import fetch_sumario
+    from cnmv_enforcement.sources.cnmv.register import collect_register
+    from cnmv_enforcement.sources.http import HttpClient
+
+    snapshot = snapshot or runtime_root() / "cnmv_pdf_status.json"
+    previous = (
+        json.loads(snapshot.read_text(encoding="utf-8"))
+        if snapshot.exists()
+        else {}
+    )
+    client = HttpClient()
+    store = RawStore(data_root() / "raw")
+    snap = collect_register(client)
+    day_cache: dict = {}
+    rows = snap.rows[:limit] if limit else snap.rows
+    current: dict[str, dict] = {}
+    observed = datetime.now(UTC).isoformat()
+    for row in rows:
+        m = re.search(r"\(BOE de (\d+ de \w+ de \d{4})\)", row.title)
+        if not m or not row.document_url:
+            continue
+        day = parse_long_es(m.group(1))
+        if day is None:
+            continue
+        if day not in day_cache:
+            day_cache[day] = fetch_sumario(client, day)
+        res = resolve_row(row, day_cache[day][0].items)
+        if not res.boe_id:
+            continue
+        url = row.document_url
+        if url.startswith("/"):
+            url = "https://www.cnmv.es" + url
+        fetched = client.get(url)
+        store.store(
+            fetched,
+            authority="CNMV",
+            document_type="register_document",
+            canonical_locator=res.boe_id,
+            kind="cnmv_pdf",
+        )
+        sha = hashlib.sha256(fetched.content).hexdigest()
+        try:
+            pt = extract_pdf_text(fetched.content)
+            notes = [
+                {"kind": n.kind, "page": n.page, "verbatim": n.verbatim}
+                for n in pt.status_notes
+            ]
+        except Exception as exc:
+            notes = []
+            typer.echo(f"  PDF extract failed {res.boe_id}: {exc}")
+        prev = previous.get(res.boe_id)
+        if prev:
+            if prev.get("sha256") != sha:
+                typer.echo(f"  CHANGED-BYTES {res.boe_id}")
+            elif prev.get("notes") != notes:
+                typer.echo(f"  CHANGED-NOTES {res.boe_id}")
+        status = FirmnessStatus.UNKNOWN
+        kinds = {n["kind"] for n in notes}
+        if "JUDGMENT_OBSERVED" in kinds:
+            status = FirmnessStatus.JUDGMENT_OBSERVED
+        elif "JUDICIAL_APPEAL_OBSERVED" in kinds:
+            status = FirmnessStatus.APPEAL_OBSERVED
+        elif kinds & {"ADMINISTRATIVE_FINALITY", "RENUNCIATION_TO_APPEAL"}:
+            status = FirmnessStatus.FIRM_STATED
+        elif "JUDICIAL_REVIEW_POSSIBLE" in kinds:
+            status = FirmnessStatus.APPEAL_POSSIBLE
+        current[res.boe_id] = {
+            "sha256": sha,
+            "notes": notes,
+            "status": status,
+            "observed_at": observed,
+        }
+    snapshot.parent.mkdir(parents=True, exist_ok=True)
+    snapshot.write_text(
+        json.dumps(current, ensure_ascii=False, indent=1), encoding="utf-8"
+    )
+    typer.echo(f"{len(current)} PDF observations -> {snapshot}")
+
+
 @app.command()
 def parse(corpus_dir: Path | None = None) -> None:
     """Parse corpus XMLs; print per-document summary and issues."""
@@ -223,7 +326,13 @@ def build(
     db_path = db_path or runtime_root() / "cnmv-enforcement.duckdb"
 
     result = build_corpus(corpus_dir)
-    tables = flatten(result)
+    status_path = runtime_root() / "cnmv_pdf_status.json"
+    pdf_obs = (
+        json.loads(status_path.read_text(encoding="utf-8"))
+        if status_path.exists()
+        else None
+    )
+    tables = flatten(result, pdf_status=pdf_obs)
     written = write_parquet(tables, exports_dir / "parquet")
     counts = build_duckdb(exports_dir / "parquet", db_path)
 
@@ -239,15 +348,23 @@ def build(
         SourceCoverage(
             source="boe_document",
             role="primary_publication",
-            observed_from=min(p.publication_date for p in pubs) if pubs else None,
-            observed_to=max(p.publication_date for p in pubs) if pubs else None,
+            observed_from=(
+                min(p.publication_date for p in pubs if p.publication_date)
+                if pubs
+                else None
+            ),
+            observed_to=(
+                max(p.publication_date for p in pubs if p.publication_date)
+                if pubs
+                else None
+            ),
             count=len(result.publications),
         )
     )
     if pubs:
         ledger.boe_date_range = {
-            "from": str(min(p.publication_date for p in pubs)),
-            "to": str(max(p.publication_date for p in pubs)),
+            "from": str(min(p.publication_date for p in pubs if p.publication_date)),
+            "to": str(max(p.publication_date for p in pubs if p.publication_date)),
         }
     for issue in result.issues:
         ledger.unresolved_or_ambiguous.append(
@@ -393,7 +510,10 @@ def respondent(name: str, db: Path | None = None) -> None:
             "SELECT COUNT(*), SUM(amount) FROM sanctions WHERE respondent_id = ?",
             [rid],
         ).fetchone()
-        typer.echo(f"{nm}  [{rt}]  sanctions={n[0]} total={n[1]}")
+        typer.echo(
+            f"{nm}  [{rt}]  sanctions={n[0] if n else 0} "
+            f"total={n[1] if n else 0}"
+        )
     if not rows:
         typer.echo("no respondents matched")
     con.close()
