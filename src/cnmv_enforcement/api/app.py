@@ -83,10 +83,32 @@ def _coverage_meta() -> dict:
     }
 
 
+def _release_meta() -> dict:
+    """Identify the dataset release the API is serving — never vague."""
+    candidates = sorted(
+        p for p in exports_root().glob("*/dataset_manifest.json")
+        if p.exists() and p.parent.name.startswith("v")
+    )
+    out: dict = {"dataset_release": None, "corpus_logical_sha256": None}
+    if candidates:
+        m = json.loads(candidates[-1].read_text(encoding="utf-8"))
+        out["dataset_release"] = m.get("release")
+        out["corpus_logical_sha256"] = m.get("corpus_logical_sha256")
+        out["dataset_schema_version"] = m.get("dataset_schema_version")
+        out["code_commit"] = m.get("code_commit")
+    return out
+
+
+@app.get("/metadata")
+def metadata() -> dict:
+    """Dataset identity: which release is being served."""
+    return {**_release_meta(), "api_version": "v1"}
+
+
 @app.get("/coverage")
 def coverage() -> dict:
     """The honest-scope ledger: sources, windows, counts, non-claims."""
-    return _coverage_meta()
+    return {**_coverage_meta(), "release": _release_meta()}
 
 
 @app.get("/stats")

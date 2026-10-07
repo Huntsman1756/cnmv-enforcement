@@ -1,4 +1,6 @@
+import { useEffect, useState } from "react";
 import { NavLink, Route, Routes } from "react-router-dom";
+import { api, type Meta } from "./lib/api";
 import Overview from "./pages/Overview";
 import Cases from "./pages/Cases";
 import CaseDetail from "./pages/CaseDetail";
@@ -7,6 +9,10 @@ import Laws from "./pages/Laws";
 import Coverage from "./pages/Coverage";
 
 export default function App() {
+  const [meta, setMeta] = useState<Meta | null>(null);
+  useEffect(() => {
+    api.metadata().then(setMeta).catch(() => setMeta(null));
+  }, []);
   return (
     <div className="shell">
       <nav className="side">
@@ -14,6 +20,11 @@ export default function App() {
           CNMV Enforcement
           <small>publicly observable ledger</small>
         </div>
+        {meta?.dataset_release && (
+          <small className="faint" title={`corpus ${meta.corpus_logical_sha256?.slice(0, 16)}…`}>
+            dataset {meta.dataset_release}
+          </small>
+        )}
         <NavLink to="/" end>Overview</NavLink>
         <NavLink to="/cases">Cases</NavLink>
         <NavLink to="/respondents">Respondents</NavLink>

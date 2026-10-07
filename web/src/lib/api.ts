@@ -123,7 +123,16 @@ async function get<T>(path: string): Promise<T> {
   return r.json() as Promise<T>;
 }
 
+export interface Meta {
+  dataset_release: string | null;
+  corpus_logical_sha256: string | null;
+  dataset_schema_version?: number;
+  code_commit?: string;
+  api_version: string;
+}
+
 export const api = {
+  metadata: () => get<Meta>("/metadata"),
   stats: () => get<Stats>("/stats"),
   coverage: () => get<CoverageDoc>("/coverage"),
   cases: (q: {

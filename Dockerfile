@@ -8,6 +8,8 @@ COPY src ./src
 RUN uv sync --frozen --no-dev
 
 COPY data/corpus ./data/corpus
+COPY data/corpus_historical ./data/corpus_historical
+COPY data/review ./data/review
 RUN .venv/bin/python -m cnmv_enforcement.cli.main build
 
 EXPOSE 8765
