@@ -412,11 +412,12 @@ def split_subjects(raw: str) -> list[str]:
     """
     raw = re.sub(r"^a\s+", "", raw.strip(), flags=re.IGNORECASE)
     parens: list[str] = []
-    masked = re.sub(
-        r"\([^()]*\)",
-        lambda m: parens.append(m.group(0)) or f"\x00{len(parens)-1}\x00",
-        raw,
-    )
+
+    def _mask_paren(m: re.Match[str]) -> str:
+        parens.append(m.group(0))
+        return f"\x00{len(parens)-1}\x00"
+
+    masked = re.sub(r"\([^()]*\)", _mask_paren, raw)
     parts = re.split(
         r",\s+(?=a\s+|de\s+|el\s+|la\s+|don\b|doña\b|d\.\s|dña\b)|"
         r"\s+y\s+a\s+|\s+e\s+a\s+|"

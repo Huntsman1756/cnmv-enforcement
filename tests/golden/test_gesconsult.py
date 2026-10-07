@@ -6,7 +6,7 @@ Observed truth (verified against the BOE XML on 2026-10-07):
 - 2 respondents: Gesconsult, SA, SGIIC (legal person) + don Juan Lladó
   García-Lomas (natural person)
 - 3 infringements: 1 very serious (93.a), 2 serious (94.ñ, 94.o)
-- 6 monetary fines (2 respondents × 3 infringements):
+- 6 monetary fines (2 respondents x 3 infringements):
   50 000 + 40 000 + 30 000 + 20 000 + 35 000 + 25 000 EUR
 - 3 distinct dates: sanctioning 2026-04-30, publication resolution
   2026-07-17, BOE publication 2026-08-03
@@ -99,7 +99,9 @@ def test_subject_types():
 
 def test_bundle_assembly(pub):
     bundle = assemble_case(
-        pub, document_id="AEBOE:boe_xml:test", observed_at=__import__("datetime").datetime(2026, 10, 7)
+        pub,
+        document_id="AEBOE:boe_xml:test",
+        observed_at=__import__("datetime").datetime(2026, 10, 7),
     )
     assert bundle.case.case_id == "CNMV-BOE-A-2026-16921"
     assert len(bundle.respondents) == 2
