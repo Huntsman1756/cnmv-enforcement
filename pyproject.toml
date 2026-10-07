@@ -64,6 +64,8 @@ ignore = [
 # the ambiguity IS the point (BOE text uses all of them).
 "src/cnmv_enforcement/parsing/**" = ["RUF001", "RUF002", "RUF003"]
 "src/cnmv_enforcement/sources/**" = ["RUF001", "RUF002", "RUF003"]
+"src/cnmv_enforcement/cli/**" = ["PLC0415", "ISC004"]
+"src/cnmv_enforcement/coverage/**" = ["ISC004"]
 
 [tool.mypy]
 python_version = "3.12"

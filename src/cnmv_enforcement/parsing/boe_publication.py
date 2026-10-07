@@ -84,11 +84,21 @@ _SUBJECT_FIRST_RE = re.compile(
     rf"^[{_BULLETS}\s]*A\s+(.+?):\s*(.+?)\.?\s*$",
     re.IGNORECASE | re.DOTALL,
 )
+_SUBJ_START = (
+    r"don|doña|d\.|dña|de\s+|la\s+|las\s+|los\s+|el\s+|cada\s+|"
+    r"[A-ZÁÉÍÓÚÑ]"
+)
+# sanction-first bullet; trailing 'a <subject>' optional — when absent the
+# subjects of the enclosing impose/header are inherited.
 _SANCTION_FIRST_RE = re.compile(
     rf"^[{_BULLETS}\s]*"
-    r"((?:Multa|Inhabilitaci[oó]n|Amonestaci[oó]n|Sanci[oó]n|Suspensi[oó]n|"
-    r"Restituci[oó]n|Confiscaci[oó]n|Comiso)\b.+?)"
-    r"\s+a\s+(.+?)\.?\s*$",
+    r"((?:Multas?|Inhabilitaci[oó]n(?:es)?|Amonestaci[oó]n(?:es)?|"
+    r"Sanci[oó]n(?:es)?|Suspensi[oó]n(?:es)?|"
+    r"Separaci[oó]n(?:es)?|Restituci[oó]n(?:es)?|Confiscaci[oó]n(?:es)?|"
+    r"Comiso)\b"
+    r"(?:\.(?=[a-zA-Z0-9])|[^.;])*?)"
+    rf"(?:\s+a\s+((?:{_SUBJ_START}).+?)|\s+(do[nñ]a?\s.+?))?\s*"
+    r"[.,;]?\s*(?:y)?\s*$",
     re.IGNORECASE | re.DOTALL,
 )
 
@@ -173,7 +183,8 @@ _SANCTION_TAIL_RE = re.compile(
     re.IGNORECASE,
 )
 _SANCTION_SPLIT_RE = re.compile(
-    rf"[,;]\s*(?:y\s+)?(?=(?:{_COUNT_RE}|\d+)?\s*(?:sanci[oó]n(?:es)?\s+de\s+|multas?|"
+    rf"(?:[,;]\s*(?:y\s+)?|\s+y\s+)(?=(?:{_COUNT_RE}|\d+)?\s*"
+    r"(?:sanci[oó]n(?:es)?\s+de\s+|multas?|"
     r"inhabilitaci[oó]n|amonestaci[oó]n|suspensi[oó]n|separaci[oó]n|"
     r"confiscaci[oó]n|comiso|restituci[oó]n))",
     re.IGNORECASE,
@@ -227,9 +238,10 @@ _ENTITY_HINT_RE = re.compile(
     re.IGNORECASE,
 )
 _ROLE_SPLIT_RE = re.compile(
-    r",\s*(?=(?:en\s+su\s+calidad\s+de|en\s+su\s+condici[oó]n\s+de|consejero|"
-    r"consejeros|administrador(?:es)?|director(?:es)?|presidente|secretario|"
-    r"apoderado|miembros?\b|cargo\s+de|directivo))",
+    r",\s*(?=(?:en\s+su\s+calidad\s+de|en\s+su\s+condici[oó]n\s+de|"
+    r"como\s+(?:consejero|administrador|director|presidente|apoderado)|"
+    r"consejero|consejeros|administrador(?:es)?|director(?:es)?|presidente|"
+    r"secretario|apoderado|miembros?\b|cargo\s+de|directivo))",
     re.IGNORECASE,
 )
 # same-statute shorthands in related provisions
@@ -292,6 +304,7 @@ class ParsedPublication:
     administrative_finality: bool = False
     judicial_review_possible: bool = False
     administrative_appeal: bool = False
+    underlying_resolutions: list[str] = field(default_factory=list)
     parse_issues: list[str] = field(default_factory=list)
 
 
@@ -329,17 +342,23 @@ def classify_subject(name_raw: str) -> RespondentType:
 
 
 def split_subject_role(chunk: str) -> tuple[str, str | None]:
-    """Split 'X, en su calidad de consejero' → ('X', 'en su calidad de…')."""
-    parts = _ROLE_SPLIT_RE.split(chunk, maxsplit=1)
-    name = parts[0].strip().rstrip(",")
-    role = parts[1].strip().rstrip(",.") if len(parts) > 1 else None
-    # parenthesized role: 'X (consejero delegado)'
+    """Split 'X, en su calidad de consejero' / 'X (consejero delegado)'
+    → ('X', role). Parenthesized roles are extracted FIRST so the comma
+    split can never cut inside them."""
+    role = None
+    name = chunk
+    m = re.match(
+        r"^(.*?)\s*\(([^)]*(?:consejero|administrador|director|presidente|"
+        r"secretario|apoderado|directivo|condici[oó]n|calidad)[^)]*)\)\s*$",
+        chunk,
+        re.IGNORECASE,
+    )
+    if m:
+        name, role = m.group(1).strip(), m.group(2).strip()
     if role is None:
-        m = re.match(r"^(.*?)\s*\(([^)]*(?:consejero|administrador|director|"
-                     r"presidente|secretario|apoderado|directivo)[^)]*)\)\s*$",
-                     name, re.IGNORECASE)
-        if m:
-            name, role = m.group(1).strip(), m.group(2).strip()
+        parts = _ROLE_SPLIT_RE.split(chunk, maxsplit=1)
+        name = parts[0].strip().rstrip(",")
+        role = parts[1].strip().rstrip(",.") if len(parts) > 1 else None
     return name, role
 
 
@@ -349,7 +368,8 @@ def split_subjects(raw: str) -> list[str]:
     raw = re.sub(r"^a\s+", "", raw.strip(), flags=re.IGNORECASE)
     parts = re.split(
         r",\s+(?=a\s+|de\s+|el\s+|la\s+|don\b|doña\b|d\.\s|dña\b)|"
-        r"\s+y\s+a\s+|\s+e\s+a\s+",
+        r"\s+y\s+a\s+|\s+e\s+a\s+|"
+        r"\s+[ye]\s+(?=don\b|doña\b|d\.\s|dña\b)",
         raw,
         flags=re.IGNORECASE,
     )
@@ -830,7 +850,6 @@ def parse_publication_xml(
                 r"comiso|restitu)",
                 body,
             ):
-                sanction_ord += 1
                 # sanction text may embed its own subject: 'Multa … a don X'
                 emb = re.search(
                     r"^(.*?)\s+a\s+((?:don|doña|d\.|dña|[A-ZÁÉÍÓÚÑ])"
@@ -847,6 +866,7 @@ def parse_publication_xml(
                     sanc_txt = emb.group(1)
                 st, amt, amt_raw, dur = _line_sanction(sanc_txt)
                 for subj in [emb_subj] if emb_subj else (context_subjects or [""]):
+                    sanction_ord += 1
                     current.sanctions.append(
                         ParsedSanctionLine(
                             subject_raw=subj,
@@ -863,25 +883,53 @@ def parse_publication_xml(
                     )
                 continue
         # sanction-first bullet: '– Multa por importe de N euros a <subj>.'
+        # subject optional — inherits the enclosing header's subjects; a
+        # bullet may hold several clauses ('… y sanción de separación…')
         msanc = _SANCTION_FIRST_RE.match(t)
         if msanc:
-            sanction_ord += 1
-            st, amt, amt_raw, dur = _line_sanction(msanc.group(1))
-            current.sanctions.append(
-                ParsedSanctionLine(
-                    subject_raw=msanc.group(2).strip(),
-                    sanction_raw=collapse_ws(msanc.group(1)),
-                    sanction_type=st,
-                    amount=amt,
-                    currency="EUR" if amt is not None else None,
-                    amount_raw=amt_raw,
-                    paragraph_index=para.index,
-                    excerpt=t,
-                    ordinal=sanction_ord,
-                    duration_raw=dur,
-                )
+            subj_part = msanc.group(2) or msanc.group(3)
+            if subj_part and ":" in subj_part:
+                # 'a cada uno de los siguientes miembros…: <member list>'
+                subj_part = subj_part.split(":", 1)[1]
+            line_subjects = (
+                split_subjects(subj_part)
+                if subj_part
+                else (context_subjects or [""])
             )
+            for seg_ in _SANCTION_SPLIT_RE.split(msanc.group(1)):
+                seg = seg_.strip().lstrip(",;").strip()
+                if not seg:
+                    continue
+                st, amt, amt_raw, dur = _line_sanction(seg)
+                for subj in line_subjects:
+                    sanction_ord += 1
+                    current.sanctions.append(
+                        ParsedSanctionLine(
+                            subject_raw=subj,
+                            sanction_raw=collapse_ws(seg),
+                            sanction_type=st,
+                            amount=amt,
+                            currency="EUR" if amt is not None else None,
+                            amount_raw=amt_raw,
+                            paragraph_index=para.index,
+                            excerpt=t,
+                            ordinal=sanction_ord,
+                            duration_raw=dur,
+                        )
+                    )
             continue
+        # 'N. Resolución del Consejo …' — the underlying sanctioning
+        # resolutions the publication covers; metadata, not a sanction line
+        if re.match(r"^\s*\d{1,2}\.\s*Resoluci[oó]n\b", t):
+            pub.underlying_resolutions.append(t)
+            continue
+        # safety net: a bullet/numbered-looking line under an open block
+        # that matched nothing must surface, never drop silently
+        if re.match(rf"^\s*(?:[{_BULLETS}]|[a-f]\)|\d{{1,2}}\s*[.)])", t):
+            pub.parse_issues.append(
+                f"unhandled line under block {current.ordinal} "
+                f"(para {para.index}): {t[:100]}"
+            )
     # ---- document-level statute context -------------------------------
     # In-document references are resolved deterministically, raw text kept:
     # 1. 'todos ellos/ambos de <LAW>' in a related segment covers the
@@ -934,7 +982,8 @@ def _line_sanction(
 ) -> tuple[SanctionType, Decimal | None, str | None, str | None]:
     """Type + amount + duration for a standalone sanction phrase."""
     km = re.match(
-        r"(?i)\s*(multa|inhabilitaci[oó]n|amonestaci[oó]n|sanci[oó]n|"
+        r"(?i)\s*(multa|inhabilitaci[oó]n|amonestaci[oó]n|"
+        r"sanci[oó]n(?:\s+de\s+\w+)?|"
         r"suspensi[oó]n|confiscaci[oó]n|comiso|restituci[oó]n|"
         r"separaci[oó]n(?:\s+del?\s+cargo)?)",
         text,

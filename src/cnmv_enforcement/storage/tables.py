@@ -11,7 +11,6 @@ import json
 from decimal import Decimal
 from typing import Any
 
-from cnmv_enforcement.domain.bundle import CaseBundle
 from cnmv_enforcement.pipeline.build import BuildResult
 
 

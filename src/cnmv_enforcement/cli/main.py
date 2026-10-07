@@ -1,7 +1,7 @@
 """cnmv-enforcement CLI.
 
-Commands follow the pipeline: probe → enumerate → fetch → parse →
-build → validate → coverage. Query commands (case / respondent /
+Commands follow the pipeline: probe -> enumerate -> fetch -> parse ->
+build -> validate -> coverage. Query commands (case / respondent /
 article / law / stats) read the built dataset.
 """
 
@@ -70,7 +70,7 @@ def probe() -> None:
 
 
 @app.command()
-def enumerate(out: Path | None = None) -> None:  # noqa: A002 — CLI name
+def enumerate(out: Path | None = None) -> None:
     """Resolve every register row to its BOE-A id (no download)."""
     import re
     from collections import defaultdict
@@ -130,11 +130,11 @@ def fetch(
     import re
 
     from cnmv_enforcement.acquisition.rawstore import RawStore
+    from cnmv_enforcement.parsing.dates import parse_long_es
     from cnmv_enforcement.sources.boe.resolve import resolve_row
     from cnmv_enforcement.sources.boe.sumario import fetch_sumario
     from cnmv_enforcement.sources.cnmv.register import collect_register
     from cnmv_enforcement.sources.http import HttpClient
-    from cnmv_enforcement.parsing.dates import parse_long_es
 
     corpus_dir = corpus_dir or _corpus()
     corpus_dir.mkdir(parents=True, exist_ok=True)
@@ -182,12 +182,12 @@ def fetch(
         json.dumps(index, ensure_ascii=False, indent=1), encoding="utf-8"
     )
     n = sum(1 for i in index if i["boe_id"])
-    typer.echo(f"fetched {n} documents → {corpus_dir}")
+    typer.echo(f"fetched {n} documents -> {corpus_dir}")
 
 
 # ---------------------------------------------------------------- pipeline
 @app.command()
-def parse(corpus_dir: Path | None = None) -> None:  # noqa: A001 — CLI name
+def parse(corpus_dir: Path | None = None) -> None:
     """Parse corpus XMLs; print per-document summary and issues."""
     from cnmv_enforcement.parsing.boe_publication import parse_publication_xml
 
@@ -211,7 +211,7 @@ def build(
     exports_dir: Path | None = None,
     db_path: Path | None = None,
 ) -> None:
-    """Full build: parse corpus → assemble → parquet + DuckDB + coverage."""
+    """Full build: parse corpus -> assemble -> parquet + DuckDB + coverage."""
     from cnmv_enforcement.coverage.ledger import CoverageLedger, SourceCoverage
     from cnmv_enforcement.pipeline.build import build_corpus
     from cnmv_enforcement.storage.duckdb import build_duckdb
@@ -259,9 +259,9 @@ def build(
         encoding="utf-8",
     )
     typer.echo(json.dumps(counts, indent=1))
-    typer.echo(f"parquet → {exports_dir / 'parquet'} ({len(written)} tables)")
-    typer.echo(f"duckdb  → {db_path}")
-    typer.echo(f"coverage → {coverage_path}")
+    typer.echo(f"parquet -> {exports_dir / 'parquet'} ({len(written)} tables)")
+    typer.echo(f"duckdb  -> {db_path}")
+    typer.echo(f"coverage -> {coverage_path}")
 
 
 # ---------------------------------------------------------------- validation
@@ -343,7 +343,7 @@ def case(case_id_or_boe: str, db: Path | None = None) -> None:
     cols = [d[0] for d in con.description]
     case_row = dict(zip(cols, c, strict=True))
     typer.echo(json.dumps(case_row, ensure_ascii=False, indent=2, default=str))
-    for t, key in [
+    for t, _key in [
         ("infringements", "infringement_id"),
         ("sanctions", "sanction_id"),
         ("respondents", None),
@@ -444,7 +444,7 @@ def export(
         typer.echo("fmt must be jsonl|csv")
         raise typer.Exit(1)
     con.close()
-    typer.echo(f"exported → {out}")
+    typer.echo(f"exported -> {out}")
 
 
 if __name__ == "__main__":

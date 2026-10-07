@@ -50,7 +50,6 @@ def run_gates(corpus_dir: Path) -> dict:
     """Build the corpus and check every release invariant."""
     result = build_corpus(corpus_dir)
     report = GateReport()
-    pubs = {p.boe_id: p for p in result.publications}
 
     def gate(name: str, ok: bool, detail: str = "") -> None:
         report.gates.append(GateResult(name, ok, detail))

@@ -39,6 +39,7 @@ from cnmv_enforcement.normalize.ids import (
 from cnmv_enforcement.parsing.boe_publication import (
     ParsedPublication,
     classify_subject,
+    split_subject_role,
 )
 from cnmv_enforcement.parsing.text import normalize_key
 
@@ -104,14 +105,18 @@ def assemble_case(
     respondent_ord: dict[str, int] = {}
 
     def respondent_for(name_raw: str) -> Respondent:
-        norm = _normalized_name(name_raw)
-        rtype = classify_subject(name_raw)
+        # strip the role clause for identity — 'don X, en su condición de
+        # consejero de Y' is the same respondent as 'don X'; the verbatim
+        # name stays in raw_display_name, the role in role_raw
+        name_part, role = split_subject_role(name_raw)
+        norm = _normalized_name(name_part)
+        rtype = classify_subject(name_part)
         rid = respondent_id_for(norm, rtype.value)
         if rid not in respondents:
             resp = Respondent(
                 respondent_id=rid,
                 raw_display_name=name_raw.strip(),
-                normalized_name=_strip_person_prefix(name_raw.strip()),
+                normalized_name=_strip_person_prefix(name_part.strip()),
                 respondent_type=rtype,
                 source_anonymized=rtype == RespondentType.ANONYMIZED_PERSON,
                 publication_policy=(
@@ -119,11 +124,12 @@ def assemble_case(
                     if rtype == RespondentType.ANONYMIZED_PERSON
                     else "SOURCE_NAMED"
                 ),
+                role_raw=role,
             )
             respondents[rid] = resp
             respondent_ord[rid] = len(respondent_ord)
             bundle.case_respondents.append(
-                CaseRespondent(case_id=case_id, respondent_id=rid)
+                CaseRespondent(case_id=case_id, respondent_id=rid, role=role)
             )
         return respondents[rid]
 
