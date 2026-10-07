@@ -292,6 +292,7 @@ def assemble_case(
                 entity_id=rid,
                 field_name="name",
                 document_id=document_id,
+                artifact_sha256=pub.raw_sha256,
                 locator=None,
                 excerpt=respo.raw_display_name,
                 extraction_method=ExtractionMethod.DIRECT,

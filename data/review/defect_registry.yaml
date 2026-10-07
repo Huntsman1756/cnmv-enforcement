@@ -350,3 +350,21 @@ defects:
   description: bulleted conduct items '• No gestionar adecuadamente los conflictos
     de interés…' under an open block.
   fix_commit: v0.6 H1
+- defect_id: D31
+  defect_class: ENTITY_NAME_SPLIT_ERROR
+  round: H1
+  fixtures:
+  - BOE-A-2015-12924
+  description: resolution-listed sanctions 'A X, por la comisión de …; una multa…'
+    under 'N. Resolución… acordó imponer' — bare subject-first items with no Imponer
+    header produced 0 blocks.
+  fix_commit: v0.6 H1
+- defect_id: D32
+  defect_class: COMISION_VARIANT_DROP
+  round: H1
+  fixtures:
+  - BOE-A-2015-3206
+  - BOE-A-2015-3207
+  description: 'sanction-kind wrappers missed: ''sanción, a cada uno de ellos, de
+    multa'' and ''sanción consistente en multa'' → UNKNOWN type with stray amounts.'
+  fix_commit: v0.6 H1

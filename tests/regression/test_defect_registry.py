@@ -359,3 +359,16 @@ def test_D29_lettered_conduct_items():
 def test_D30_dashed_conduct_items():
     pub = _h1_pub("BOE-A-2015-9187")
     assert not pub.parse_issues, pub.parse_issues
+
+
+def test_D31_resolution_listed_a_subject():
+    """'A X, por la comisión…' items under 'N. Resolución… acordó
+    imponer las siguientes sanciones:' — no Imponer header."""
+    p = Path("data/corpus_h1_dev/BOE-A-2015-12924.xml")
+    src = p if p.exists() else Path("data/corpus_h1_holdout/BOE-A-2015-12924.xml")
+    if not src.exists():
+        pytest.skip("h1 corpus absent")
+    pub = parse_publication_xml(src.read_bytes())
+    assert len(pub.blocks) == 5
+    amts = sorted(l.amount for b in pub.blocks for l in b.sanctions)
+    assert amts == [20000, 75000, 150000, 150000, 300000]

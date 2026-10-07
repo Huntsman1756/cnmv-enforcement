@@ -287,7 +287,10 @@ _CONDUCT_SPLIT_RE = re.compile(
 # sanction clause at the end of an impose/por-comisión sentence
 _SANCTION_TAIL_RE = re.compile(
     r"\b(?P<count>una|un|uno|dos|tres|cuatro|cinco|seis|siete|ocho|nueve|diez|\d{1,2})?\s*"
-    r"(?P<kind>multas?|sanci[oó]n(?:es)?(?:\s+de\s+\w+)?|inhabilitaci[oó]n(?:es)?|"
+    r"(?P<kind>multas?|sanci[oó]n(?:es)?(?:\s*,?\s*a\s+cada\s+un[ao]"
+    r"\s+de\s+(?:ellos|ellas|cada\s+una)\s*,?)?(?:\s+(?:de|"
+    r"consistente\s+en)\s+\w+)?|"
+    r"inhabilitaci[oó]n(?:es)?|"
     r"amonestaci[oó]n(?:es)?(?:\s+p[uú]blica)?|suspensi[oó]n(?:es)?|"
     r"separaci[oó]n(?:es)?(?:\s+del?\s+cargo)?|confiscaci[oó]n(?:es)?|comiso|"
     r"restituci[oó]n(?:es)?)\b"
@@ -639,8 +642,17 @@ def parse_amount(tail: str) -> tuple[Decimal | None, str | None]:
 
 def _sanction_kind(kind: str) -> SanctionType:
     k = collapse_ws(kind).lower()
-    if k.startswith(("sanción de ", "sancion de ")):
-        k = k.split(" de ", 1)[1]
+    # 'sanción, a cada uno de ellos, de multa' → normalize to the
+    # object clause before matching
+    k = re.sub(
+        r",\s*a\s+cada\s+un[ao]\s+de\s+(?:ellos|ellas|cada\s+una)\s*,?",
+        "",
+        k,
+    )
+    # 'sanción consistente en multa' / 'sanción de multa' → 'multa'
+    k = re.sub(
+        r"^sanci[oó]n\s+(?:consistente\s+en|de)\s+", "", k
+    )
     if k.startswith("multa"):
         return SanctionType.MONETARY_FINE
     if k.startswith(("inhabilit", "separaci")):
@@ -1226,6 +1238,21 @@ def parse_publication_xml(
             pub.blocks.extend(blocks)
             current = blocks[-1]
             _link_successor(blocks, declared_blocks)
+            continue
+        # 'A Pescanova, S.A., por la comisión de …; una multa…' —
+        # subject-first sanction items under a 'N. Resolución… acordó
+        # imponer las siguientes sanciones:' list (historical form)
+        m_asi = re.match(
+            rf"^[{_BULLETS}\s]*A\s+(.+?)\s*,\s*(?=por\s+la\s+comisi[oó]n\b)",
+            t,
+            re.IGNORECASE | re.DOTALL,
+        )
+        if m_asi:
+            subs = split_subjects(m_asi.group(1))
+            ctx = "Por " + t[m_asi.end() :].lstrip(" ,").removeprefix("por ")
+            blocks = new_blocks(para, subs, ctx)
+            pub.blocks.extend(blocks)
+            current = blocks[-1]
             continue
         if _POR_COMISION_BULLET_RE.match(t):
             # standalone infringement+sanction bullet; inherits header subject

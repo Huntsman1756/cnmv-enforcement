@@ -582,8 +582,14 @@ def validate(corpus_dir: Path | None = None) -> None:
     from cnmv_enforcement.validation.gates import run_gates
 
     corpus_dir = corpus_dir or _corpus()
-    hist = data_root() / "corpus_historical"
-    extra = [hist] if hist.exists() and any(hist.glob("BOE-A-*.xml")) else []
+    extra = [
+        d
+        for d in (
+            data_root() / "corpus_historical",
+            data_root() / "corpus_h1_dev",
+        )
+        if d.exists() and any(d.glob("BOE-A-*.xml"))
+    ]
     report = run_gates(corpus_dir, extra_dirs=extra)
     typer.echo(json.dumps(report, ensure_ascii=False, indent=2))
     if not report["ok"]:

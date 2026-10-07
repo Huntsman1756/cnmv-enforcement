@@ -10,6 +10,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from cnmv_enforcement.domain.enums import SanctionType, Severity
+from cnmv_enforcement.parsing.boe_publication import parse_publication_xml
 from cnmv_enforcement.pipeline.build import build_corpus
 
 
@@ -436,5 +437,148 @@ def run_gates(corpus_dir: Path, extra_dirs: list[Path] | None = None) -> dict:
         gate("G22 reproducible dataset", not mism, ",".join(mism[:5]))
     else:
         gate("G22 reproducible dataset", False, "SHA256SUMS missing")
+
+    # ── v0.6 historical gates ──────────────────────────────────────────
+    # G23 HISTORICAL_ENUMERATION_REPRODUCIBLE — every non-fixture corpus
+    # doc present in the dataset must trace to an enumerated manifest
+    # entry; the manifests themselves are frozen JSONL.
+    hist_manifest = Path("data/runtime")
+    manifests = [
+        hist_manifest / n
+        for n in ("boe_history.jsonl", "boe_history_gap.jsonl",
+                  "boe_history_2015_2017.jsonl")
+        if (hist_manifest / n).exists()
+    ]
+    if manifests:
+        enum_ids = set()
+        for mp in manifests:
+            for ln in mp.read_text(encoding="utf-8").splitlines():
+                for it in json.loads(ln).get("items", []):
+                    enum_ids.add(it["boe_id"])
+        # publications not in the register corpus must be manifest-backed
+        missing = [
+            p.boe_id
+            for p in result.publications
+            if p.corpus != "register_snapshot" and p.boe_id not in enum_ids
+        ]
+        gate(
+            "G23 historical enumeration reproducible",
+            not missing,
+            f"{len(missing)} historical docs absent from manifests: "
+            f"{missing[:4]}",
+        )
+
+    # G24 HISTORICAL_DOCUMENT_RECONCILIATION — the documents↔cases
+    # count must reconcile exactly per corpus (no unexplained deltas)
+    from collections import Counter
+
+    per_corpus: dict[str, Counter] = {}
+    for p in result.publications:
+        c = per_corpus.setdefault(p.corpus, Counter())
+        c["documents"] += 1
+        c[p.document_kind] += 1
+    case_by_corpus: Counter = Counter(
+        next(
+            (p.corpus for p in result.publications
+             if p.boe_id == b.case.canonical_boe_id),
+            "?",
+        )
+        for b in result.bundles
+    )
+    unreconciled = [
+        corpus
+        for corpus, counts in per_corpus.items()
+        if counts["documents"] - case_by_corpus.get(corpus, 0)
+        != counts.get("SUBSEQUENT_EVENT", 0) + counts.get("OTHER", 0)
+    ]
+    gate(
+        "G24 historical document reconciliation",
+        not unreconciled,
+        f"{unreconciled} corpora have unexplained doc/case deltas",
+    )
+
+    # G25 HISTORICAL_HOLDOUT — the frozen holdout corpus must parse
+    # cleanly (dev-set fixes may not have degraded it)
+    holdout_dir = Path("data/corpus_h1_holdout")
+    if holdout_dir.exists() and any(holdout_dir.glob("BOE-A-*.xml")):
+        hold_fails = []
+        for xf in sorted(holdout_dir.glob("BOE-A-*.xml")):
+            try:
+                hp = parse_publication_xml(xf.read_bytes())
+            except Exception as exc:  # noqa: BLE001 — a crash IS a fail
+                hold_fails.append(f"{xf.stem}: crash {exc}")
+                continue
+            if not hp.blocks or not any(b.sanctions for b in hp.blocks):
+                hold_fails.append(f"{xf.stem}: no sanctions")
+        gate(
+            "G25 historical holdout",
+            not hold_fails,
+            f"{len(hold_fails)} holdout docs failed: "
+            f"{hold_fails[:3]}",
+        )
+
+    # G26 HISTORICAL_MONEY_EXACTNESS — every monetary fine in the
+    # non-register corpus carries a Decimal amount (never None/float)
+    bad_money = [
+        f"{b.case.case_id}/{s.ordinal}"
+        for p in result.publications
+        if p.corpus != "register_snapshot"
+        for b in result.bundles
+        if p.boe_id == b.case.canonical_boe_id
+        for s in b.sanctions
+        if s.sanction_type.name == "MONETARY_FINE" and s.amount is None
+    ]
+    gate(
+        "G26 historical money exactness",
+        not bad_money,
+        f"{len(bad_money)} fines w/o amount: {bad_money[:4]}",
+    )
+
+    # G27 HISTORICAL_CASE_LINK_HONESTY — no sanction may land on an
+    # empty respondent (successor/dative parsing must always resolve to
+    # a concrete subject — the N-finding "empty-subject phantom
+    # respondent" becomes a hard failure here)
+    empty_subj = [
+        f"{b.case.case_id}/{s.ordinal}"
+        for b in result.bundles
+        for s in b.sanctions
+        if not s.respondent_id or s.respondent_id.strip() == ""
+    ]
+    gate(
+        "G27 historical case-link honesty",
+        not empty_subj,
+        f"{len(empty_subj)} sanctions with empty respondent",
+    )
+
+    # G28 HISTORICAL_COVERAGE_CLAIMS — coverage.json must declare the
+    # historical slice explicitly (no silent exhaustivity)
+    import json as _json
+
+    cov = Path("data/exports")
+    covs = sorted(cov.glob("*/coverage.json"))
+    if covs:
+        cdoc = _json.loads(covs[-1].read_text(encoding="utf-8"))
+        hist_cov = cdoc.get("historical_backfill", {})
+        note = str(hist_cov.get("note", ""))
+        gate(
+            "G28 historical coverage claims",
+            "NOT exhaustive" in note or "not exhaustive" in note.lower(),
+            "coverage.json must declare the historical slice as "
+            "non-exhaustive",
+        )
+
+    # G29 HISTORICAL_EVIDENCE_INTEGRITY — every evidence row in the
+    # historical cohort binds to an artifact sha (no unbound evidence)
+    unbound = [
+        f"{e.entity_id}/{e.field_name}"
+        for b in result.bundles
+        for e in b.evidence
+        if not e.artifact_sha256
+    ]
+    gate(
+        "G29 historical evidence integrity",
+        not unbound,
+        f"{len(unbound)} evidence rows without artifact sha",
+    )
 
     return report.to_dict()
