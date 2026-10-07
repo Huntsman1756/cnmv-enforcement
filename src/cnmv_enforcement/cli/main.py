@@ -393,7 +393,11 @@ def build(
     exports_dir = exports_dir or exports_root() / datetime.now(UTC).date().isoformat()
     db_path = db_path or runtime_root() / "cnmv-enforcement.duckdb"
 
-    result = build_corpus(corpus_dir)
+    dirs = [corpus_dir]
+    hist = data_root() / "corpus_historical"
+    if hist.exists() and any(hist.glob("BOE-A-*.xml")):
+        dirs.append(hist)
+    result = build_corpus(dirs)
     status_path = runtime_root() / "cnmv_pdf_status.json"
     pdf_obs = (
         json.loads(status_path.read_text(encoding="utf-8"))

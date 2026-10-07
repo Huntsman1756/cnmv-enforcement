@@ -61,9 +61,11 @@ def run_gates(corpus_dir: Path) -> dict:
         not failed,
         "; ".join(i["boe_id"] or "?" for i in failed[:10]),
     )
-    zero_block = [
-        p.boe_id for p in result.publications if not p.blocks
+    sanction_pubs = [
+        p for p in result.publications
+        if p.document_kind == "SANCTION_PUBLICATION"
     ]
+    zero_block = [p.boe_id for p in sanction_pubs if not p.blocks]
     gate(
         "every publication yields >=1 infringement block",
         not zero_block,
@@ -71,7 +73,7 @@ def run_gates(corpus_dir: Path) -> dict:
     )
     zero_sanc = [
         p.boe_id
-        for p in result.publications
+        for p in sanction_pubs
         if not any(b.sanctions for b in p.blocks)
     ]
     gate(

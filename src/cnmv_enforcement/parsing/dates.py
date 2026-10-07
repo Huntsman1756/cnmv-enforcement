@@ -81,6 +81,20 @@ _DAY_LIST_RE = re.compile(
     r"(\d{4})",
     re.IGNORECASE,
 )
+# cross-month lists: '9 de marzo y 29 de mayo de 2020' / '19 de noviembre
+# y 23 de diciembre de 2021' — one shared year at the end
+_CROSS_MONTH_RE = re.compile(
+    rf"(\d{{1,2}})\s+de\s+({_MONTH})\s*(?:,|y)\s*"
+    rf"(?:(\d{{1,2}})\s+de\s+({_MONTH})\s*(?:,|y)\s*)*"
+    r"(\d{1,2})\s+de\s+(" + _MONTH + r")\s+de\s+(\d{4})",
+    re.IGNORECASE,
+)
+# day list without 'de' before month: '8 y 9 junio de 2020'
+_DAY_NODE_RE = re.compile(
+    rf"(\d{{1,2}}(?:\s*(?:,|y|e)\s*\d{{1,2}})*)\s+({_MONTH})\s+de\s+"
+    r"(\d{4})",
+    re.IGNORECASE,
+)
 _YEAR_RE = re.compile(r"\b(19\d{2}|20\d{2})\b")
 # a date is instrument-context when a statute keyword precedes it within the
 # same clause (e.g. 'del Reglamento (UE) 596/2014, de 16 de abril de 2014')
@@ -108,10 +122,38 @@ def extract_conduct_period(
     days: list[date] = []
     seen: set[tuple[int, int, int]] = set()
     for m in _DAY_LIST_RE.finditer(conduct):
-        window = conduct[max(0, m.start() - 80) : m.start()]
+        window = conduct[max(0, m.start() - 120) : m.start()]
         clause = window.rsplit(".", 1)[-1]
         if _STATUTE_CTX_RE.search(clause):
             continue  # belongs to an instrument title, not the conduct
+        month = MONTHS_ES[m.group(2).lower()]
+        year = int(m.group(3))
+        for dm in re.finditer(r"\d{1,2}", m.group(1)):
+            d = _day(year, month, int(dm.group(0)))
+            if d and (d.year, d.month, d.day) not in seen:
+                seen.add((d.year, d.month, d.day))
+                days.append(d)
+    # cross-month lists the flat regex can't reach ('9 de marzo y 29 de
+    # mayo de 2020')
+    for m in _CROSS_MONTH_RE.finditer(conduct):
+        window = conduct[max(0, m.start() - 120) : m.start()]
+        clause = window.rsplit(".", 1)[-1]
+        if _STATUTE_CTX_RE.search(clause):
+            continue
+        year = int(m.group(7))
+        for dm in re.finditer(
+            rf"(\d{{1,2}})\s+de\s+({_MONTH})", m.group(0), re.IGNORECASE
+        ):
+            d = _day(year, MONTHS_ES[dm.group(2).lower()], int(dm.group(1)))
+            if d and (d.year, d.month, d.day) not in seen:
+                seen.add((d.year, d.month, d.day))
+                days.append(d)
+    # '8 y 9 junio de 2020' — day list without 'de' before the month
+    for m in _DAY_NODE_RE.finditer(conduct):
+        window = conduct[max(0, m.start() - 120) : m.start()]
+        clause = window.rsplit(".", 1)[-1]
+        if _STATUTE_CTX_RE.search(clause):
+            continue
         month = MONTHS_ES[m.group(2).lower()]
         year = int(m.group(3))
         for dm in re.finditer(r"\d{1,2}", m.group(1)):

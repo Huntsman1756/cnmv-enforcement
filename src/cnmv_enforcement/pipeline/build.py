@@ -28,27 +28,43 @@ class BuildResult:
 
 
 def build_corpus(
-    corpus_dir: Path,
+    corpus_dir: Path | list[Path],
     *,
     register_snapshot: dict | None = None,
     observed_at: datetime | None = None,
 ) -> BuildResult:
-    """Parse every ``BOE-A-*.xml`` in corpus_dir and assemble CaseBundles.
-
-    ``index.json`` (written by fetch) supplies register metadata per doc;
-    files are processed in sorted order for determinism.
+    """Parse every ``BOE-A-*.xml`` in the corpus dir(s) and assemble
+    CaseBundles. Multiple dirs = multiple corpora (register snapshot +
+    historical backfill); the corpus label lands on each publication for
+    coverage accounting.
     """
     obs = observed_at or datetime.now(UTC)
+    dirs = [corpus_dir] if isinstance(corpus_dir, Path) else list(corpus_dir)
     index: dict[str, dict] = {}
-    index_path = corpus_dir / "index.json"
-    if index_path.exists():
-        for item in json.loads(index_path.read_text(encoding="utf-8")):
-            index[item["boe_id"]] = item
+    xml_paths: list[Path] = []
+    for d in dirs:
+        index_path = d / "index.json"
+        if index_path.exists():
+            for item in json.loads(index_path.read_text(encoding="utf-8")):
+                index[item["boe_id"]] = item
+        xml_paths.extend(sorted(d.glob("BOE-A-*.xml")))
+    xml_paths.sort(key=lambda p: (p.parent.name, p.name))
 
     result = BuildResult(built_at=obs)
-    for xml_path in sorted(corpus_dir.glob("BOE-A-*.xml")):
+    seen: set[str] = set()
+    for xml_path in xml_paths:
         boe_id = xml_path.stem
         meta = index.get(boe_id, {})
+        if boe_id in seen:
+            result.issues.append(
+                {
+                    "boe_id": boe_id,
+                    "kind": "DUPLICATE_CORPUS_ENTRY",
+                    "detail": f"skipped second copy in {xml_path.parent}",
+                }
+            )
+            continue
+        seen.add(boe_id)
         try:
             pub = parse_publication_xml(xml_path.read_bytes())
         except Exception as exc:  # hard parse failure — recorded, not silent
@@ -57,6 +73,20 @@ def build_corpus(
             )
             continue
         result.publications.append(pub)
+        pub.corpus = (
+            "register_snapshot"
+            if xml_path.parent.name == "corpus"
+            else "historical_backfill"
+        )
+        if pub.document_kind != "SANCTION_PUBLICATION":
+            result.issues.append(
+                {
+                    "boe_id": boe_id,
+                    "kind": "SUBSEQUENT_EVENT_DOC",
+                    "detail": "revocation/correction document — not a case",
+                }
+            )
+            continue
         for issue in pub.parse_issues:
             result.issues.append(
                 {"boe_id": boe_id, "kind": "PARSE_ISSUE", "detail": issue}

@@ -72,6 +72,15 @@ _IMPOSE_START_RE = re.compile(
     rf"^\s*(?:\d{{1,2}}\s*[.)]?\s*)?[{_BULLETS}\s]*Imponer\b",
     re.IGNORECASE,
 )
+# historical comision variants normalized before the canonical check:
+# 'N. La comisión de una infracción…' → 'Por la comisión de una…';
+# '• De una infracción…' → 'Por la comisión de una infracción…'
+_PRE_COMISION_NORM = re.compile(
+    rf"^([{_BULLETS}\s]*(?:\d{{1,2}}\s*[.)]\s*|[a-f]\)\s*)?)"
+    r"(?:La\s+comisi[oó]n\s+de\s+(?=una|dos|tres|cuatro|un\s+|infracci)|"
+    r"De\s+(?=una\s+infracci[oó]n))",
+    re.IGNORECASE,
+)
 _POR_COMISION_BULLET_RE = re.compile(
     rf"^\s*(?:\d{{1,2}}\s*[.)]\s*|[a-f]\)\s*)?[{_BULLETS}\s]*"
     r"Por\s+la\s+comisi[oó]n\b",
@@ -82,6 +91,18 @@ _LETTERED_BULLET_RE = re.compile(
 )
 _SUBJECT_FIRST_RE = re.compile(
     rf"^[{_BULLETS}\s]*A\s+(.+?):\s*(.+?)\.?\s*$",
+    re.IGNORECASE | re.DOTALL,
+)
+# historical variant: '• A <subj>, multa por importe de N' and
+# '• A <subj> por importe de N euros' — no colon
+_SUBJECT_FIRST2_RE = re.compile(
+    rf"^[{_BULLETS}\s]*A\s+(.+?)\s*"
+    r"(?:,\s*)?(?=(?:una\s+|dos\s+|tres\s+|cuatro\s+|cinco\s+|seis\s+|"
+    r"siete\s+|ocho\s+|nueve\s+|diez\s+|"
+    r"multa|sanci[oó]n|inhabilitaci|amonestaci|suspensi|restitu|comiso)|"
+    r"por\s+importe\s+de|\d[\d.]*\s+euros?)\s*"
+    r"((?:una|dos|tres|cuatro|cinco|seis|siete|ocho|nueve|diez)\s+)?"
+    r"(.*)$",
     re.IGNORECASE | re.DOTALL,
 )
 _SUBJ_START = (
@@ -122,7 +143,8 @@ _COUNT_RE = "|".join(_COUNT_WORDS)
 # 'comisión' observed ('por la comisión, de una infracción').
 _COMISION_RE = re.compile(
     rf"por\s+la\s+comisi[oó]n\s*,?\s*"
-    rf"(?:cada\s+uno\s+de\s+ellos\s*,?\s*|respectivamente\s*,?\s*)?de\s+"
+    rf"(?:cada\s+uno\s+de\s+ellos\s*,?\s*|respectivamente\s*,?\s*|"
+    rf"(?:en|por|como)\s+[^,]{{1,90}},\s*)?de\s+"
     rf"(?P<count>{_COUNT_RE}|\d{{1,2}})\s+infracci[oó]n(?:es)?"
     rf"(?P<cont>\s+continuada)?",
     re.IGNORECASE,
@@ -204,9 +226,12 @@ _WORDS_EUROS_RE = re.compile(
     r"([a-záéíóúüñ\s-]{4,60}?)\s*\(?\s*euros?\)?",
     re.IGNORECASE,
 )
+_DATE_ES = r"\d{1,2}\s+de\s+[a-záéíóúñ]+\s+de\s+\d{4}"
 _SANCTIONING_RES_RE = re.compile(
-    r"Resoluci[oó]n\s+del\s+Consejo\s+de\s+la\s+CNMV\s+de\s+fecha\s+"
-    r"(\d{1,2}\s+de\s+\w+\s+de\s+\d{4})",
+    r"Resoluci[oó]n(?:es)?\s+del\s+Consejo\s+de\s+la\s+"
+    r"(?:CNMV|Comisi[oó]n\s+Nacional\s+del\s+Mercado\s+de\s+Valores"
+    r"(?:\s*\(CNMV\))?)\s*,?\s*de\s+fecha\s+"
+    r"((?:" + _DATE_ES + r")(?:\s+y\s+(?:" + _DATE_ES + r"))?)",
     re.IGNORECASE,
 )
 _FINALITY_RES = [
@@ -306,6 +331,8 @@ class ParsedPublication:
     administrative_appeal: bool = False
     underlying_resolutions: list[str] = field(default_factory=list)
     parse_issues: list[str] = field(default_factory=list)
+    document_kind: str = "SANCTION_PUBLICATION"  # | SUBSEQUENT_EVENT | OTHER
+    corpus: str = "register_snapshot"  # | historical_backfill
 
 
 def _severity_from(text: str) -> Severity:
@@ -359,25 +386,68 @@ def split_subject_role(chunk: str) -> tuple[str, str | None]:
         parts = _ROLE_SPLIT_RE.split(chunk, maxsplit=1)
         name = parts[0].strip().rstrip(",")
         role = parts[1].strip().rstrip(",.") if len(parts) > 1 else None
+    # procedural boilerplate inside the name position
+    name = re.sub(
+        r"^(?:los|las)\s+(?:consejeros|administradores|miembros)\b.*?"
+        r"(?=don\b|doña\b|d\.\s|dña\b)",
+        "",
+        name,
+        flags=re.IGNORECASE,
+    ).strip()
+    name = re.sub(
+        r",\s*las?\s+siguientes\s+sanciones\s*$",
+        "",
+        name,
+        flags=re.IGNORECASE,
+    ).strip()
     return name, role
 
 
 def split_subjects(raw: str) -> list[str]:
     """'a X, a Y y a Z' or 'X, Y' → subject chunks (names may contain
-    commas like 'Gesconsult, SA, SGIIC')."""
+    commas like 'Gesconsult, SA, SGIIC'). Parenthesized roles are masked
+    so ', a la fecha' inside '(…, a la fecha de los hechos)' can never
+    split; ' y ' splits only when both sides are multi-word (protects
+    entity names like 'Riva y García' and surnames like 'Vidal y Ladrón').
+    """
     raw = re.sub(r"^a\s+", "", raw.strip(), flags=re.IGNORECASE)
+    parens: list[str] = []
+    masked = re.sub(
+        r"\([^()]*\)",
+        lambda m: parens.append(m.group(0)) or f"\x00{len(parens)-1}\x00",
+        raw,
+    )
     parts = re.split(
         r",\s+(?=a\s+|de\s+|el\s+|la\s+|don\b|doña\b|d\.\s|dña\b)|"
         r"\s+y\s+a\s+|\s+e\s+a\s+|"
         r"\s+[ye]\s+(?=don\b|doña\b|d\.\s|dña\b)",
-        raw,
+        masked,
         flags=re.IGNORECASE,
     )
-    out = []
+    out: list[str] = []
     for part in parts:
-        p = re.sub(r"^a\s+", "", part.strip().rstrip(","), flags=re.IGNORECASE)
-        if p:
-            out.append(p)
+        # ' y ' between two multi-word chunks is a list boundary
+        subparts = [part]
+        for m in re.finditer(r"\s+y\s+", part):
+            left, right = part[: m.start()], part[m.end() :]
+            if (
+                len(left.split()) >= 2
+                and len(right.split()) >= 2
+                # a comma on the left = role/company-form text already
+                # present ('Alcalde, Presidente y Consejero Delegado')
+                and "," not in left
+            ):
+                subparts = [left, *subparts[1:]]
+                subparts.extend(re.split(r"\s+y\s+(?=[A-ZÁÉÍÓÚÑ])", right))
+                break
+        for sp in subparts:
+            p = re.sub(
+                r"^a\s+", "", sp.strip().rstrip(","), flags=re.IGNORECASE
+            )
+            if p:
+                for i, text in enumerate(parens):
+                    p = p.replace(f"\x00{i}\x00", text)
+                out.append(p)
     return out
 
 
@@ -583,10 +653,22 @@ def parse_comision(
             zone_start = cand.start()
             break
     if zone_start is None and candidates:
-        last = candidates[-1]
-        before = rest[: last.start()].rstrip()
-        if re.search(r"\d{4}\s*$|\)\s*$", before):
-            zone_start = last.start()
+        # missing-comma tolerance: accept a count-word + sanction-kind
+        # clause directly after name/year/paren text ('… SA una multa
+        # por importe de…', '… 2017 multa por importe de…')
+        for cand in candidates:
+            seg0 = cand.group(0).strip().lower()
+            if re.match(
+                rf"(?:{_COUNT_RE}|\d{{1,2}})\s+(?:multas?|sanci[oó]n)",
+                seg0,
+                re.IGNORECASE,
+            ):
+                zone_start = cand.start()
+                break
+            before = rest[: cand.start()].rstrip()
+            if re.search(r"\d{4}\s*$|\)\s*$", before):
+                zone_start = cand.start()
+                break
     if zone_start is not None:
         sanction_tail = rest[zone_start:]
         rest = rest[:zone_start].rstrip()
@@ -609,8 +691,10 @@ def parse_comision(
         art_end = atok.end() if atok else tm.end()
         if atok:
             article_raw = atok.group(0).rstrip(")").strip()
-            # space-separated letter suffix: '282.16 c)' → '282.16.c'
-            lt = re.match(r"\s+([a-zñ])\s*\)", head[atok.end() :], re.IGNORECASE)
+            # space/dot-letter suffix: '282.16 c)' / '282.16. a)' / '93. p)'
+            lt = re.match(
+                r"\s*\.?\s*([a-zñ])\s*\)", head[atok.end() :], re.IGNORECASE
+            )
             if lt:
                 article_raw = f"{article_raw}.{lt.group(1).lower()}"
                 art_end = atok.end() + lt.end()
@@ -624,6 +708,23 @@ def parse_comision(
         if sn or not _SAME_STATUTE_RE.search(first_seg):
             statute_raw = stat_seg.strip().rstrip(",;.").strip() or None
             statute_norm = sn
+        # multi-letter typifying refs: '282.16 b) y c)' — the extra
+        # letters are additional typified provisions, recorded as related
+        if atok:
+            for lm in re.finditer(
+                r"\s+(?:,|y|e)\s*([a-zñ])\s*\)", after, re.IGNORECASE
+            ):
+                related.append(
+                    LegalReference(
+                        statute_raw=statute_raw,
+                        article_raw=f"{atok.group(0)}.{lm.group(1)}",
+                        statute_normalized=statute_norm,
+                        article_normalized=normalize_article(
+                            f"{atok.group(0)}.{lm.group(1)}"
+                        ),
+                        relation="RELATED",
+                    )
+                )
         for seg in rel_parts[1:]:
             related.extend(_related_refs(seg, (statute_raw, statute_norm)))
     # conduct-article refs: 'por vulneración del artículo 15' —
@@ -694,12 +795,23 @@ def parse_publication_xml(
     full_text = "\n".join(p.text for p in pub.paragraphs)
     m = _SANCTIONING_RES_RE.search(full_text)
     if m:
-        pub.sanctioning_resolution_date = parse_long_es(m.group(1))
+        # plural 'Resoluciones … de fecha A y B' — take the most recent
+        last = list(re.finditer(r"\d{1,2}\s+de\s+\w+\s+de\s+\d{4}", m.group(1)))
+        pub.sanctioning_resolution_date = parse_long_es(last[-1].group(0))
     pub.administrative_finality = any(r.search(full_text) for r in _FINALITY_RES)
     pub.judicial_review_possible = any(
         r.search(full_text) for r in _JUDICIAL_REVIEW_RES
     )
     pub.administrative_appeal = any(r.search(full_text) for r in _ADMIN_APPEAL_RES)
+    # subsequent-event documents: revocation/rectification/correction of an
+    # earlier publication — these are events about a case, not new cases
+    if re.search(
+        r"se\s+revoca\s+la\s+publicaci[oó]n|se\s+rectifica\s+la\s+publicaci[oó]n|"
+        r"correcci[oó]n\s+de\s+errores|se\s+rectifica|se\s+corrige",
+        (pub.title or "") + " " + full_text,
+        re.IGNORECASE,
+    ):
+        pub.document_kind = "SUBSEQUENT_EVENT"
 
     current: ParsedBlock | None = None
     context_subjects: list[str] = []
@@ -765,16 +877,18 @@ def parse_publication_xml(
 
     for para in pub.paragraphs:
         t = para.text
+        # normalize historical comision phrasings to the canonical form
+        t = _PRE_COMISION_NORM.sub(r"\g<1>Por la comisión de ", t)
         if _IMPOSE_START_RE.match(t):
             subj_part = ""
             cm = _COMISION_RE.search(t)
             if cm:
                 subj_part = t[: cm.start()]
             else:
-                # 'Imponer a X:' subjects-only header (no 'por la comisión')
+                # 'Imponer a X:' / 'Imponer a X, por:' subjects-only header
                 sm = re.match(
                     rf"^\s*(?:\d{{1,2}}\s*[.)]\s*)?[{_BULLETS}\s]*"
-                    r"Imponer\s+a\s+(.+?)[:.]?\s*$",
+                    r"Imponer\s+a\s+(.+?)(?:,?\s*por\s*)?[:.]?\s*$",
                     t,
                     re.IGNORECASE,
                 )
@@ -801,26 +915,40 @@ def parse_publication_xml(
             continue
         if current is None:
             continue
-        # subject-first bullet: '– A <subj>: <sanction>'
+        # subject-first bullet: '– A <subj>: <sanction>' or historical
+        # '• A <subj>[, multa] por importe de N euros' (no colon)
         msubj = _SUBJECT_FIRST_RE.match(t)
-        if msubj:
-            sanction_ord += 1
-            tail_txt = msubj.group(2)
-            st, amt, amt_raw, dur = _line_sanction(tail_txt)
-            current.sanctions.append(
-                ParsedSanctionLine(
-                    subject_raw=msubj.group(1).strip(),
-                    sanction_raw=collapse_ws(tail_txt),
-                    sanction_type=st,
-                    amount=amt,
-                    currency="EUR" if amt is not None else None,
-                    amount_raw=amt_raw,
-                    paragraph_index=para.index,
-                    excerpt=t,
-                    ordinal=sanction_ord,
-                    duration_raw=dur,
+        msubj2 = None if msubj else _SUBJECT_FIRST2_RE.match(t)
+        if msubj or msubj2:
+            if msubj:
+                line_subjects = [msubj.group(1).strip()]
+                tail_txt = msubj.group(2)
+            elif msubj2:
+                line_subjects = (
+                    split_subjects(msubj2.group(1)) or [msubj2.group(1).strip()]
                 )
-            )
+                tail_txt = (
+                    (msubj2.group(2) or "") + " " + msubj2.group(3)
+                ).strip()
+            else:  # pragma: no cover
+                line_subjects, tail_txt = [], ""
+            st, amt, amt_raw, dur = _line_sanction(tail_txt)
+            for subj in line_subjects:
+                sanction_ord += 1
+                current.sanctions.append(
+                    ParsedSanctionLine(
+                        subject_raw=subj,
+                        sanction_raw=collapse_ws(tail_txt),
+                        sanction_type=st,
+                        amount=amt,
+                        currency="EUR" if amt is not None else None,
+                        amount_raw=amt_raw,
+                        paragraph_index=para.index,
+                        excerpt=t,
+                        ordinal=sanction_ord,
+                        duration_raw=dur,
+                    )
+                )
             continue
         ml = _LETTERED_BULLET_RE.match(t)
         if ml:
@@ -859,8 +987,24 @@ def parse_publication_xml(
                 )
                 emb_subj = None
                 sanc_txt = body
-                if emb and emb.group(1) and not emb.group(1).strip().endswith(
-                    ("de", "del", "para", "por")
+                # 'a X' inside a descriptive clause is dative, not the
+                # sanction addressee ('venta de opciones … a Deutsche
+                # Bank, tanto los denominados …'). Reject captures that
+                # run into clause text or are implausibly long.
+                if (
+                    emb
+                    and emb.group(1)
+                    and not emb.group(1).strip().endswith(
+                        ("de", "del", "para", "por")
+                    )
+                    and len(emb.group(2)) <= 90
+                    and not re.search(
+                        r"tanto\s+los|como\s+aquell|por\s+un\s+plazo|"
+                        r"que\s+incluy|denominad|funcionamiento|"
+                        r"naturaleza|emitidos",
+                        emb.group(2),
+                        re.IGNORECASE,
+                    )
                 ):
                     emb_subj = emb.group(2).strip()
                     sanc_txt = emb.group(1)

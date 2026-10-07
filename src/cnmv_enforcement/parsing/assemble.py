@@ -195,6 +195,7 @@ def assemble_case(
                 amount=line.amount,
                 currency=line.currency,
                 amount_raw=line.amount_raw,
+                duration_raw=line.duration_raw,
             )
             bundle.sanctions.append(s)
             ev("sanction", sid, "subject", line.paragraph_index, line.excerpt)

@@ -51,6 +51,7 @@ def flatten(
     meta: dict[str, ParsedPublication] = {
         p.boe_id or "": p for p in result.publications
     }
+    seen_respondents: set[str] = set()
     for bundle in result.bundles:
         c = bundle.case
         pub = meta.get(c.canonical_boe_id or "")
@@ -135,6 +136,7 @@ def flatten(
                     "document_id": f"boe-xml:{pub.boe_id}",
                     "boe_id": pub.boe_id,
                     "source": "BOE",
+                    "corpus": pub.corpus,
                     "format": "xml",
                     "title": pub.title,
                     "publication_date": _d(pub.publication_date),
@@ -142,6 +144,9 @@ def flatten(
                 }
             )
         for r in bundle.respondents:
+            if r.respondent_id in seen_respondents:
+                continue
+            seen_respondents.add(r.respondent_id)
             tables["respondents"].append(
                 {
                     "respondent_id": r.respondent_id,

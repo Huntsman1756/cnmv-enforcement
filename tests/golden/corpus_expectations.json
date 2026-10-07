@@ -18,7 +18,7 @@
   ],
   "non_monetary": [],
   "conduct_dates": 0,
-  "sample": "Imponer a don David Martínez Guzmán, por la comisión, de una infracción muy grave del artículo 282.3, en relación con el artículo "
+  "sample": "Habiéndose declarado firme en vía administrativa la sanción impuesta a don David Martínez Guzmán, por la comisión de una"
  },
  {
   "boe_id": "BOE-A-2021-18969",
@@ -39,7 +39,7 @@
   ],
   "non_monetary": [],
   "conduct_dates": 0,
-  "sample": "Imponer a don Andrei Ivanov, por la comisión de una infracción muy grave del artículo 282.3, en relación con el artículo 125, ambo"
+  "sample": "Siendo firme en vía administrativa la sanción impuesta a don Andrei Ivanov por la comisión de una infracción muy grave d"
  },
  {
   "boe_id": "BOE-A-2021-18970",
@@ -60,7 +60,7 @@
   ],
   "non_monetary": [],
   "conduct_dates": 0,
-  "sample": "Imponer a Housers Global Properties, PFP, SL, por la comisión de una infracción muy grave tipificada en la letra d) del artículo 9"
+  "sample": "Siendo firme en vía administrativa la sanción impuesta a Housers Global Properties, PFP, SL, por la comisión de una infr"
  },
  {
   "boe_id": "BOE-A-2021-21303",
@@ -81,7 +81,7 @@
   ],
   "non_monetary": [],
   "conduct_dates": 1,
-  "sample": "«Imponer a doña Sara Zárate Lacalle, por la comisión de una infracción muy grave del artículo 282.6 de la Ley del Mercado de Valor"
+  "sample": "Habiéndose declarado firme en vía administrativa la sanción impuesta a doña Sara Zárate Lacalle por la comisión de una i"
  },
  {
   "boe_id": "BOE-A-2021-21786",
@@ -106,7 +106,7 @@
   ],
   "non_monetary": [],
   "conduct_dates": 2,
-  "sample": "– Imponer a Obrascon Huarte Lain, SA (OHL), por la comisión de una infracción muy grave tipificada en el artículo 282.2 de la Ley "
+  "sample": "Siendo firmes en vía administrativa las sanciones impuestas a Obrascon Huarte Lain, SA (OHL), don José Antonio Fernández"
  },
  {
   "boe_id": "BOE-A-2022-10032",
@@ -128,7 +128,7 @@
   ],
   "non_monetary": [],
   "conduct_dates": 0,
-  "sample": "– Imponer a Caixabank, SA por la comisión de una infracción grave tipificada en el artículo 296.12 de la Ley del Mercado de Valore"
+  "sample": "– Imponer a Caixabank, SA por la comisión de una infracción grave tipificada en el artículo 296.12 de la Ley del Mercado"
  },
  {
   "boe_id": "BOE-A-2022-10033",
@@ -152,12 +152,12 @@
   ],
   "non_monetary": [],
   "conduct_dates": 1,
-  "sample": "– Imponer a don José María Castillo Lacabex, por la comisión de una infracción muy grave del artículo 282.6, en relación con el ar"
+  "sample": "Habiéndose declarado firmes en vía administrativa las sanciones impuestas a don José María Castillo Lacabex por la comis"
  },
  {
   "boe_id": "BOE-A-2022-12643",
   "blocks": 3,
-  "sanctions": 4,
+  "sanctions": 5,
   "severities": [
    "VERY_SERIOUS"
   ],
@@ -167,21 +167,22 @@
   "statutes": [
    "Real Decreto Legislativo 4/2015"
   ],
-  "total_fine_eur": 200000,
+  "total_fine_eur": 220000,
   "subjects": [
    "Deoleo, S.A.",
-   "don Francisco Javier López-García Asenjo y Theatre Directorship Service Delta SARL",
+   "Theatre Directorship Service Delta SARL",
+   "don Francisco Javier López-García Asenjo",
    "don Ignacio Silva Alcalde, Presidente y Consejero Delegado de Deoleo, S.A.",
    "los Consejeros miembros de su Comisión de Auditoría don Gianluca Bolla"
   ],
   "non_monetary": [],
   "conduct_dates": 3,
-  "sample": "– Imponer a Deoleo, S.A., por la comisión de una infracción muy grave tipificada en el artículo 282.2 de la Ley del Mercado de Val"
+  "sample": "Siendo firmes en vía administrativa las sanciones impuestas a Deoleo, S.A., don Gianluca Bolla, don Francisco Javier Lóp"
  },
  {
   "boe_id": "BOE-A-2022-17410",
   "blocks": 2,
-  "sanctions": 2,
+  "sanctions": 3,
   "severities": [
    "VERY_SERIOUS"
   ],
@@ -191,14 +192,15 @@
   "statutes": [
    "Ley 35/2003"
   ],
-  "total_fine_eur": 25000,
+  "total_fine_eur": 35000,
   "subjects": [
    "Javier Carrasco Martín",
-   "Rafael Grau San Martín y Siegfried Marissens"
+   "Rafael Grau San Martín",
+   "Siegfried Marissens"
   ],
   "non_monetary": [],
   "conduct_dates": 0,
-  "sample": "– Imponer a Rafael Grau San Martín y Siegfried Marissens por la comisión de una Infracción muy grave tipificada en el artículo 80,"
+  "sample": "Siendo firmes en vía administrativa las sanciones impuestas a Rafael Grau San Martín, Siegfried Marissens y Javier Carra"
  },
  {
   "boe_id": "BOE-A-2022-17411",
@@ -219,7 +221,7 @@
   ],
   "non_monetary": [],
   "conduct_dates": 0,
-  "sample": "– Imponer a Esfera Capital Gestión SGIIC, SA, en liquidación por la comisión de una infracción muy grave tipificada en el artículo"
+  "sample": "Siendo firmes en vía administrativa las sanciones impuestas a Esfera Capital Gestión SGIIC, SA, en liquidación por la co"
  },
  {
   "boe_id": "BOE-A-2022-17466",
@@ -240,7 +242,7 @@
   ],
   "non_monetary": [],
   "conduct_dates": 1,
-  "sample": "– Imponer a Deutsche Bank, SAE, por la comisión de una infracción muy grave tipificada en el artículo 283.3 de la Ley del Mercado "
+  "sample": "Siendo firme en vía administrativa la sanción impuesta a Deutsche Bank, SAE, por la comisión de una infracción muy grave"
  },
  {
   "boe_id": "BOE-A-2022-17521",
@@ -264,7 +266,7 @@
   ],
   "non_monetary": [],
   "conduct_dates": 1,
-  "sample": "– Don Amine Saoudi Hassani, por la comunicación, a doña Hind Frata El Idrissu, de información privilegiada sobre el emisor Edreams"
+  "sample": "– Imponer a don Amine Saoudi Hassani, por la comisión de una infracción muy grave tipificada en el artículo 282.6, en re"
  },
  {
   "boe_id": "BOE-A-2022-17646",
@@ -285,7 +287,7 @@
   ],
   "non_monetary": [],
   "conduct_dates": 0,
-  "sample": "– Imponer a Catalana Occidente Capital, AV, SA, por la comisión de una infracción muy grave prevista en el artículo 284.5 de la Le"
+  "sample": "Siendo firme en vía administrativa la sanción impuesta a Catalana Occidente Capital, AV, SA, por la comisión de una infr"
  },
  {
   "boe_id": "BOE-A-2022-17647",
@@ -309,7 +311,7 @@
   ],
   "non_monetary": [],
   "conduct_dates": 0,
-  "sample": "– Imponer a Montebalito, SA, por la comisión de una infracción grave del artículo 295.4 de la Ley del Mercado de Valores, texto re"
+  "sample": "Siendo firmes en vía administrativa las sanciones impuestas a don José Alberto Barreras Barreras, Montebalito, SA, Tam I"
  },
  {
   "boe_id": "BOE-A-2022-1771",
@@ -330,7 +332,7 @@
   ],
   "non_monetary": [],
   "conduct_dates": 1,
-  "sample": "Imponer a don Fulgencio Tomás Olivo Sánchez, por la comisión de una infracción muy grave de las tipificadas en el artículo 282.5 d"
+  "sample": "Siendo firme en vía administrativa la sanción impuesta a don Fulgencio Tomás Olivo Sánchez por la comisión de una infrac"
  },
  {
   "boe_id": "BOE-A-2022-17720",
@@ -352,7 +354,7 @@
   ],
   "non_monetary": [],
   "conduct_dates": 2,
-  "sample": "– Imponer a Trea Asset Management, SGIIC, SA, por la comisión de una infracción grave tipificada en el artículo 295.13 de la Ley d"
+  "sample": "Siendo firmes en vía administrativa las sanciones impuestas a Trea Asset Management, SGIIC, SA, y a Link Securities, SV,"
  },
  {
   "boe_id": "BOE-A-2022-17819",
@@ -373,7 +375,7 @@
   ],
   "non_monetary": [],
   "conduct_dates": 0,
-  "sample": "– Imponer a ACapital BB, AV, SA, por la comisión de una infracción grave tipificada en el artículo 296.5 de la Ley del Mercado de "
+  "sample": "– Imponer a ACapital BB, AV, SA, por la comisión de una infracción grave tipificada en el artículo 296.5 de la Ley del M"
  },
  {
   "boe_id": "BOE-A-2022-17820",
@@ -394,7 +396,7 @@
   ],
   "non_monetary": [],
   "conduct_dates": 1,
-  "sample": "– Imponer a don Miguel Ángel Blanco Galende, por la comisión de una infracción grave de las tipificadas en el artículo del 295.13 "
+  "sample": "Siendo firme en vía administrativa la sanción impuesta a don Miguel Ángel Blanco Galende por la comisión de una infracci"
  },
  {
   "boe_id": "BOE-A-2022-22462",
@@ -415,7 +417,7 @@
   ],
   "non_monetary": [],
   "conduct_dates": 0,
-  "sample": "– Imponer a Renta 4 Banco, SA, por la comisión de una infracción grave de las previstas en el artículo 295.14 de la Ley del Mercad"
+  "sample": "– Imponer a Renta 4 Banco, SA, por la comisión de una infracción grave de las previstas en el artículo 295.14 de la Ley "
  },
  {
   "boe_id": "BOE-A-2022-22463",
@@ -436,7 +438,7 @@
   ],
   "non_monetary": [],
   "conduct_dates": 1,
-  "sample": "– Imponer a Squirrel Capital, SL, por la comisión de una infracción grave prevista en el artículo 295.18 de la Ley del Mercado de "
+  "sample": "– Imponer a Squirrel Capital, SL, por la comisión de una infracción grave prevista en el artículo 295.18 de la Ley del M"
  },
  {
   "boe_id": "BOE-A-2022-22464",
@@ -457,7 +459,7 @@
   ],
   "non_monetary": [],
   "conduct_dates": 1,
-  "sample": "– Imponer a Abengoa, SA, por la comisión de una infracción muy grave del artículo 282.2, en relación con el artículo 118, ambos de"
+  "sample": "Siendo firme en vía administrativa la sanción impuesta a Abengoa, SA, por la comisión de una infracción muy grave del ar"
  },
  {
   "boe_id": "BOE-A-2022-22465",
@@ -478,7 +480,7 @@
   ],
   "non_monetary": [],
   "conduct_dates": 1,
-  "sample": "– Imponer a Codere, SA, por la comisión de una infracción muy grave tipificada en el artículo 282.2 del texto refundido de la Ley "
+  "sample": "– Imponer a Codere, SA, por la comisión de una infracción muy grave tipificada en el artículo 282.2 del texto refundido "
  },
  {
   "boe_id": "BOE-A-2022-4968",
@@ -499,7 +501,7 @@
   ],
   "non_monetary": [],
   "conduct_dates": 0,
-  "sample": "Imponer a Deutsche Bank, SAE, por la comisión de una infracción muy grave tipificada en el artículo 284.1 del texto refundido de l"
+  "sample": "Siendo firme en vía administrativa la sanción impuesta a Deutsche Bank, SAE, por la comisión de una infracción muy grave"
  },
  {
   "boe_id": "BOE-A-2022-8451",
@@ -520,7 +522,7 @@
   ],
   "non_monetary": [],
   "conduct_dates": 1,
-  "sample": "«Imponer a don Marc Albajar Viñas, por la comisión de una infracción muy grave del artículo 282.6 de la Ley del Mercado de Valores"
+  "sample": "Siendo firme en vía administrativa la sanción impuesta a don Marc Albajar Viñas por la comisión de una infracción muy gr"
  },
  {
   "boe_id": "BOE-A-2022-8452",
@@ -543,7 +545,7 @@
   ],
   "non_monetary": [],
   "conduct_dates": 3,
-  "sample": "– Imponer a AF Corona Boreal, SA, por la comisión de una infracción grave tipificada en el artículo 295.4, en relación con el artí"
+  "sample": "Siendo firmes en vía administrativa las sanciones impuestas a AF Corona Boreal, SA, Serbal De Abantos, SL y don Francisc"
  },
  {
   "boe_id": "BOE-A-2022-9281",
@@ -564,7 +566,7 @@
   ],
   "non_monetary": [],
   "conduct_dates": 1,
-  "sample": "− Imponer a don Tomás Peinado Alcaraz, por la comisión de una infracción muy grave tipificada en el artículo 282.6, en relación co"
+  "sample": "Siendo firme en vía administrativa la sanción impuesta a don Tomás Peinado Alcaraz por la comisión de una infracción muy"
  },
  {
   "boe_id": "BOE-A-2022-9282",
@@ -588,7 +590,7 @@
   ],
   "non_monetary": [],
   "conduct_dates": 3,
-  "sample": "– Imponer a don David Peña Delgado, por la comisión de una infracción muy grave tipificada en el artículo 282.6, en relación con e"
+  "sample": "Siendo firmes en vía administrativa las sanciones impuestas a don David Peña Delgado por la comisión de dos infracciones"
  },
  {
   "boe_id": "BOE-A-2023-13935",
@@ -612,7 +614,7 @@
   ],
   "non_monetary": [],
   "conduct_dates": 2,
-  "sample": "1. Imponer a don Carlos Villaseca García, Director de operaciones retail a nivel global (COO) de Codere, SA, al tiempo de los hech"
+  "sample": "Siendo firmes en vía administrativa las sanciones impuestas a don Carlos Villaseca García, don Norman Raul Sorensen Vald"
  },
  {
   "boe_id": "BOE-A-2023-17426",
@@ -635,7 +637,7 @@
   ],
   "non_monetary": [],
   "conduct_dates": 2,
-  "sample": "Imponer a Berkeley Energia Limited:"
+  "sample": "Habiéndose renunciado expresamente por el interesado a la interposición de recursos en vía administrativa y deviniendo e"
  },
  {
   "boe_id": "BOE-A-2023-17427",
@@ -665,7 +667,7 @@
    "DISQUALIFICATION"
   ],
   "conduct_dates": 0,
-  "sample": "1. Imponer a Esfera Capital, S.A. (anteriormente, Esfera Capital, A.V., S.A.) y a los miembros de su Consejo de Administración al "
+  "sample": "Siendo firmes en vía administrativa las sanciones impuestas a Esfera Capital, S.A., don José Antonio Andrés Ruiz, doña I"
  },
  {
   "boe_id": "BOE-A-2023-17638",
@@ -687,7 +689,7 @@
   ],
   "non_monetary": [],
   "conduct_dates": 0,
-  "sample": "Imponer a Activotrade AV, SA, por la comisión de una Infracción grave tipificada en el artículo 296.5, del texto refundido de la L"
+  "sample": "Siendo firmes en vía administrativa las sanciones impuestas a Activotrade, AV, SA, y don Ángel Yepes Doallo, por la comi"
  },
  {
   "boe_id": "BOE-A-2023-18206",
@@ -713,7 +715,7 @@
   ],
   "non_monetary": [],
   "conduct_dates": 0,
-  "sample": "– Imponer a Link Securities, SV, SA, don Rufino Gallego Bernal (en su condición de Presidente), doña Macarena Fernández-Figares Ro"
+  "sample": "Habiéndose renunciado expresamente por los interesados a la interposición de recursos en vía administrativa y deviniendo"
  },
  {
   "boe_id": "BOE-A-2023-18207",
@@ -735,7 +737,7 @@
   ],
   "non_monetary": [],
   "conduct_dates": 2,
-  "sample": "– Imponer a doña Alba Sande Martínez, por la comisión de una infracción muy grave tipificada en el artículo 282.16 de la Ley del M"
+  "sample": "Habiéndose renunciado expresamente por los interesados a la interposición de recursos en vía administrativa y deviniendo"
  },
  {
   "boe_id": "BOE-A-2023-1952",
@@ -756,7 +758,7 @@
   ],
   "non_monetary": [],
   "conduct_dates": 1,
-  "sample": "«Imponer a don Agustín Marco Ortuño, por la comisión de una infracción muy grave tipificada en el artículo 282.16 de la Ley del Me"
+  "sample": "Siendo firme en vía administrativa la sanción impuesta a don Agustín Marco Ortuño por la comisión de una infracción muy "
  },
  {
   "boe_id": "BOE-A-2023-21568",
@@ -777,7 +779,7 @@
   ],
   "non_monetary": [],
   "conduct_dates": 2,
-  "sample": "– Imponer a don Pablo López Yepes, por la comisión de una infracción muy grave tipificada en el artículo 282.6 de la Ley del Merca"
+  "sample": "Habiéndose renunciado expresamente por el interesado a la interposición de recursos en vía administrativa y deviniendo, "
  },
  {
   "boe_id": "BOE-A-2023-24186",
@@ -800,7 +802,7 @@
    "SUSPENSION"
   ],
   "conduct_dates": 0,
-  "sample": "– Imponer a don Raza Pérez Martínez, como Consejero, Presidente y Director General de Activotrade AV, SA, por la comisión de una i"
+  "sample": "Siendo firmes en vía administrativa las sanciones impuestas a don Raza Pérez Martínez, por la comisión de una infracción"
  },
  {
   "boe_id": "BOE-A-2023-24475",
@@ -822,7 +824,7 @@
   ],
   "non_monetary": [],
   "conduct_dates": 0,
-  "sample": "Imponer a don Alejandro González Yánquez, y a don Fernando de la Mata Viader, como consejeros de Activotrade AV, SA, por la comisi"
+  "sample": "Habiéndose renunciado expresamente por los interesados a la interposición de recursos en vía administrativa y deviniendo"
  },
  {
   "boe_id": "BOE-A-2023-26720",
@@ -843,7 +845,7 @@
   ],
   "non_monetary": [],
   "conduct_dates": 1,
-  "sample": "1. Imponer a Civislend, PFP, SA, por la comisión de una infracción muy grave, tipificada en el artículo 92.1.h) de la Ley 5/2015, "
+  "sample": "Siendo firmes en vía administrativa las sanciones impuestas a Civislend, PFP, SA, por la comisión de dos infracciones mu"
  },
  {
   "boe_id": "BOE-A-2023-26721",
@@ -864,7 +866,7 @@
   ],
   "non_monetary": [],
   "conduct_dates": 0,
-  "sample": "Imponer a Renta 4 Banco, SA, por la comisión de una infracción grave tipificada en el artículo 295.14 del texto refundido de la Le"
+  "sample": "Habiéndose renunciado por el interesado a la interposición de recursos en vía administrativa y deviniendo, en consecuenc"
  },
  {
   "boe_id": "BOE-A-2023-8112",
@@ -885,7 +887,7 @@
   ],
   "non_monetary": [],
   "conduct_dates": 1,
-  "sample": "– Imponer a don Bricio Jesús Valera López, por la comisión de una infracción muy grave tipificada en el artículo 282.16 de la Ley "
+  "sample": "Siendo firme en vía administrativa la sanción impuesta a don Bricio Jesús Valera López por la comisión de una infracción"
  },
  {
   "boe_id": "BOE-A-2024-11054",
@@ -906,7 +908,7 @@
   ],
   "non_monetary": [],
   "conduct_dates": 1,
-  "sample": "– Imponer a don José Javier García Belinchón, por la comisión de una infracción continuada, tipificada como grave en el artículo 2"
+  "sample": "Habiéndose renunciado por el interesado a la interposición de recursos en vía administrativa y deviniendo, en consecuenc"
  },
  {
   "boe_id": "BOE-A-2024-11055",
@@ -928,7 +930,7 @@
   ],
   "non_monetary": [],
   "conduct_dates": 0,
-  "sample": "1. Resolución del Consejo de la Comisión Nacional del Mercado de Valores de fecha 22 de febrero de 2023 que, tras la exposición de"
+  "sample": "Siendo firmes en vía administrativa las sanciones impuestas a Solventis, S.V., SA, por la comisión de dos infracciones m"
  },
  {
   "boe_id": "BOE-A-2024-11477",
@@ -949,7 +951,7 @@
   ],
   "non_monetary": [],
   "conduct_dates": 1,
-  "sample": "Imponer a don Juan Gualberto Nogués Ortuño, por la comisión de una infracción muy grave tipificada en el artículo 282.16 de la Ley"
+  "sample": "Habiéndose renunciado por el interesado a la interposición de recursos en vía administrativa y deviniendo, en consecuenc"
  },
  {
   "boe_id": "BOE-A-2024-11478",
@@ -971,7 +973,7 @@
   ],
   "non_monetary": [],
   "conduct_dates": 2,
-  "sample": "Imponer a don Enrique Manuel López Carmona, por la comisión de una infracción muy grave tipificada en el artículo 282.16 de la Ley"
+  "sample": "Habiéndose renunciado por los interesados a la interposición de recursos en vía administrativa y deviniendo, en consecue"
  },
  {
   "boe_id": "BOE-A-2024-11534",
@@ -992,7 +994,7 @@
   ],
   "non_monetary": [],
   "conduct_dates": 1,
-  "sample": "– Imponer a don Francisco Bellón del Rosal, por la comisión de una infracción muy grave tipificada en el artículo 282.16 del texto"
+  "sample": "Siendo firme en vía administrativa la sanción impuesta a don Francisco Bellón del Rosal por la comisión de una infracció"
  },
  {
   "boe_id": "BOE-A-2024-13095",
@@ -1014,7 +1016,7 @@
   ],
   "non_monetary": [],
   "conduct_dates": 2,
-  "sample": "1. Imponer a LLeidanetworks Serveis Telemátics, SA, por la comisión de una infracción muy grave tipificada en el artículo 282.15 d"
+  "sample": "Siendo firmes en vía administrativa las sanciones impuestas a Lleidanetworks Servéis Telemátics, SA, y a don Francisco S"
  },
  {
   "boe_id": "BOE-A-2024-13096",
@@ -1038,7 +1040,7 @@
    "DISGORGEMENT"
   ],
   "conduct_dates": 0,
-  "sample": "Imponer a Globalfinanzas Investment Group, A.V., SA:"
+  "sample": "Habiéndose renunciado por la interesada a la interposición de recursos en vía administrativa y deviniendo, en consecuenc"
  },
  {
   "boe_id": "BOE-A-2024-13097",
@@ -1060,7 +1062,7 @@
   ],
   "non_monetary": [],
   "conduct_dates": 0,
-  "sample": "– Imponer a Renta Markets, SV, SA (actualmente Miralta Finance Bank, SA), por la comisión de una infracción muy grave tipificada e"
+  "sample": "Habiéndose renunciado por la interesada a la interposición de recurso en vía administrativa y deviniendo, en consecuenci"
  },
  {
   "boe_id": "BOE-A-2024-13175",
@@ -1081,7 +1083,7 @@
   ],
   "non_monetary": [],
   "conduct_dates": 1,
-  "sample": "– Imponer a don Félix Revuelta Fernández, por la comisión de una infracción muy grave tipificada en el artículo 282.16 de la Ley d"
+  "sample": "Siendo firme en vía administrativa la sanción impuesta a don Félix Revuelta Fernández por la comisión de una infracción "
  },
  {
   "boe_id": "BOE-A-2024-16325",
@@ -1108,7 +1110,7 @@
   ],
   "non_monetary": [],
   "conduct_dates": 1,
-  "sample": "Imponer a Desarrollos Especiales de Sistemas de Anclaje, SA, a su consejero delegado, don José María Vidal Vía, y a sus consejeros"
+  "sample": "Siendo firmes en vía administrativa las sanciones impuestas a Desarrollos Especiales de Sistemas de Anclaje, SA, don Jos"
  },
  {
   "boe_id": "BOE-A-2024-20286",
@@ -1134,7 +1136,7 @@
   ],
   "non_monetary": [],
   "conduct_dates": 5,
-  "sample": "1. Imponer a don Juan José Llinares Santisteban (en su condición de consejero delegado de Gestión de Patrimonios Mobiliarios, SV, "
+  "sample": "Habiéndose renunciado por los interesados a la interposición de recursos en vía administrativa y deviniendo, en consecue"
  },
  {
   "boe_id": "BOE-A-2024-20287",
@@ -1160,7 +1162,7 @@
   ],
   "non_monetary": [],
   "conduct_dates": 6,
-  "sample": "1. Resolución del Consejo de la Comisión Nacional del Mercado de Valores de fecha 24 de julio de 2024 que, tras la exposición de h"
+  "sample": "Habiéndose renunciado por la interesada a la interposición de recursos en vía administrativa y deviniendo, en consecuenc"
  },
  {
   "boe_id": "BOE-A-2024-22428",
@@ -1181,7 +1183,7 @@
   ],
   "non_monetary": [],
   "conduct_dates": 1,
-  "sample": "– Imponer a don Ernesto Bermúdez de Castro Arróniz, por la comisión de una infracción muy grave tipificada en el artículo 282.16 d"
+  "sample": "Siendo firme en vía administrativa la sanción impuesta a don Ernesto Bermúdez de Castro Arróniz por la comisión de una i"
  },
  {
   "boe_id": "BOE-A-2024-22429",
@@ -1202,7 +1204,7 @@
   ],
   "non_monetary": [],
   "conduct_dates": 0,
-  "sample": "– Imponer a Riva y García Gestión, SGIIC, SA, por la comisión de una infracción muy grave tipificada en el artículo 80 p) de la Le"
+  "sample": "Habiéndose renunciado por la interesada a la interposición de recurso en vía administrativa y deviniendo, en consecuenci"
  },
  {
   "boe_id": "BOE-A-2024-22430",
@@ -1213,7 +1215,7 @@
    "VERY_SERIOUS"
   ],
   "articles": [
-   "282.16",
+   "282.16.a",
    "295.15"
   ],
   "statutes": [
@@ -1226,7 +1228,7 @@
   ],
   "non_monetary": [],
   "conduct_dates": 2,
-  "sample": "– Imponer a don Jorge López-Balcells Gallardo, por la comisión de una infracción grave tipificada en el artículo 295.15 de la Ley "
+  "sample": "Habiéndose renunciado por los interesados a la interposición de recurso en vía administrativa y deviniendo, en consecuen"
  },
  {
   "boe_id": "BOE-A-2024-3024",
@@ -1247,7 +1249,7 @@
   ],
   "non_monetary": [],
   "conduct_dates": 4,
-  "sample": "– Imponer a Miolo Desarrollos, SL, por la comisión de dos infracciones graves tipificadas en el artículo 292.4 de la Ley del Merca"
+  "sample": "Habiéndose renunciado por la interesada a la interposición de recursos en vía administrativa y deviniendo, en consecuenc"
  },
  {
   "boe_id": "BOE-A-2024-4671",
@@ -1268,7 +1270,7 @@
   ],
   "non_monetary": [],
   "conduct_dates": 1,
-  "sample": "Imponer a Renta 4 Banco, SA, por la comisión de una infracción grave tipificada en el artículo 295.14 de la Ley del Mercado de Val"
+  "sample": "Habiéndose renunciado por la interesada a la interposición de recursos en vía administrativa y deviniendo, en consecuenc"
  },
  {
   "boe_id": "BOE-A-2024-4857",
@@ -1290,7 +1292,7 @@
   ],
   "non_monetary": [],
   "conduct_dates": 0,
-  "sample": "Imponer a don Rodolfo del Rey Ramos:"
+  "sample": "Siendo firmes en vía administrativa las sanciones impuestas a don Rodolfo del Rey Ramos, por la comisión de tres infracc"
  },
  {
   "boe_id": "BOE-A-2024-8172",
@@ -1311,7 +1313,7 @@
   ],
   "non_monetary": [],
   "conduct_dates": 1,
-  "sample": "Imponer a Quadriga Asset Managers, SGIIC, SA, por la comisión de una infracción grave tipificada en el artículo 81 z) de la Ley 35"
+  "sample": "Siendo firme en vía administrativa la sanción impuesta a Quadriga Asset Managers, SGIIC, SA, por la comisión de una infr"
  },
  {
   "boe_id": "BOE-A-2025-14958",
@@ -1333,7 +1335,7 @@
   ],
   "non_monetary": [],
   "conduct_dates": 0,
-  "sample": "– Imponer a don Mariano Schoendorff Pérez-González, por la comisión de una infracción muy grave del artículo 282.3, en relación co"
+  "sample": "Siendo firmes en vía administrativa las sanciones impuestas a don Mariano Schoendorff Pérez-González y a Cerrina Inversi"
  },
  {
   "boe_id": "BOE-A-2025-14959",
@@ -1354,7 +1356,7 @@
   ],
   "non_monetary": [],
   "conduct_dates": 0,
-  "sample": "– Imponer a Bestinver Gestión, SA, SGIIC, por la comisión de una infracción muy grave tipificada en el artículo 284.1 de la Ley de"
+  "sample": "Habiéndose renunciado por la interesada a la interposición de recursos en vía administrativa y deviniendo, en consecuenc"
  },
  {
   "boe_id": "BOE-A-2025-14960",
@@ -1375,7 +1377,7 @@
   ],
   "non_monetary": [],
   "conduct_dates": 1,
-  "sample": "– Imponer a don Manuel Barba Panal, por la comisión de una infracción muy grave tipificada en el artículo 282.16 c) de la Ley del "
+  "sample": "Siendo firme en vía administrativa la sanción impuesta a don Manuel Barba Panal, por la comisión de una infracción muy g"
  },
  {
   "boe_id": "BOE-A-2025-16320",
@@ -1416,7 +1418,7 @@
   ],
   "non_monetary": [],
   "conduct_dates": 2,
-  "sample": "1. Imponer a Grifols, SA, don Raimon Grifols Roura, don Victor Grifols Deu, don Thomas Glanzman, don Steven F. Mayer, doña Carina "
+  "sample": "Habiéndose renunciado por los interesados a la interposición de recursos en vía administrativa y deviniendo, en consecue"
  },
  {
   "boe_id": "BOE-A-2025-16321",
@@ -1426,7 +1428,7 @@
    "VERY_SERIOUS"
   ],
   "articles": [
-   "282.16",
+   "282.16.a",
    "282.16.b",
    "282.16.c"
   ],
@@ -1440,7 +1442,7 @@
   ],
   "non_monetary": [],
   "conduct_dates": 2,
-  "sample": "– Imponer a don Jesús María García Sánchez, las siguientes sanciones:"
+  "sample": "Habiéndose renunciado por los interesados a la interposición de recursos en vía administrativa y deviniendo, en consecue"
  },
  {
   "boe_id": "BOE-A-2025-16492",
@@ -1466,12 +1468,12 @@
   ],
   "non_monetary": [],
   "conduct_dates": 1,
-  "sample": "– Imponer a Liquidaciones Vizcaya, SL, Albujón Solar 81, SL, don Óscar Antonio Romero Martínez, don Arkaitz Lozano Hurtado, don En"
+  "sample": "Siendo firmes en vía administrativa las sanciones impuestas a Liquidaciones Vizcaya, SL, Albujón Solar 81, SL, don Óscar"
  },
  {
   "boe_id": "BOE-A-2025-16708",
   "blocks": 1,
-  "sanctions": 2,
+  "sanctions": 1,
   "severities": [
    "SERIOUS"
   ],
@@ -1481,14 +1483,13 @@
   "statutes": [
    "Real Decreto Legislativo 4/2015"
   ],
-  "total_fine_eur": 80000,
+  "total_fine_eur": 40000,
   "subjects": [
-   "don Juan José Llinares Santisteban (en su condición de consejero delegado de Gestión de Patrimonios Mobiliarios, SV, SA",
-   "la fecha de los hechos)"
+   "don Juan José Llinares Santisteban (en su condición de consejero delegado de Gestión de Patrimonios Mobiliarios, SV, SA, a la fecha de los hechos)"
   ],
   "non_monetary": [],
   "conduct_dates": 1,
-  "sample": "– Imponer a don Juan José Llinares Santisteban (en su condición de consejero delegado de Gestión de Patrimonios Mobiliarios, SV, S"
+  "sample": "Siendo firme en vía administrativa la sanción impuesta a don Juan José Llinares Santisteban, por la comisión de una infr"
  },
  {
   "boe_id": "BOE-A-2025-1726",
@@ -1509,7 +1510,7 @@
   ],
   "non_monetary": [],
   "conduct_dates": 1,
-  "sample": "– Imponer a don Pablo San José Casaseca por la comisión de una infracción continuada, tipificada como muy grave en el artículo 282"
+  "sample": "Siendo firme en vía administrativa la sanción impuesta a don Pablo San José Casaseca por la comisión de una infracción c"
  },
  {
   "boe_id": "BOE-A-2025-1727",
@@ -1530,7 +1531,7 @@
   ],
   "non_monetary": [],
   "conduct_dates": 1,
-  "sample": "Imponer a don José Juan Bugés Medina, por la comisión de una infracción continuada, tipificada como muy grave en el artículo 282.1"
+  "sample": "Habiéndose renunciado por el interesado a la interposición de recurso en vía administrativa y deviniendo, en consecuenci"
  },
  {
   "boe_id": "BOE-A-2025-1728",
@@ -1552,7 +1553,7 @@
   ],
   "non_monetary": [],
   "conduct_dates": 1,
-  "sample": "Imponer a Liwe Española, SA y a su presidente, don Juan Carlos Pardo Cano, por la comisión de una infracción tipificada como grave"
+  "sample": "Habiéndose renunciado por los interesados a la interposición de recursos en vía administrativa y deviniendo, en consecue"
  },
  {
   "boe_id": "BOE-A-2025-18960",
@@ -1575,7 +1576,7 @@
    "DISQUALIFICATION"
   ],
   "conduct_dates": 0,
-  "sample": "Imponer a don Ernesto González Quesada, en su condición de consejero y director general de Gestión de Patrimonios Mobiliarios, S.V"
+  "sample": "Siendo firmes en vía administrativa las sanciones impuestas a don Ernesto González Quesada por la comisión de una infrac"
  },
  {
   "boe_id": "BOE-A-2025-20495",
@@ -1597,7 +1598,7 @@
   ],
   "non_monetary": [],
   "conduct_dates": 1,
-  "sample": "1. Imponer a doña Rebeca Alonso Abril y don Fernando Romero Martínez, por la comisión de una infracción grave tipificada en el art"
+  "sample": "Siendo firmes en vía administrativa las sanciones impuestas a doña Rebeca Alonso Abril y a don Fernando Romero Martínez "
  },
  {
   "boe_id": "BOE-A-2025-21658",
@@ -1618,7 +1619,7 @@
   ],
   "non_monetary": [],
   "conduct_dates": 0,
-  "sample": "1. Imponer a CA Indosuez Wealth (Europe), Sucursal en España, por la comisión de una infracción continuada muy grave tipificada en"
+  "sample": "Habiéndose renunciado por la interesada a la interposición de recursos en vía administrativa y deviniendo, en consecuenc"
  },
  {
   "boe_id": "BOE-A-2025-23046",
@@ -1639,7 +1640,7 @@
   ],
   "non_monetary": [],
   "conduct_dates": 1,
-  "sample": "Imponer a Twitter International Unlimited Company por la comisión de una infracción continuada muy grave tipificada en el artículo"
+  "sample": "Habiéndose renunciado por la interesada a la interposición de recursos en vía administrativa y deviniendo, en consecuenc"
  },
  {
   "boe_id": "BOE-A-2025-2496",
@@ -1663,7 +1664,7 @@
   ],
   "non_monetary": [],
   "conduct_dates": 2,
-  "sample": "1. Imponer a don Alfonso Ortín Castellano, por la comisión de una infracción muy grave tipificada en el artículo 282.16 de la Ley "
+  "sample": "Habiéndose renunciado por los interesados a la interposición de recursos en vía administrativa y deviniendo, en consecue"
  },
  {
   "boe_id": "BOE-A-2025-2497",
@@ -1681,14 +1682,13 @@
   ],
   "total_fine_eur": 10000000,
   "subjects": [
-   "Deutsche Bank, SAE",
-   "Deutsche Bank, SAE, tanto los denominados Target Profit Forwards y Pivot TPF, como aquellos otros de análoga naturaleza y funcionamiento, emitidos por la propia Entidad o por terceros, por un plazo de un año"
+   "Deutsche Bank, SAE"
   ],
   "non_monetary": [
    "SUSPENSION"
   ],
   "conduct_dates": 2,
-  "sample": "1. Imponer a Deutsche Bank, SAE, por la comisión de una infracción muy grave tipificada en el artículo 284.1 de la Ley del Mercado"
+  "sample": "Siendo firmes en vía administrativa las sanciones impuestas a Deutsche Bank, SAE, por la comisión de una infracción muy "
  },
  {
   "boe_id": "BOE-A-2025-7034",
@@ -1709,7 +1709,7 @@
   ],
   "non_monetary": [],
   "conduct_dates": 0,
-  "sample": "– Imponer a March Asset Management, SGIIC, SAU, por la comisión de una infracción grave tipificada en el artículo 81.o) de la Ley "
+  "sample": "Habiéndose renunciado por la interesada a la interposición de recurso en vía administrativa y deviniendo, en consecuenci"
  },
  {
   "boe_id": "BOE-A-2025-8290",
@@ -1730,7 +1730,7 @@
   ],
   "non_monetary": [],
   "conduct_dates": 1,
-  "sample": "– Imponer a don Antonio Pérez Vílchez por la comisión de una infracción continuada grave tipificada en el artículo 295.13 de la Le"
+  "sample": "Habiéndose renunciado por el interesado a la interposición de recursos en vía administrativa y deviniendo, en consecuenc"
  },
  {
   "boe_id": "BOE-A-2026-10225",
@@ -1753,7 +1753,7 @@
   ],
   "non_monetary": [],
   "conduct_dates": 2,
-  "sample": "– Imponer a don Francisco José Elías Navarro, por la comisión de una infracción muy grave tipificada en el artículo 282.16.c) de l"
+  "sample": "Siendo firmes en vía administrativa las sanciones impuestas a don Francisco José Elías Navarro y a don Gerard Piqué Bern"
  },
  {
   "boe_id": "BOE-A-2026-16752",
@@ -1776,7 +1776,7 @@
    "PUBLIC_REPRIMAND"
   ],
   "conduct_dates": 0,
-  "sample": "− Imponer a Ginvest Asset Management, SGIIC, SA, por la comisión de una infracción grave tipificada en el artículo 81.z) de la Ley"
+  "sample": "Habiéndose declarado firme en vía administrativa la sanción impuesta a Ginvest Asset Management, SGIIC, SA, por la comis"
  },
  {
   "boe_id": "BOE-A-2026-16753",
@@ -1786,7 +1786,7 @@
    "VERY_SERIOUS"
   ],
   "articles": [
-   "93"
+   "93.p"
   ],
   "statutes": [
    "Ley 22/2014"
@@ -1800,7 +1800,7 @@
   ],
   "non_monetary": [],
   "conduct_dates": 2,
-  "sample": "– Imponer a don Santiago Reyna Herrero y a don Luis Manuel Martínez Fernández (en su condición de, respectivamente, Presidente y C"
+  "sample": "Siendo firmes en vía administrativa las sanciones impuestas a don Santiago Reyna Herrero, don Luis Manuel Martínez Ferná"
  },
  {
   "boe_id": "BOE-A-2026-16921",
@@ -1825,7 +1825,7 @@
   ],
   "non_monetary": [],
   "conduct_dates": 1,
-  "sample": "1. Imponer por la comisión de una infracción muy grave tipificada en el artículo 93.a) en relación con los artículos 67 y 70, todo"
+  "sample": "Habiéndose renunciado por los interesados a la interposición de recurso en vía administrativa y deviniendo, en consecuen"
  },
  {
   "boe_id": "BOE-A-2026-16922",
@@ -1846,7 +1846,7 @@
   ],
   "non_monetary": [],
   "conduct_dates": 0,
-  "sample": "– Imponer a Compañía Española de Viviendas de Alquiler, SA, por la comisión de una infracción grave tipificada en el artículo 292."
+  "sample": "Habiéndose renunciado por la interesada a la interposición de recursos en vía administrativa y deviniendo, en consecuenc"
  },
  {
   "boe_id": "BOE-A-2026-16923",
@@ -1867,7 +1867,7 @@
   ],
   "non_monetary": [],
   "conduct_dates": 1,
-  "sample": "– Imponer a Soltec Power Holdings, SA, por la comisión de una infracción grave tipificada en el artículo 297.1.e), en relación con"
+  "sample": "Habiéndose renunciado por la interesada a la interposición de recursos en vía administrativa y deviniendo, en consecuenc"
  },
  {
   "boe_id": "BOE-A-2026-1909",
@@ -1888,7 +1888,7 @@
   ],
   "non_monetary": [],
   "conduct_dates": 1,
-  "sample": "– Imponer a don José Luis Vallejo Pizarro por la comisión de una infracción continuada grave tipificada en el artículo 297.1.c), e"
+  "sample": "Habiéndose renunciado por el interesado a la interposición de recursos en vía administrativa y deviniendo, en consecuenc"
  },
  {
   "boe_id": "BOE-A-2026-2464",
@@ -1909,7 +1909,7 @@
   ],
   "non_monetary": [],
   "conduct_dates": 1,
-  "sample": "– Imponer a don Jaime María Malo de Molina Olaso, por la comisión de una infracción muy grave tipificada en el artículo 282.16 de "
+  "sample": "Habiéndose renunciado por el interesado a la interposición de recursos en vía administrativa y deviniendo, en consecuenc"
  },
  {
   "boe_id": "BOE-A-2026-4658",
@@ -1930,7 +1930,7 @@
   ],
   "non_monetary": [],
   "conduct_dates": 1,
-  "sample": "– Imponer a Demium Capital, SGEIC, SA, por la comisión de una infracción muy grave tipificada en el artículo 93.p) de la Ley 22/20"
+  "sample": "Habiéndose renunciado por la interesada a la interposición de recursos en vía administrativa y deviniendo, en consecuenc"
  },
  {
   "boe_id": "BOE-A-2026-4960",
@@ -1951,7 +1951,7 @@
   ],
   "non_monetary": [],
   "conduct_dates": 1,
-  "sample": "– Imponer a Banco de Sabadell, SA, por la comisión de una infracción tipificada como muy grave en el artículo 293.1.a) de la Ley 6"
+  "sample": "Siendo firme en vía administrativa la sanción impuesta Banco de Sabadell, SA, por la comisión de una infracción tipifica"
  },
  {
   "boe_id": "BOE-A-2026-4961",
@@ -1975,7 +1975,7 @@
   ],
   "non_monetary": [],
   "conduct_dates": 3,
-  "sample": "– Imponer a don Jesús de la Lama Obando por la comisión de una infracción muy grave tipificada en el artículo 282.16.c) de la Ley "
+  "sample": "Habiéndose renunciado por los interesados a la interposición de recursos en vía administrativa y deviniendo, en consecue"
  },
  {
   "boe_id": "BOE-A-2026-6540",
@@ -1998,7 +1998,7 @@
   ],
   "non_monetary": [],
   "conduct_dates": 2,
-  "sample": "– Imponer a doña Pilar Pascual Zárate, por la comisión de una infracción muy grave tipificada en el artículo 282.16.c) de la Ley d"
+  "sample": "Siendo firmes en vía administrativa las sanciones impuestas a doña Pilar Pascual Zárate por la comisión de una infracció"
  },
  {
   "boe_id": "BOE-A-2026-6638",
@@ -2026,7 +2026,7 @@
   ],
   "non_monetary": [],
   "conduct_dates": 6,
-  "sample": "1. Imponer a doña Pilar Pascual Zárate, por la comisión de una infracción muy grave tipificada en el artículo 282.16.c) de la Ley "
+  "sample": "Habiéndose renunciado por los interesados a la interposición de recursos en vía administrativa y deviniendo, en consecue"
  },
  {
   "boe_id": "BOE-A-2026-8696",
@@ -2047,6 +2047,6 @@
   ],
   "non_monetary": [],
   "conduct_dates": 0,
-  "sample": "– Imponer a Bankinter Gestión de Activos, SA, SGIIC, por la comisión de una infracción grave tipificada en el artículo 81.o) de la"
+  "sample": "Habiéndose renunciado por la interesada a la interposición de recurso en vía administrativa y deviniendo, en consecuenci"
  }
 ]

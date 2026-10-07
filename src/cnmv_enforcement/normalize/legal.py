@@ -80,7 +80,8 @@ _STATUTE_PATTERNS: list[tuple[re.Pattern[str], str]] = [
     ),
     (
         re.compile(
-            r"\bReglamento\s*\(\s*UE\s*\)\s*(?:n\.?º\.?\s*)?(\d+/\d{4})",
+            r"\bReglamento\s*\(\s*UE\s*\)\s*"
+            r"(?:n\.?[ºo]\.?|número|núm\.?)?\s*(\d+/\d{4})",
             re.IGNORECASE,
         ),
         "Reglamento (UE) {}",
