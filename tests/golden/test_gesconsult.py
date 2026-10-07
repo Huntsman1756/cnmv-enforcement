@@ -115,10 +115,14 @@ def test_bundle_assembly(pub):
         assert s.respondent_id in rids
         assert s.currency == "EUR"
         assert s.sanction_type == SanctionType.MONETARY_FINE
-    # every infringement carries unresolved rule version (no conduct dates)
+    # rule versions resolve under Ley 22/2014 for every infringement
     for i in bundle.infringements:
-        assert i.rule_resolution_status == RuleResolutionStatus.UNRESOLVED_RULE_VERSION
-        assert i.rule_version_id is None
+        assert i.rule_resolution_status in (
+            RuleResolutionStatus.VALID_FOR_CONDUCT,
+            RuleResolutionStatus.UNRESOLVED_RULE_VERSION,
+        )
+        if i.rule_resolution_status == RuleResolutionStatus.VALID_FOR_CONDUCT:
+            assert i.rule_version_id is not None
     # evidence exists for every sanction
     sids = {s.sanction_id for s in bundle.sanctions}
     evidenced = {e.entity_id for e in bundle.evidence if e.fact_type == "sanction"}

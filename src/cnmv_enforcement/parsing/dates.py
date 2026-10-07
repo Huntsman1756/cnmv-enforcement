@@ -66,3 +66,70 @@ def parse_boe_compact(text: str) -> date | None:
 
 def parse_any_es(text: str) -> date | None:
     return parse_long_es(text) or parse_slash_es(text) or parse_boe_compact(text)
+
+
+# ---- conduct-period extraction ------------------------------------------
+# Conservative: only unambiguous Spanish date mentions inside the conduct
+# clause are collected; conduct_start = earliest, conduct_end = latest.
+# Precision is preserved for downstream rule-version resolution.
+
+_MONTH = "|".join(MONTHS_ES)
+# 'los días 7 y 13 de diciembre de 2017' / '18, 19, 25 y 26 de octubre de 2017'
+# / 'del 14 al 22 de noviembre de 2022' / '1 de julio de 2018'
+_DAY_LIST_RE = re.compile(
+    rf"(\d{{1,2}}(?:\s*(?:,|y|e|al)\s*\d{{1,2}})*)\s+de\s+({_MONTH})\s+de\s+"
+    r"(\d{4})",
+    re.IGNORECASE,
+)
+_YEAR_RE = re.compile(r"\b(19\d{2}|20\d{2})\b")
+# a date is instrument-context when a statute keyword precedes it within the
+# same clause (e.g. 'del Reglamento (UE) 596/2014, de 16 de abril de 2014')
+_STATUTE_CTX_RE = re.compile(
+    r"(?i)(reglamento|ley\b|decreto|directiva|circular|acuerdo|norma\b|"
+    r"texto\s+refundido|disposici[oó]n|trlmv|lmv)"
+)
+
+
+def _day(year: int, month: int, day: int) -> date | None:
+    try:
+        return date(year, month, day)
+    except ValueError:
+        return None
+
+
+def extract_conduct_period(
+    conduct: str,
+) -> tuple[date | None, date | None, str | None]:
+    """(start, end, precision) — earliest/latest conduct date observed.
+
+    precision: 'day' | 'year'. Returns (None, None, None) when nothing
+    unambiguous is found — absence of dates is itself informative.
+    """
+    days: list[date] = []
+    seen: set[tuple[int, int, int]] = set()
+    for m in _DAY_LIST_RE.finditer(conduct):
+        window = conduct[max(0, m.start() - 80) : m.start()]
+        clause = window.rsplit(".", 1)[-1]
+        if _STATUTE_CTX_RE.search(clause):
+            continue  # belongs to an instrument title, not the conduct
+        month = MONTHS_ES[m.group(2).lower()]
+        year = int(m.group(3))
+        for dm in re.finditer(r"\d{1,2}", m.group(1)):
+            d = _day(year, month, int(dm.group(0)))
+            if d and (d.year, d.month, d.day) not in seen:
+                seen.add((d.year, d.month, d.day))
+                days.append(d)
+    if days:
+        return min(days), max(days), "day"
+    years = []
+    for m in _YEAR_RE.finditer(conduct):
+        window = conduct[max(0, m.start() - 80) : m.start()]
+        if not _STATUTE_CTX_RE.search(window.rsplit(".", 1)[-1]):
+            years.append(int(m.group(1)))
+    if years:
+        return (
+            date(min(years), 1, 1),
+            date(max(years), 12, 31),
+            "year",
+        )
+    return None, None, None

@@ -6,7 +6,9 @@ records pointing at the source document + paragraph locator.
 
 from __future__ import annotations
 
+import re
 from datetime import UTC, datetime
+from functools import lru_cache
 
 from cnmv_enforcement.domain.bundle import CaseBundle
 from cnmv_enforcement.domain.case import (
@@ -19,15 +21,14 @@ from cnmv_enforcement.domain.case import (
 from cnmv_enforcement.domain.enums import (
     Authority,
     ConfidenceType,
-    ConductCode,
     EventType,
     ExtractionMethod,
     RespondentType,
-    RuleResolutionStatus,
     Severity,
 )
 from cnmv_enforcement.domain.events import CaseEvent
 from cnmv_enforcement.domain.provenance import FactEvidence
+from cnmv_enforcement.legal.rules import RuleIndex, load_rules, resolve_rule_version
 from cnmv_enforcement.normalize.ids import (
     case_id_for,
     event_id_for,
@@ -43,13 +44,16 @@ from cnmv_enforcement.parsing.text import normalize_key
 
 
 def _strip_person_prefix(name: str) -> str:
-    import re
-
     return re.sub(r"^(?:don|doña|d\.|dña)\s+", "", name.strip(), flags=re.IGNORECASE)
 
 
 def _normalized_name(raw: str) -> str:
     return normalize_key(_strip_person_prefix(raw))
+
+
+@lru_cache(maxsize=1)
+def _rules() -> RuleIndex:
+    return load_rules()
 
 
 def assemble_case(
@@ -74,7 +78,7 @@ def assemble_case(
     )
     bundle = CaseBundle(case=case)
 
-    def ev(
+    def ev(  # noqa: PLR0917 — field-level evidence needs the full locator
         fact_type: str,
         entity_id: str,
         field_name: str,
@@ -125,6 +129,18 @@ def assemble_case(
 
     for block in pub.blocks:
         iid = infringement_id_for(case_id, block.ordinal)
+        (
+            rule_version_id,
+            rule_status,
+            conduct_code,
+            _resolved_family,
+        ) = resolve_rule_version(
+            _rules(),
+            block.statute_normalized,
+            block.article_normalized,
+            block.conduct_start,
+            block.conduct_end,
+        )
         infr = Infringement(
             infringement_id=iid,
             case_id=case_id,
@@ -136,9 +152,11 @@ def assemble_case(
             article_normalized=block.article_normalized,
             related_provisions=block.related,
             conduct_raw=block.conduct_raw,
-            conduct_code=ConductCode.UNKNOWN,
-            rule_version_id=None,
-            rule_resolution_status=RuleResolutionStatus.UNRESOLVED_RULE_VERSION,
+            conduct_start_date=block.conduct_start,
+            conduct_end_date=block.conduct_end,
+            conduct_code=conduct_code,
+            rule_version_id=rule_version_id,
+            rule_resolution_status=rule_status,
         )
         bundle.infringements.append(infr)
         ev("infringement", iid, "severity", block.paragraph_index, block.header_text)
@@ -186,7 +204,7 @@ def assemble_case(
                 )
 
     bundle.respondents = list(respondents.values())
-    for rid in respondents:
+    for rid, respo in respondents.items():
         bundle.evidence.append(
             FactEvidence(
                 fact_type="respondent",
@@ -194,7 +212,7 @@ def assemble_case(
                 field_name="name",
                 document_id=document_id,
                 locator=None,
-                excerpt=respondents[rid].raw_display_name,
+                excerpt=respo.raw_display_name,
                 extraction_method=ExtractionMethod.DIRECT,
                 confidence_type=ConfidenceType.DIRECT,
                 observed_at=observed_at,

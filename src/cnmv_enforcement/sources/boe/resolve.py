@@ -14,8 +14,9 @@ import logging
 import re
 from dataclasses import dataclass
 
+from cnmv_enforcement.config import BOE_DEPARTAMENTO_CODIGO
 from cnmv_enforcement.parsing.text import normalize_key
-from cnmv_enforcement.sources.boe.sumario import SumarioItem, cnmv_items
+from cnmv_enforcement.sources.boe.sumario import SumarioItem
 from cnmv_enforcement.sources.cnmv.register import RegisterRow
 
 log = logging.getLogger("cnmv_enforcement.boe.resolve")
@@ -54,7 +55,7 @@ class Resolution:
 
 def resolve_row(row: RegisterRow, day_items: list[SumarioItem]) -> Resolution:
     key = title_key(row.title)
-    cands = [i for i in cnmv_items_like(day_items)]
+    cands = list(cnmv_items_like(day_items))
     # exact normalized-title match
     exact = [i for i in cands if title_key(i.titulo) == key]
     if len(exact) == 1:
@@ -68,16 +69,17 @@ def resolve_row(row: RegisterRow, day_items: list[SumarioItem]) -> Resolution:
         key=lambda t: t[0],
         reverse=True,
     )
-    if scored and scored[0][0] >= _JACCARD_MIN:
-        if len(scored) == 1 or scored[0][0] > scored[1][0]:
-            return Resolution(
-                row, scored[0][1].identificador, "JACCARD", scored[0][0]
-            )
+    if scored and scored[0][0] >= _JACCARD_MIN and (
+        len(scored) == 1 or scored[0][0] > scored[1][0]
+    ):
+        return Resolution(
+            row, scored[0][1].identificador, "JACCARD", scored[0][0]
+        )
     return Resolution(row, None, "UNRESOLVED", scored[0][0] if scored else 0.0)
+
+
 
 
 def cnmv_items_like(items: list[SumarioItem]) -> list[SumarioItem]:
     """Dept-1040 items only (already filtered upstream, defensive)."""
-    from cnmv_enforcement.config import BOE_DEPARTAMENTO_CODIGO
-
     return [i for i in items if i.departamento_codigo == BOE_DEPARTAMENTO_CODIGO]

@@ -17,15 +17,14 @@ Guarantees:
 
 from __future__ import annotations
 
-import json
+import hashlib
 import logging
+from collections.abc import Iterable
 from datetime import datetime
 from pathlib import Path
-from typing import Iterable
 
 from pydantic import BaseModel
 
-from cnmv_enforcement.domain.provenance import ArtifactRef
 from cnmv_enforcement.sources.http import FetchResult
 
 log = logging.getLogger("cnmv_enforcement.rawstore")
@@ -62,8 +61,8 @@ class RawStore:
         if not self.manifest_path.exists():
             return []
         rows: list[ManifestRow] = []
-        for line in self.manifest_path.read_text(encoding="utf-8").splitlines():
-            line = line.strip()
+        for raw_line in self.manifest_path.read_text(encoding="utf-8").splitlines():
+            line = raw_line.strip()
             if line:
                 rows.append(ManifestRow.model_validate_json(line))
         return rows
@@ -131,8 +130,6 @@ class RawStore:
         kind: str | None = None,
     ) -> ManifestRow:
         """Store bytes obtained outside the HTTP client (fixtures, tests)."""
-        import hashlib
-
         result = FetchResult(
             url=retrieval_url,
             final_url=retrieval_url,

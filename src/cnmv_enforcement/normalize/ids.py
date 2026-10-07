@@ -10,8 +10,6 @@ from __future__ import annotations
 import hashlib
 import re
 
-from cnmv_enforcement.parsing.text import normalize_key
-
 
 def content_hash(*parts: str | None) -> str:
     joined = "|".join(p or "" for p in parts)

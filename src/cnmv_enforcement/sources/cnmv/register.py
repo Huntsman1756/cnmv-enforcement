@@ -23,7 +23,7 @@ from datetime import date
 from selectolax.lexbor import LexborHTMLParser as HTMLParser
 
 from cnmv_enforcement.config import CNMV_REGISTER_URL
-from cnmv_enforcement.parsing.dates import parse_slash_es
+from cnmv_enforcement.parsing.dates import parse_long_es, parse_slash_es
 from cnmv_enforcement.parsing.text import collapse_ws
 from cnmv_enforcement.sources.http import FetchResult, HttpClient
 
@@ -85,8 +85,6 @@ def parse_register_page(html: str, page_index: int) -> tuple[list[RegisterRow], 
         boe_m = _BOE_DATE_RE.search(title)
         boe_date = None
         if boe_m:
-            from cnmv_enforcement.parsing.dates import parse_long_es
-
             boe_date = parse_long_es(boe_m.group(1))
         rows.append(
             RegisterRow(
@@ -113,7 +111,7 @@ def collect_register(client: HttpClient) -> RegisterSnapshot:
     for page in range(1, declared):
         res = client.get(f"{CNMV_REGISTER_URL}?lang=es&page={page}")
         snap.observed_at_pages.append(res)
-        page_rows, page_declared = parse_register_page(
+        page_rows, _page_declared = parse_register_page(
             res.content.decode("utf-8"), page
         )
         if not page_rows:

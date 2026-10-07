@@ -17,9 +17,10 @@ from __future__ import annotations
 import json
 import logging
 import re
+from collections.abc import Iterator
 from dataclasses import dataclass, field
 from datetime import date, timedelta
-from typing import Any, Iterator
+from typing import Any
 
 from cnmv_enforcement.config import BOE_DEPARTAMENTO_CODIGO, BOE_SUMARIO_URL
 from cnmv_enforcement.sources.http import HttpClient
@@ -83,7 +84,7 @@ def _as_list(v: Any) -> list[Any]:
 
 
 def parse_sumario(payload: bytes | str, fecha: date) -> Sumario:
-    data = json.loads(payload) if isinstance(payload, bytes) else json.loads(payload)
+    data = json.loads(payload)
     root = data.get("data", data)
     sumario = root.get("sumario", {})
     diarios = _as_list(sumario.get("diario"))

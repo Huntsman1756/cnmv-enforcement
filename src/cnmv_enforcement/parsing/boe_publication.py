@@ -54,9 +54,14 @@ from cnmv_enforcement.normalize.legal import (
     normalize_article,
     normalize_statute,
 )
-from cnmv_enforcement.parsing.dates import parse_boe_compact, parse_long_es
-from cnmv_enforcement.parsing.text import collapse_ws
+from cnmv_enforcement.parsing.dates import (
+    extract_conduct_period,
+    parse_boe_compact,
+    parse_long_es,
+)
+from cnmv_enforcement.parsing.money import parse_es_number
 from cnmv_enforcement.parsing.spanish_numbers import spanish_words_to_int
+from cnmv_enforcement.parsing.text import collapse_ws
 
 log = logging.getLogger("cnmv_enforcement.parsing.boe_publication")
 
@@ -68,7 +73,8 @@ _IMPOSE_START_RE = re.compile(
     re.IGNORECASE,
 )
 _POR_COMISION_BULLET_RE = re.compile(
-    rf"^\s*(?:\d{{1,2}}\s*[.)]\s*)?[{_BULLETS}\s]*Por\s+la\s+comisi[oó]n\b",
+    rf"^\s*(?:\d{{1,2}}\s*[.)]\s*|[a-f]\)\s*)?[{_BULLETS}\s]*"
+    r"Por\s+la\s+comisi[oó]n\b",
     re.IGNORECASE,
 )
 _LETTERED_BULLET_RE = re.compile(
@@ -150,13 +156,15 @@ _ARTICLE_TOKEN_RE = re.compile(
 )
 _RELACION_RE = re.compile(r"en\s+relaci[oó]n\s+con\s+", re.IGNORECASE)
 _CONDUCT_SPLIT_RE = re.compile(
-    r"[,;.]\s*(?:y\s+)?por\s+(?!la\s+que\b|el\s+que\b|los\s+que\b|las\s+que\b|"
-    r"lo\s+que\b|lo\s+cual\b|tanto\b|consiguiente\b|ello\b|ejemplo\b)",
+    r"[,;.]\s*(?:y\s+)?(?:por\s+(?!la\s+que\b|el\s+que\b|los\s+que\b|"
+    r"las\s+que\b|lo\s+que\b|l[ao]s?\s+cual\b|tanto\b|consiguiente\b|ello\b|"
+    r"ejemplo\b)|al\s+(?:haber|incumplir|realizar|utilizar|no|vulnerar|"
+    r"adquirir|comunicar|disponer|transmitir|eludir|omitir))",
     re.IGNORECASE,
 )
 # sanction clause at the end of an impose/por-comisión sentence
 _SANCTION_TAIL_RE = re.compile(
-    rf"\b(?P<count>una|un|uno|dos|tres|cuatro|cinco|seis|siete|ocho|nueve|diez|\d{{1,2}})?\s*"
+    r"\b(?P<count>una|un|uno|dos|tres|cuatro|cinco|seis|siete|ocho|nueve|diez|\d{1,2})?\s*"
     r"(?P<kind>multas?|sanci[oó]n(?:es)?(?:\s+de\s+\w+)?|inhabilitaci[oó]n(?:es)?|"
     r"amonestaci[oó]n(?:es)?(?:\s+p[uú]blica)?|suspensi[oó]n(?:es)?|"
     r"separaci[oó]n(?:es)?(?:\s+del?\s+cargo)?|confiscaci[oó]n(?:es)?|comiso|"
@@ -265,6 +273,9 @@ class ParsedBlock:
     article_normalized: str | None
     related: list[LegalReference] = field(default_factory=list)
     conduct_raw: str | None = None
+    conduct_start: date | None = None
+    conduct_end: date | None = None
+    conduct_precision: str | None = None  # 'day' | 'year'
     subjects_inline: list[str] = field(default_factory=list)
     sanctions: list[ParsedSanctionLine] = field(default_factory=list)
 
@@ -343,8 +354,8 @@ def split_subjects(raw: str) -> list[str]:
         flags=re.IGNORECASE,
     )
     out = []
-    for p in parts:
-        p = re.sub(r"^a\s+", "", p.strip().rstrip(","), flags=re.IGNORECASE)
+    for part in parts:
+        p = re.sub(r"^a\s+", "", part.strip().rstrip(","), flags=re.IGNORECASE)
         if p:
             out.append(p)
     return out
@@ -356,12 +367,10 @@ def parse_amount(tail: str) -> tuple[Decimal | None, str | None]:
     Handles: '50.000 euros', '(10.000 €)', '5.000.000 (cinco millones) de
     euros', and word-only 'diez mil euros'.
     """
-    for i, rx in enumerate(_AMOUNT_RES):
+    for rx in _AMOUNT_RES:
         m = rx.search(tail)
         if m:
             num = next(g for g in m.groups() if g)
-            from cnmv_enforcement.parsing.money import parse_es_number
-
             amount = parse_es_number(num)
             if amount is not None:
                 return amount, m.group(0).strip()
@@ -376,11 +385,11 @@ def parse_amount(tail: str) -> tuple[Decimal | None, str | None]:
 
 def _sanction_kind(kind: str) -> SanctionType:
     k = collapse_ws(kind).lower()
-    if k.startswith("sanción de ") or k.startswith("sancion de "):
+    if k.startswith(("sanción de ", "sancion de ")):
         k = k.split(" de ", 1)[1]
     if k.startswith("multa"):
         return SanctionType.MONETARY_FINE
-    if k.startswith("inhabilit") or k.startswith("separaci"):
+    if k.startswith(("inhabilit", "separaci")):
         return SanctionType.DISQUALIFICATION
     if k.startswith("amonest"):
         return SanctionType.PUBLIC_REPRIMAND
@@ -407,8 +416,8 @@ def parse_sanction_tail(
     """
     lines: list[ParsedSanctionLine] = []
     ord_ = ordinal_start
-    for seg in _SANCTION_SPLIT_RE.split(zone):
-        seg = seg.strip().lstrip(",;").strip()
+    for raw_seg in _SANCTION_SPLIT_RE.split(zone):
+        seg = raw_seg.strip().lstrip(",;").strip()
         if not seg:
             continue
         m = _SANCTION_TAIL_RE.match(seg)
@@ -454,10 +463,16 @@ def parse_sanction_tail(
     return lines
 
 
-_STATUTE_TAIL_CUT_RE = re.compile(r",\s*por\s+", re.IGNORECASE)
+# cut a statute segment at the first conduct boundary (', por X' / ', al X')
+_STATUTE_TAIL_CUT_RE = re.compile(
+    r"[,;]\s*(?:y\s+)?(?:por\s+(?!la\s+que\b|el\s+que\b|los\s+que\b|"
+    r"las\s+que\b|lo\s+que\b|l[ao]s?\s+cual\b)|al\s+)",
+    re.IGNORECASE,
+)
 _CONDUCT_ART_RE = re.compile(
-    r"(?:vulneraci[oó]n|incumplimiento|incumpliendo)\s+de[l]?\s*"
-    r"(?:la|los|las|el)?\s*art[ií]culo\s+",
+    r"(?:(?:vulneraci[oó]n|incumplimiento|incumpliendo|incumplir)\s+de[l]?\s*"
+    r"(?:la|los|las|el)?\s*|establecid[ao]s?\s+en\s+(?:el|los|la|las)\s+)"
+    r"art[ií]culo\s+",
     re.IGNORECASE,
 )
 
@@ -555,13 +570,14 @@ def parse_comision(
     if zone_start is not None:
         sanction_tail = rest[zone_start:]
         rest = rest[:zone_start].rstrip()
-    # conduct: last ', por X' where X isn't a statute-title tail
+    # conduct clause: starts at the FIRST ', por/al <verb>' boundary — the
+    # whole remainder (possibly several ', por' parts) describes the conduct
     conduct_raw = None
     cands = list(_CONDUCT_SPLIT_RE.finditer(rest))
     if cands:
-        last = cands[-1]
-        head = rest[: last.start()]
-        conduct_raw = rest[last.end() :].strip().rstrip(":.").strip() or None
+        first = cands[0]
+        head = rest[: first.start()]
+        conduct_raw = rest[first.end() :].strip().rstrip(":.").strip() or None
     else:
         head = rest
     # typifying article
@@ -581,17 +597,15 @@ def parse_comision(
         after = head[art_end:]
         rel_parts = _RELACION_RE.split(after)
         first_seg = rel_parts[0]
-        sn = normalize_statute(first_seg)
+        # cut at the conduct boundary BEFORE normalizing — a statute mention
+        # inside the conduct clause must never become the typifying statute
+        stat_seg = _STATUTE_TAIL_CUT_RE.split(first_seg, maxsplit=1)[0]
+        sn = normalize_statute(stat_seg)
         if sn or not _SAME_STATUTE_RE.search(first_seg):
-            stat_seg = _STATUTE_TAIL_CUT_RE.split(first_seg, maxsplit=1)[0]
             statute_raw = stat_seg.strip().rstrip(",;.").strip() or None
             statute_norm = sn
         for seg in rel_parts[1:]:
             related.extend(_related_refs(seg, (statute_raw, statute_norm)))
-        # typifying statute falls back to the first related statute context
-        if statute_norm is None and related:
-            statute_norm = related[0].statute_normalized
-            statute_raw = statute_raw or related[0].statute_raw
     # conduct-article refs: 'por vulneración del artículo 15' —
     # the breached provision; statute = first instrument mentioned AFTER the
     # token, else the typifying statute when 'la misma norma'/'mismo texto'.
@@ -684,6 +698,10 @@ def parse_publication_xml(
             conduct,
             tail,
         ) = parse_comision(para.text)
+        c_start = c_end = None
+        c_prec = None
+        if conduct:
+            c_start, c_end, c_prec = extract_conduct_period(conduct)
         tail_lines = (
             parse_sanction_tail(tail, subjects, para.index, para.text, sanction_ord)
             if tail
@@ -707,6 +725,9 @@ def parse_publication_xml(
                 ),
                 related=related,
                 conduct_raw=conduct,
+                conduct_start=c_start,
+                conduct_end=c_end,
+                conduct_precision=c_prec,
                 subjects_inline=subjects,
                 sanctions=sanctions,
             )
@@ -861,6 +882,50 @@ def parse_publication_xml(
                 )
             )
             continue
+    # ---- document-level statute context -------------------------------
+    # In-document references are resolved deterministically, raw text kept:
+    # 1. 'todos ellos/ambos de <LAW>' in a related segment covers the
+    #    typifying article too (explicit universal quantifier).
+    # 2. the preamble may restate the same article WITH its statute
+    #    ('del artículo 282.3 de la Ley del Mercado de Valores') — a
+    #    same-article match adopts that statute.
+    # 3. 'del mismo texto legal' shorthand inherits the statute of the
+    #    nearest earlier block.
+    block_paras = {b.paragraph_index for b in pub.blocks}
+    preamble_art_stat: dict[str, tuple[str, str]] = {}
+    for para in pub.paragraphs:
+        if para.index in block_paras:
+            continue
+        for m in _TYPIFY_ART_RE.finditer(para.text):
+            tok = _ARTICLE_TOKEN_RE.match(para.text, m.end() - 1)
+            if not tok:
+                continue
+            art_n = normalize_article(tok.group(0).rstrip(")"))
+            stat_seg = para.text[tok.end() : tok.end() + 220]
+            stat_seg = _STATUTE_TAIL_CUT_RE.split(stat_seg, maxsplit=1)[0]
+            sn = normalize_statute(stat_seg)
+            if sn:
+                preamble_art_stat[art_n] = (stat_seg[:120], sn)
+    last_stat: str | None = None
+    for b in pub.blocks:
+        if b.statute_normalized is None:
+            for r in b.related:
+                if r.statute_normalized and re.search(
+                    r"tod[ao]s\s+ell[ao]s|ambo[as]s?", r.statute_raw or "", re.I
+                ):
+                    b.statute_normalized = r.statute_normalized
+                    if not b.statute_raw or b.statute_raw == ")":
+                        b.statute_raw = r.statute_raw
+                    break
+        if b.statute_normalized is None and b.article_normalized in preamble_art_stat:
+            raw, sn = preamble_art_stat[b.article_normalized]
+            b.statute_normalized = sn
+            if not b.statute_raw or b.statute_raw == ")":
+                b.statute_raw = raw
+        if b.statute_normalized is None:
+            b.statute_normalized = last_stat
+        if b.statute_normalized:
+            last_stat = b.statute_normalized
     return pub
 
 

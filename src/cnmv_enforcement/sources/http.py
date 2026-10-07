@@ -96,7 +96,7 @@ class HttpClient:
                 resp = self._client.get(url, headers=merged)
                 self._last_request_at = time.monotonic()
                 if len(resp.content) > MAX_DOWNLOAD_BYTES:
-                    raise FetchErrorSize(url)
+                    raise FetchSizeError(url)
                 # retry on transient statuses
                 if resp.status_code in (429, 500, 502, 503, 504) and attempt < self.max_retries:
                     wait = BACKOFF_BASE_S * (2**attempt)
@@ -128,6 +128,6 @@ class HttpFetchError(Exception):
         self.url = url
 
 
-class FetchErrorSize(Exception):
+class FetchSizeError(Exception):
     def __init__(self, url: str) -> None:
         super().__init__(f"download exceeds size cap: {url}")
