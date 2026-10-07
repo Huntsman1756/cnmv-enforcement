@@ -372,3 +372,19 @@ def test_D31_resolution_listed_a_subject():
     assert len(pub.blocks) == 5
     amts = sorted(l.amount for b in pub.blocks for l in b.sanctions)
     assert amts == [20000, 75000, 150000, 150000, 300000]
+
+
+def test_D32_sanction_kind_wrappers():
+    """'sanción, a cada uno de ellos, de multa' and 'sanción
+    consistente en multa' → MONETARY_FINE, never UNKNOWN."""
+    from cnmv_enforcement.domain.enums import SanctionType
+
+    for bid, expect in (
+        ("BOE-A-2015-3206", 100000),
+        ("BOE-A-2015-3207", 500000),
+    ):
+        pub = _h1_pub(bid)
+        for b in pub.blocks:
+            for l in b.sanctions:
+                assert l.sanction_type == SanctionType.MONETARY_FINE
+        assert any(l.amount == expect for b in pub.blocks for l in b.sanctions)
