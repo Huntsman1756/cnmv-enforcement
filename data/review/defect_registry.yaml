@@ -91,6 +91,9 @@ defect_classes:
   description: 2006–2007 dispositivos enumerate sanction clauses as 'a) Imponer a…',
     'b) Una sanción de…' — lettered prefixes (not digits) plus 'las siguientes sanciones:'
     headers and comma-decimal amounts 'importe de 300.506,05'.
+- id: EMBEDDED_OPERATIVE_ITEM
+  description: operative item ('N.'/'x)') embedded mid-paragraph after a preceding
+    item's closing text — must split so each item carries its own context.
 defects:
 - defect_id: S1
   defect_class: DURATION_FIELD_LOSS
@@ -516,3 +519,21 @@ defects:
     plural header; 'importe de 300.506,05' comma-decimal without adjacent 'euros'
     (€ inside word-form paren).
   fix_commit: v0.6 H4
+- defect_id: D46
+  defect_class: AMOUNT_FORM_VARIANT
+  round: H4
+  fixtures:
+  - BOE-A-2008-20817
+  description: '''300.506.05 euros (trescientos mil quinientos seis euros con cinco
+    céntimos)'' — dotted thousands + 2-digit cents read as 30M not 300,506.05.'
+  fix_commit: v0.6 H4
+- defect_id: D47
+  defect_class: EMBEDDED_OPERATIVE_ITEM
+  round: H4
+  fixtures:
+  - BOE-A-2006-22626
+  description: '''…(quince mil euros). c) Imponer a don Francisco Neri…'' — a lettered
+    operative item embedded mid-para after the previous item''s amount; the whole
+    <p> was consumed as one block so the next subject''s context never reset (Neri''s
+    two fines bound to Afina Pentor).'
+  fix_commit: v0.6 H4-adversarial

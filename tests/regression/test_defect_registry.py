@@ -577,9 +577,13 @@ def test_D45_lettered_operative_items():
     """'a) Imponer…', 'b) Una sanción de suspensión' — lettered
     operative prefixes; 'importe de 300.506,05' comma-decimal."""
     pub = _h4_pub("BOE-A-2006-22625")
-    assert len(pub.blocks) == 3
+    assert len(pub.blocks) == 4  # a,b,c,d — 'c)' embedded in b's para
     assert all(
         l.amount for b in pub.blocks for l in b.sanctions
+    )
+    assert any(
+        "Cunill" in l.subject_raw
+        for b in pub.blocks for l in b.sanctions
     )
     pub2 = _h4_pub("BOE-A-2007-4456")
     types = {
@@ -592,3 +596,27 @@ def test_D45_lettered_operative_items():
         l.amount == Decimal("300506.05")
         for b in pub3.blocks for l in b.sanctions
     )
+
+
+def test_D46_dotdot_decimal_cents():
+    """'300.506.05 euros (…con cinco céntimos)' = 300,506.05 —
+    the last 1–2-digit group is decimal cents."""
+    pub = _h4_pub("BOE-A-2008-20817")
+    amts = [l.amount for b in pub.blocks for l in b.sanctions if l.amount]
+    assert Decimal("300506.05") in amts
+    assert Decimal("30050605") not in amts
+
+
+def test_D47_embedded_lettered_item():
+    """'…(N euros). c) Imponer a don Francisco Neri' — mid-para
+    operative item resets context; Neri gets his fines, not Pentor."""
+    pub = _h4_pub("BOE-A-2006-22626")
+    pairs = [
+        (l.subject_raw, l.amount)
+        for b in pub.blocks for l in b.sanctions
+    ]
+    neri = [a for s, a in pairs if "Neri" in s]
+    assert neri == [8000, 8000]
+    assert sum(
+        a for s, a in pairs if s.startswith("Afina Pentor")
+    ) == 15000

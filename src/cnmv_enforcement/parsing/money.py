@@ -27,7 +27,14 @@ def parse_es_number(text: str) -> Decimal | None:
         int_part = int_part.replace(".", "")
         t = f"{int_part}.{frac}"
     else:
-        t = t.replace(".", "")
+        # '300.506.05' — a dotted thousands group followed by a
+        # 1–2-digit final group is a decimal ('…con cinco céntimos'),
+        # not another thousands group
+        m = re.fullmatch(r"(\d{1,3}(?:\.\d{3})+)\.(\d{1,2})", t)
+        if m:
+            t = f"{m.group(1).replace('.', '')}.{m.group(2)}"
+        else:
+            t = t.replace(".", "")
     try:
         return Decimal(t)
     except InvalidOperation:

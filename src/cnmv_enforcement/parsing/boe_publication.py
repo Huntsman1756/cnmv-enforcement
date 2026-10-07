@@ -1282,8 +1282,19 @@ def parse_publication_xml(
                 if pred and _dkey(pred) in declared:
                     b.declared_for = declared[_dkey(pred)][-1]
 
-    for para in pub.paragraphs:
-        t = para.text
+    # embedded operative items inside a single <p>: '…(quince mil
+    # euros). c) Imponer a X…' — each item gets its own segment pass
+    # so contexts reset correctly (locators stay para-level)
+    para_items: list[tuple[ParsedParagraph, str]] = []
+    for p0 in pub.paragraphs:
+        for seg in re.split(
+            r"(?<=[.»])\s+(?=(?:\d{1,2}|[a-zñ])\s*\)\s*"
+            r"(?:Imponer|Declarar|A\s+[A-ZÁÉÍÓÚÑ]))",
+            p0.text,
+        ):
+            para_items.append((p0, seg))
+
+    for para, t in para_items:
         # normalize historical comision phrasings to the canonical form
         t = _PRE_COMISION_NORM.sub(r"\g<1>Por la comisión de ", t)
         t = _PRE_RESPONSABLE_NORM.sub("por la comisión", t)
@@ -1407,11 +1418,13 @@ def parse_publication_xml(
                     _link_successor(blocks, declared_blocks)
                     continue
                 # 'Imponer a X:' / 'Imponer a X, por:' / 'Imponer a X, por
-                # la comisión:' subjects-only headers
+                # la comisión:' / 'c) Imponer a X, las siguientes
+                # sanciones:' subjects-only headers
                 sm = re.match(
-                    rf"^\s*(?:\d{{1,2}}\s*[.)]\s*)?[{_BULLETS}\s]*"
+                    rf"^\s*(?:(?:\d{{1,2}}|[a-zñ])\s*[.)]\s*)?[{_BULLETS}\s]*"
                     r"Imponer\s+a\s+(.+?)"
-                    r"(?:,?\s*por\s+(?:la\s+comisi[oó]n\s*)?)?[:.]?\s*$",
+                    r"(?:,?\s*(?:las?\s+siguientes\s+sanciones|por\s+"
+                    r"(?:la\s+comisi[oó]n)?)\s*)?[:.]?\s*$",
                     t,
                     re.IGNORECASE,
                 )
