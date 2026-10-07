@@ -21,8 +21,28 @@ findings, all verified against source XML and fixed (see commit
 | S8 | cross-month day lists / `8 y 9 junio` dropped dates | `_CROSS_MONTH_RE`, `_DAY_NODE_RE`, wider statute window |
 | S9 | `respondents` table duplicate PK rows | dedup by `respondent_id` |
 
-Judge B: pending at time of writing; its ledger merges into
-`docs/judgment-ledger.md` when it lands.
+## Dual adversarial review — scoped re-judgment (round 2)
+
+Judge B's scoped re-judgment over the fix delta returned 9 further SEVERE
+findings — 2 of them regressions introduced by round-1 fixes (entity `y`
+names; a `separación` lookahead gap). All were verified against the real
+parse before fixing (commit `fix(parser): judge B round 2`).
+
+| # | Defect | Fix |
+|---|--------|-----|
+| F1 | `entre el D1 de M1 y el D2 de M2` cross-month form — start date lost | `el` allowed after conjunctions |
+| F2 | `Banco Financiero y de Ahorro` entity name split (round-1 regression) | `y` split requires uppercase start + no comma |
+| F3 | `separación` absent from subject-first lookahead | added |
+| F4 | `Imponer a X, por la comisión:` leaked boilerplate into subjects | header tail strip |
+| F5 | `respectivamente` → cross-product (400k vs 200k) | positional pairing |
+| F6 | `por la comisión por parte de…` unparsed (untyped block) | mid-clause without comma |
+| F7 | `del mismo texto legal` forced block statute on all segment articles | per-chunk statute |
+| F8 | `(en la actualidad, …RDL)` polluted typifying statute | masked before normalize |
+| F9 | `letra o)`, `83 ter 1`, `107 quáter 3.c`, `99 z ter` letter loss | token/word-suffix grammar (conjunction-safe) |
+
+Plus `al carecer`/`al presentar` conduct boundary, `Resolución de fecha`
+w/o Consejo, and a phantom-`e` regression caught by goldens (`282.6.e`
+→ `282.6`). Judge-B verdict on round-1 delta: UNSOUND — corrected.
 
 ## Verified dataset state (post-fix)
 
