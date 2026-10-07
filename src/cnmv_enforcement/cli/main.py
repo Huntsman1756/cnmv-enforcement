@@ -8,7 +8,7 @@ article / law / stats) read the built dataset.
 from __future__ import annotations
 
 import json
-from datetime import UTC, datetime
+from datetime import UTC, date, datetime
 from pathlib import Path
 
 import typer
@@ -112,6 +112,74 @@ def enumerate(out: Path | None = None) -> None:
             json.dumps(results, ensure_ascii=False, indent=2), encoding="utf-8"
         )
         typer.echo(f"written: {out}")
+
+
+@app.command()
+def enumerate_history(
+    start: str,
+    end: str,
+    manifest: Path | None = None,
+) -> None:
+    """Resumable enumeration of CNMV items in BOE Sección III, dept 1040.
+
+    Writes a JSONL manifest — one line per day — so a multi-day backfill
+    run can stop and resume exactly where it left off.
+    """
+    from cnmv_enforcement.sources.boe.historical import enumerate_range
+    from cnmv_enforcement.sources.http import HttpClient
+
+    manifest = manifest or runtime_root() / "boe_history.jsonl"
+    client = HttpClient()
+    stats = enumerate_range(
+        client,
+        date.fromisoformat(start),
+        date.fromisoformat(end),
+        manifest,
+    )
+    typer.echo(json.dumps(stats))
+    typer.echo(f"manifest -> {manifest}")
+
+
+@app.command()
+def backfill_fetch(
+    manifest: Path | None = None,
+    corpus_dir: Path | None = None,
+    sanction_only: bool = True,
+) -> None:
+    """Fetch BOE XMLs for sanction-like items in the history manifest."""
+    from cnmv_enforcement.acquisition.rawstore import RawStore
+    from cnmv_enforcement.sources.http import HttpClient
+
+    manifest = manifest or runtime_root() / "boe_history.jsonl"
+    corpus_dir = corpus_dir or data_root() / "corpus_historical"
+    corpus_dir.mkdir(parents=True, exist_ok=True)
+    store = RawStore(data_root() / "raw")
+    client = HttpClient()
+    seen: set[str] = set()
+    n = 0
+    for line in manifest.read_text(encoding="utf-8").splitlines():
+        if not line.strip():
+            continue
+        rec = json.loads(line)
+        for item in rec.get("items", []):
+            if sanction_only and not item.get("sanction_like"):
+                continue
+            bid = item["boe_id"]
+            if bid in seen or (corpus_dir / f"{bid}.xml").exists():
+                continue
+            seen.add(bid)
+            xml_url = BOE_XML_URL.format(boe_id=bid)
+            fetched = client.get(xml_url)
+            store.store(
+                fetched,
+                authority="BOE",
+                document_type="publication_resolution",
+                canonical_locator=bid,
+                kind="boe_xml",
+            )
+            (corpus_dir / f"{bid}.xml").write_bytes(fetched.content)
+            n += 1
+    typer.echo(f"fetched {n} documents -> {corpus_dir}")
 
 
 @app.command()
