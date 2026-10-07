@@ -9,8 +9,8 @@
 | years VERIFIED (dev cohorts) | **2004–2021** (H1/H2/H4) + register 2021–2026 |
 | years PARTIAL | 2000–2003 (notification era, no sanction content) |
 | documents accounted for | 58/58 H4 + 97/97 H2 + 77/77 H1 + 204 hist + gap 6/6 |
-| new defect classes discovered | +8 (D33–D45, incl. sumario-shape, lettered items) |
-| total defects registered | **45 / 45 regression-covered** |
+| new defect classes discovered | +10 (D33–D47, incl. sumario-shape, lettered items, embedded items, cents notation) |
+| total defects registered | **47 / 47 regression-covered** |
 | holdout failures | H2: 2 revealed (D41/D42, fixed). H4: 0 (14/14 PASS) |
 | unexplained parse failures | **0** (3 SUBSEQUENT_EVENT_DOC = classified corrections) |
 | unsupported coverage claims | 0 — pre-2004 kept PARTIAL/ENUMERATED |
@@ -24,10 +24,10 @@
 | + h1 dev 2015–2017 | 61 | +61 | +132 | +113 |
 | + h2 dev 2010–2014 | 83 | +83 | +234 | +175 |
 | + h4 dev 2004–2009 | 44 | +44 | +76 | +71 |
-| **v0.6 total (dev corpora)** | **348** | **348** | **827** | **620** |
+| **v0.6 total (dev corpora)** | **348** | **348** | **828** | **621** |
 
 **v0.5 base**: 221 cases / 517 sanctions / 376 infringements / 367 respondents.
-**v0.6 delta**: +127 cases / +310 sanctions / +244 infringements / +232 respondents — ALL new historical coverage; corrections to previously published facts are documented per-defect (BOE-A-2022-10033 Arturo Sotillo third infringement recovered; BOE-A-2021-18970 article now `92.d` — letter extracted).
+**v0.6 delta**: +127 cases / +311 sanctions / +245 infringements / +234 respondents — ALL new historical coverage; corrections to previously published facts are documented per-defect (BOE-A-2022-10033 Arturo Sotillo third infringement recovered; BOE-A-2021-18970 article now `92.d` — letter extracted).
 
 ## Coverage by period (per-surface)
 
@@ -45,10 +45,10 @@
 ## Build (dev corpora — holdouts excluded)
 
 - cases: **348** · respondents: **599** · case-respondents: 677
-- infringements: **620** · sanctions: **827** · evidence: 4 978
+- infringements: **621** · sanctions: **828** · evidence: 4 992
 - VALUE_BINDING_PROVEN 3 187 (64 %) / LOCATION_PROVEN 1 107 / DOCUMENT_PROVEN 684 — honest decline with era, not forced
 - `rule_version_id` unresolved: 412 — UNRESOLVED_RULE_VERSION kept honest
-- gates: **29/29** · tests: **160** · defects: **45/45** covered
+- gates: **29/29** · tests: **162** · defects: **47/47** covered
 
 ## First-parse → post-fix evolution
 
@@ -56,13 +56,13 @@
 |---|---|---|---|
 | H1 2015–17 | 32/61 | 61/61 | 16/16 (D31 found) |
 | H2 2010–14 | 79/85 | 85/85 | 12/12 (D41/D42 found) |
-| H4 2004–09 | 40/44 | 44/44 | 14/14 (0 found) |
+| H4 2004–09 | 40/44 | 44/44 | 14/14 (0 found; adversarial round found D46/D47 in dev) |
 
 ## Test-suite split (release verification)
 
 | suite | scope | clean-checkout |
 |---|---|---|
-| offline deterministic | 160 tests — goldens, defect registry, known_at unit, gates | all pass |
+| offline deterministic | 162 tests — goldens, defect registry, known_at unit, gates | all pass |
 | `test_known_at_api.py` (8 tests) | API-level AS_KNown_AT on the register corpus (gitignored, released as asset) | conditional-skip when `data/corpus/` absent — semantics duplicated by `test_known_at.py` unit tests which DO run offline |
 
 ## H3 verdict — `GO_WITH_PARTIAL_COVERAGE` → H4 executed
@@ -78,13 +78,13 @@
 [x] identifier manifests frozen + committed
 [x] all discovered documents accounted for
 [x] zero unexplained retrieval/parse/reconciliation failures
-[x] new defect classes regression-covered (44/44→45/45)
+[x] new defect classes regression-covered (44/44→47/47, incl. adversarial D46/D47)
 [x] fresh year-stratified holdout PASS 14/14
 [x] monetary exactness PASS (G6 + G26)
 [x] legal-reference integrity PASS (G5 + article/statute gates)
 [x] evidence integrity PASS (G29)
 [x] coverage claims PASS (G28)
-[x] clean-checkout deterministic suite PASS (160)
+[x] clean-checkout deterministic suite PASS (154 + 8 documented skips; clone-built DB, 29/29 gates)
 [x] coverage_matrix.json updated
 [x] docs/coverage/2004-2009.md generated
 [x] docs/V06_REPORT.md updated
