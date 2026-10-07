@@ -286,22 +286,34 @@ _CONDUCT_SPLIT_RE = re.compile(
 )
 # sanction clause at the end of an impose/por-comisión sentence
 _SANCTION_TAIL_RE = re.compile(
-    r"\b(?P<count>una|un|uno|dos|tres|cuatro|cinco|seis|siete|ocho|nueve|diez|\d{1,2})?\s*"
-    r"(?P<kind>multas?|sanci[oó]n(?:es)?(?:\s*,?\s*a\s+cada\s+un[ao]"
-    r"\s+de\s+(?:ellos|ellas|cada\s+una)\s*,?)?(?:\s+(?:de|"
-    r"consistente\s+en)\s+\w+)?|"
+    r"\b(?:de\s+|la\s+|las\s+|los\s+)?"
+    r"(?P<count>una|un|uno|dos|tres|cuatro|cinco|seis|siete|ocho|nueve|diez|\d{1,2})?\s*"
+    r"(?P<kind>(?:sanciones?|multas?|sanci[oó]n(?:es)?"
+    r"(?:\s*,?\s*a\s+cada\s+un[ao]"
+    r"\s+de\s+(?:ellos|ellas|cada\s+una)\s*,?)?|"
     r"inhabilitaci[oó]n(?:es)?|"
-    r"amonestaci[oó]n(?:es)?(?:\s+p[uú]blica)?|suspensi[oó]n(?:es)?|"
+    r"amonestaci[oó]n(?:es)?(?:\s+p[uú]blica)?"
+    r"(?:\s+con\s+publicaci[oó]n\s+en\s+BOE)?|suspensi[oó]n(?:es)?|"
     r"separaci[oó]n(?:es)?(?:\s+del?\s+cargo)?|confiscaci[oó]n(?:es)?|comiso|"
-    r"restituci[oó]n(?:es)?)\b"
+    r"restituci[oó]n(?:es)?)"
+    # 'sanción(es) de amonestación' — the kind may carry a 'de <word>'
+    # suffix, but NEVER 'de 500' (that's the amount's 'de')
+    r"(?:\s+(?:de|consistente\s+en)\s+[a-záéíóúñ][\w]*)?)\b"
     r"(?P<tail>(?:\.(?=\d)|[^.;])*)",
     re.IGNORECASE,
 )
 _SANCTION_SPLIT_RE = re.compile(
-    rf"(?:[,;]\s*(?:y\s+)?|\s+y\s+)(?=(?:{_COUNT_RE}|\d+)?\s*"
-    r"(?:sanci[oó]n(?:es)?\s+de\s+|multas?|"
-    r"inhabilitaci[oó]n|amonestaci[oó]n|suspensi[oó]n|separaci[oó]n|"
-    r"confiscaci[oó]n|comiso|restituci[oó]n))",
+    # 'y' before a clause lets 'de/la/las/los' prefix the kind
+    # ('y de multa', 'y la sanción de multa'); a bare ',' only splits
+    # when a kind word directly follows — 'sanción, a cada uno de
+    # ellos, de multa…' is ONE clause, not two
+    rf"(?:[,;]\s*(?:y\s+)|\s+y\s+)(?=(?:{_COUNT_RE}|\d+)?\s*"
+    r"(?:de\s+|la\s+|las\s+|los\s+)?(?:sanci[oó]n(?:es)?\s+de\s+|"
+    r"multas?|inhabilitaci[oó]n|amonestaci[oó]n|suspensi[oó]n|"
+    r"separaci[oó]n|confiscaci[oó]n|comiso|restituci[oó]n))"
+    rf"|[,;]\s+(?=(?:{_COUNT_RE}|\d+)?\s*(?:sanci[oó]n(?:es)?\s+de\s+|"
+    r"multas?|inhabilitaci[oó]n|amonestaci[oó]n|suspensi[oó]n|"
+    r"separaci[oó]n|confiscaci[oó]n|comiso|restituci[oó]n))",
     re.IGNORECASE,
 )
 _AMOUNT_RES = [
@@ -722,9 +734,13 @@ def _sanction_kind(kind: str) -> SanctionType:
         "",
         k,
     )
-    # 'sanción(es) consistente en multa' / 'sanción de multa' → 'multa'
+    # 'sanción(es) consistente en multa' / 'las sanciones de multa' →
+    # 'multa'
     k = re.sub(
-        r"^sanci[oó]n(?:es)?\s+(?:consistente\s+en|de)\s+", "", k
+        r"^(?:(?:la|las|los)\s+)?sanci[oó]n(?:es)?\s+"
+        r"(?:consistente\s+en|de)\s+",
+        "",
+        k,
     )
     if k.startswith("multa"):
         return SanctionType.MONETARY_FINE

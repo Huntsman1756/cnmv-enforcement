@@ -478,3 +478,12 @@ defects:
     ''Imponer al miembro del Consejo de X: Don Daniel'' (singular + colon) — phantom
     role subject + empty-subject sanction (holdout-caught).'
   fix_commit: v0.6 H2
+- defect_id: D43
+  defect_class: SANCTION_BEFORE_COMISION
+  round: H3
+  fixtures:
+  - BOE-A-2004-10461
+  description: '''las sanciones de amonestación pública con publicación en BOE y de
+    multa por importe de N'' — plural head + compound ''y de multa'' clause; also
+    sumario pre-2005 shape (item directly under departamento, no epigrafe).'
+  fix_commit: v0.6 H3-feasibility

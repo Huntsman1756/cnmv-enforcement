@@ -516,3 +516,25 @@ def test_D42_de_su_consejo_and_al_miembro():
         "Salama Millet" in l.subject_raw
         for b in pub2.blocks for l in b.sanctions
     )
+
+
+def test_D43_las_sanciones_compound():
+    """'las sanciones de amonestación pública … y de multa por importe
+    de N' — two sanctions: PUBLIC_REPRIMAND + MONETARY_FINE."""
+    from pathlib import Path
+    from cnmv_enforcement.parsing.boe_publication import (
+        parse_publication_xml,
+    )
+    p = Path("data/corpus_h3_sample/BOE-A-2004-10461.xml")
+    if not p.exists():
+        pytest.skip("h3 sample absent")
+    pub = parse_publication_xml(p.read_bytes())
+    kinds = {
+        l.sanction_type for b in pub.blocks for l in b.sanctions
+    }
+    assert SanctionType.PUBLIC_REPRIMAND in kinds
+    assert SanctionType.MONETARY_FINE in kinds
+    assert sum(
+        l.amount for b in pub.blocks for l in b.sanctions
+        if l.amount
+    ) == Decimal("250000")

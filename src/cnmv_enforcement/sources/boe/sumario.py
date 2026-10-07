@@ -105,7 +105,12 @@ def parse_sumario(payload: bytes | str, fecha: date) -> Sumario:
             for dept in _as_list(seccion.get("departamento")):
                 if not isinstance(dept, dict):
                     continue
-                for ep in _as_list(dept.get("epigrafe")):
+                # pre-2005 sumarios put 'item' directly under
+                # 'departamento' (no epigrafe layer); newer ones nest
+                # items under epigrafe — cover both shapes
+                containers = [dept] if "item" in dept else []
+                containers += _as_list(dept.get("epigrafe"))
+                for ep in containers:
                     if not isinstance(ep, dict):
                         continue
                     ep_name = ep.get("nombre")
