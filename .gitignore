@@ -1,0 +1,45 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+dist/
+build/
+*.whl
+
+# Data & artifacts (raw sources published as release assets)
+data/raw/
+data/runtime/
+data/exports/
+artifacts/*
+!artifacts/.gitkeep
+!artifacts/README.md
+coverage/boe-identifiers.txt
+coverage/cnmv-register-identifiers.txt
+coverage/manifest.sha256
+
+# Node / web
+web/node_modules/
+web/dist/
+web/.vite/
+
+# IDE / OS
+.idea/
+.vscode/
+*.swp
+.DS_Store
+Thumbs.db
+
+# Env
+.env
+.env.local
+
+# Test caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.hypothesis/
+playwright-report/
+test-results/
+data/corpus/
