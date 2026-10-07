@@ -453,6 +453,7 @@ def build(
     tables = flatten(
         result, pdf_status=pdf_obs, review_items=items
     )
+    exports_dir.mkdir(parents=True, exist_ok=True)
     # ship the pdf-status manifest INSIDE the export — the coverage basis
     # for negative appeal claims must be reproducible from the release
     if status_path.exists():
