@@ -250,6 +250,12 @@ _ADMIN_APPEAL_RES = [
     ),
     re.compile(r"recurso\s+extraordinario\s+de\s+revisi[oó]n", re.IGNORECASE),
 ]
+# publication-level renunciation: 'habiéndose renunciado … los recursos
+# administrativos' — the publication itself states the appeal was waived
+_RENUNCIATION_RES = [
+    re.compile(r"habi[ée]ndose\s+renunciado", re.IGNORECASE),
+    re.compile(r"renunciado\s+a(?:l|\s+interponer|\s+los)", re.IGNORECASE),
+]
 _PERSON_MARK_RE = re.compile(r"^(?:don|doña|d\.|dña|d\u00f1a)\b", re.IGNORECASE)
 _ANON_RE = re.compile(
     r"identidad\s+an[oó]nima|anonimato|se\s+preserva\s+su\s+identidad|"
@@ -329,6 +335,7 @@ class ParsedPublication:
     administrative_finality: bool = False
     judicial_review_possible: bool = False
     administrative_appeal: bool = False
+    renunciation_stated: bool = False
     underlying_resolutions: list[str] = field(default_factory=list)
     parse_issues: list[str] = field(default_factory=list)
     document_kind: str = "SANCTION_PUBLICATION"  # | SUBSEQUENT_EVENT | OTHER
@@ -804,6 +811,9 @@ def parse_publication_xml(
         r.search(full_text) for r in _JUDICIAL_REVIEW_RES
     )
     pub.administrative_appeal = any(r.search(full_text) for r in _ADMIN_APPEAL_RES)
+    pub.renunciation_stated = any(
+        r.search(full_text) for r in _RENUNCIATION_RES
+    )
     # subsequent-event documents: revocation/rectification/correction of an
     # earlier publication — these are events about a case, not new cases
     if re.search(
@@ -915,6 +925,19 @@ def parse_publication_xml(
             current = blocks[-1]
             continue
         if current is None:
+            if (
+                para.css_class == "parrafo"
+                and t[:1] in _BULLETS
+                and re.match(
+                    r"(?i)(?:a\s+|multa|sanción|suspensión|inhabilitación|"
+                    r"amonestación|restitución|comiso)",
+                    t.lstrip(_BULLETS).lstrip(),
+                )
+            ):
+                pub.parse_issues.append(
+                    f"sanction-like bullet outside any impose block "
+                    f"(para {para.index}): {t[:80]}"
+                )
             continue
         # subject-first bullet: '– A <subj>: <sanction>' or historical
         # '• A <subj>[, multa] por importe de N euros' (no colon)

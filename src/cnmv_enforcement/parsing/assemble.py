@@ -253,6 +253,20 @@ def assemble_case(
             None,
             {"wording": "firmes en dicha vía (observed in publication)"},
         )
+    if pub.administrative_appeal:
+        add_event(
+            EventType.ADMINISTRATIVE_APPEAL,
+            None,
+            {"wording": "interpuesto recurso de alzada/reposición "
+             "(observed in publication)"},
+        )
+    if pub.renunciation_stated:
+        add_event(
+            EventType.ADMINISTRATIVE_FINALITY,
+            None,
+            {"wording": "renunciado al recurso administrativo "
+             "(observed in publication)"},
+        )
     if pub.publication_date:
         add_event(EventType.BOE_PUBLICATION, pub.publication_date)
 

@@ -81,6 +81,11 @@ def project_case_status(
             )
         if pub.administrative_appeal:
             bump(
+                FirmnessStatus.APPEAL_OBSERVED,
+                "publication states an administrative appeal was filed",
+            )
+        if pub.renunciation_stated:
+            bump(
                 FirmnessStatus.RENUNCIATION_OBSERVED,
                 "publication states renunciation of administrative appeals",
             )
