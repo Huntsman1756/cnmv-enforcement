@@ -1,0 +1,1487 @@
+{
+    "status": {
+        "code": "200",
+        "text": "ok"
+    },
+    "data": {
+        "sumario": {
+            "metadatos": {
+                "publicacion": "BOE",
+                "fecha_publicacion": "20050103"
+            },
+            "diario": [
+                {
+                    "numero": "2",
+                    "sumario_diario": {
+                        "identificador": "BOE-S-2005-2",
+                        "url_pdf": {
+                            "szBytes": "302600",
+                            "szKBytes": "296",
+                            "texto": "https:\/\/www.boe.es\/boe\/dias\/2005\/01\/03\/pdfs\/BOE-S-2005-2.pdf"
+                        }
+                    },
+                    "seccion": [
+                        {
+                            "codigo": "1",
+                            "nombre": "I. Disposiciones generales",
+                            "departamento": {
+                                "codigo": "5130",
+                                "nombre": "MINISTERIO DE ECONOM\u00cdA Y HACIENDA",
+                                "texto": {
+                                    "epigrafe": [
+                                        {
+                                            "nombre": "Contrataci\u00f3n administrativa",
+                                            "item": {
+                                                "identificador": "BOE-A-2005-61",
+                                                "titulo": "Orden EHA\/4314\/2004, de 23 de diciembre, por la que se modifica la composici\u00f3n de los \u00f3rganos colegiados integrados en la Junta Consultiva de Contrataci\u00f3n Administrativa.",
+                                                "url_pdf": {
+                                                    "szBytes": "45627",
+                                                    "szKBytes": "45",
+                                                    "pagina_inicial": "81",
+                                                    "pagina_final": "82",
+                                                    "texto": "https:\/\/www.boe.es\/boe\/dias\/2005\/01\/03\/pdfs\/A00081-00082.pdf"
+                                                },
+                                                "url_html": "https:\/\/www.boe.es\/diario_boe\/txt.php?id=BOE-A-2005-61",
+                                                "url_xml": "https:\/\/www.boe.es\/diario_boe\/xml.php?id=BOE-A-2005-61"
+                                            }
+                                        },
+                                        {
+                                            "nombre": "Funcionarios p\u00fablicos. N\u00f3minas",
+                                            "item": {
+                                                "identificador": "BOE-A-2005-62",
+                                                "titulo": "Resoluci\u00f3n de 28 de diciembre de 2004, de la Secretar\u00eda de Estado de Hacienda y Presupuestos, por la que se dictan instrucciones en relaci\u00f3n con las n\u00f3minas de los funcionarios incluidos en el \u00e1mbito de aplicaci\u00f3n de la Ley 30\/1984, de 2 de agosto, y se actualizan para el a\u00f1o 2005 las cuant\u00edas de las retribuciones del personal a que se refieren los correspondientes art\u00edculos de la Ley 2\/2004, de 27 de diciembre, de Presupuestos Generales del Estado para dicho ejercicio.",
+                                                "url_pdf": {
+                                                    "szBytes": "1746369",
+                                                    "szKBytes": "1705",
+                                                    "pagina_inicial": "82",
+                                                    "pagina_final": "115",
+                                                    "texto": "https:\/\/www.boe.es\/boe\/dias\/2005\/01\/03\/pdfs\/A00082-00115.pdf"
+                                                },
+                                                "url_html": "https:\/\/www.boe.es\/diario_boe\/txt.php?id=BOE-A-2005-62",
+                                                "url_xml": "https:\/\/www.boe.es\/diario_boe\/xml.php?id=BOE-A-2005-62"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "codigo": "2A",
+                            "nombre": "II. Autoridades y personal. - A. Nombramientos, situaciones e incidencias",
+                            "departamento": [
+                                {
+                                    "codigo": "4810",
+                                    "nombre": "MINISTERIO DE JUSTICIA",
+                                    "epigrafe": [
+                                        {
+                                            "nombre": "Situaciones",
+                                            "item": {
+                                                "identificador": "BOE-A-2005-63",
+                                                "titulo": "Resoluci\u00f3n de 15 de diciembre de 2004, de la Direcci\u00f3n General de los Registros y del Notariado, por la que en aplicaci\u00f3n del art\u00edculo primero de la Ley 29\/1983, de 12 de diciembre, se jubila al notario de Madrid don Andr\u00e9s Sanz Tobes.",
+                                                "url_pdf": {
+                                                    "szBytes": "39564",
+                                                    "szKBytes": "39",
+                                                    "pagina_inicial": "116",
+                                                    "pagina_final": "116",
+                                                    "texto": "https:\/\/www.boe.es\/boe\/dias\/2005\/01\/03\/pdfs\/A00116-00116.pdf"
+                                                },
+                                                "url_html": "https:\/\/www.boe.es\/diario_boe\/txt.php?id=BOE-A-2005-63",
+                                                "url_xml": "https:\/\/www.boe.es\/diario_boe\/xml.php?id=BOE-A-2005-63"
+                                            }
+                                        }
+                                    ]
+                                },
+                                {
+                                    "codigo": "5130",
+                                    "nombre": "MINISTERIO DE ECONOM\u00cdA Y HACIENDA",
+                                    "epigrafe": [
+                                        {
+                                            "nombre": "Destinos",
+                                            "item": {
+                                                "identificador": "BOE-A-2005-64",
+                                                "titulo": "Orden EHA\/4315\/2004, de 17 de diciembre, por la que se hace p\u00fablica la adjudicaci\u00f3n de puestos de trabajo provistos por el procedimiento de libre designaci\u00f3n (11\/04).",
+                                                "url_pdf": {
+                                                    "szBytes": "80416",
+                                                    "szKBytes": "79",
+                                                    "pagina_inicial": "116",
+                                                    "pagina_final": "117",
+                                                    "texto": "https:\/\/www.boe.es\/boe\/dias\/2005\/01\/03\/pdfs\/A00116-00117.pdf"
+                                                },
+                                                "url_html": "https:\/\/www.boe.es\/diario_boe\/txt.php?id=BOE-A-2005-64",
+                                                "url_xml": "https:\/\/www.boe.es\/diario_boe\/xml.php?id=BOE-A-2005-64"
+                                            }
+                                        }
+                                    ]
+                                },
+                                {
+                                    "codigo": "7320",
+                                    "nombre": "MINISTERIO DEL INTERIOR",
+                                    "epigrafe": [
+                                        {
+                                            "nombre": "Destinos",
+                                            "item": {
+                                                "identificador": "BOE-A-2005-65",
+                                                "titulo": "Orden INT\/4316\/2004, de 14 de diciembre, por la que se resuelven parcialmente las convocatorias de puestos de trabajo convocados para ser provistos por el procedimiento de libre designaci\u00f3n.",
+                                                "url_pdf": {
+                                                    "szBytes": "81835",
+                                                    "szKBytes": "80",
+                                                    "pagina_inicial": "117",
+                                                    "pagina_final": "118",
+                                                    "texto": "https:\/\/www.boe.es\/boe\/dias\/2005\/01\/03\/pdfs\/A00117-00118.pdf"
+                                                },
+                                                "url_html": "https:\/\/www.boe.es\/diario_boe\/txt.php?id=BOE-A-2005-65",
+                                                "url_xml": "https:\/\/www.boe.es\/diario_boe\/xml.php?id=BOE-A-2005-65"
+                                            }
+                                        },
+                                        {
+                                            "nombre": "Nombramientos",
+                                            "item": {
+                                                "identificador": "BOE-A-2005-66",
+                                                "titulo": "Orden INT\/4317\/2004, de 14 de diciembre, por la que se nombra Subdirector General del Centro de Sistemas de Informaci\u00f3n a don Jaime Jes\u00fas Denis Zambrana.",
+                                                "url_pdf": {
+                                                    "szBytes": "79046",
+                                                    "szKBytes": "77",
+                                                    "pagina_inicial": "118",
+                                                    "pagina_final": "119",
+                                                    "texto": "https:\/\/www.boe.es\/boe\/dias\/2005\/01\/03\/pdfs\/A00118-00119.pdf"
+                                                },
+                                                "url_html": "https:\/\/www.boe.es\/diario_boe\/txt.php?id=BOE-A-2005-66",
+                                                "url_xml": "https:\/\/www.boe.es\/diario_boe\/xml.php?id=BOE-A-2005-66"
+                                            }
+                                        }
+                                    ]
+                                },
+                                {
+                                    "codigo": "7210",
+                                    "nombre": "MINISTERIO DE ADMINISTRACIONES P\u00daBLICAS",
+                                    "epigrafe": [
+                                        {
+                                            "nombre": "Destinos",
+                                            "item": {
+                                                "identificador": "BOE-A-2005-67",
+                                                "titulo": "Resoluci\u00f3n de 17 de diciembre de 2004, de la Direcci\u00f3n General de Cooperaci\u00f3n Local, por la que se adjudica puesto por el procedimiento de libre designaci\u00f3n, reservado a funcionarios de Administraci\u00f3n Local con habilitaci\u00f3n de car\u00e1cter nacional.",
+                                                "url_pdf": {
+                                                    "szBytes": "38761",
+                                                    "szKBytes": "38",
+                                                    "pagina_inicial": "119",
+                                                    "pagina_final": "119",
+                                                    "texto": "https:\/\/www.boe.es\/boe\/dias\/2005\/01\/03\/pdfs\/A00119-00119.pdf"
+                                                },
+                                                "url_html": "https:\/\/www.boe.es\/diario_boe\/txt.php?id=BOE-A-2005-67",
+                                                "url_xml": "https:\/\/www.boe.es\/diario_boe\/xml.php?id=BOE-A-2005-67"
+                                            }
+                                        }
+                                    ]
+                                },
+                                {
+                                    "codigo": "4110",
+                                    "nombre": "MINISTERIO DE CULTURA",
+                                    "epigrafe": [
+                                        {
+                                            "nombre": "Destinos",
+                                            "item": [
+                                                {
+                                                    "identificador": "BOE-A-2005-68",
+                                                    "titulo": "Orden CUL\/4318\/2004, de 21 de diciembre, por la que se adjudican las plazas convocadas por Orden CUL\/3055\/2004, de 10 de septiembre, para cubrir, por concurso, puestos de trabajo en el Instituto Nacional de las Artes Esc\u00e9nicas y de la M\u00fasica.",
+                                                    "url_pdf": {
+                                                        "szBytes": "98657",
+                                                        "szKBytes": "96",
+                                                        "pagina_inicial": "119",
+                                                        "pagina_final": "120",
+                                                        "texto": "https:\/\/www.boe.es\/boe\/dias\/2005\/01\/03\/pdfs\/A00119-00120.pdf"
+                                                    },
+                                                    "url_html": "https:\/\/www.boe.es\/diario_boe\/txt.php?id=BOE-A-2005-68",
+                                                    "url_xml": "https:\/\/www.boe.es\/diario_boe\/xml.php?id=BOE-A-2005-68"
+                                                },
+                                                {
+                                                    "identificador": "BOE-A-2005-69",
+                                                    "titulo": "Orden CUL\/4319\/2004, de 22 de diciembre, por la que se adjudican puestos de trabajo convocados a concurso espec\u00edfico por Orden CUL\/3761\/2004, de 1 de octubre.",
+                                                    "url_pdf": {
+                                                        "szBytes": "40399",
+                                                        "szKBytes": "39",
+                                                        "pagina_inicial": "121",
+                                                        "pagina_final": "121",
+                                                        "texto": "https:\/\/www.boe.es\/boe\/dias\/2005\/01\/03\/pdfs\/A00121-00121.pdf"
+                                                    },
+                                                    "url_html": "https:\/\/www.boe.es\/diario_boe\/txt.php?id=BOE-A-2005-69",
+                                                    "url_xml": "https:\/\/www.boe.es\/diario_boe\/xml.php?id=BOE-A-2005-69"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                {
+                                    "codigo": "3410",
+                                    "nombre": "MINISTERIO DE MEDIO AMBIENTE",
+                                    "epigrafe": [
+                                        {
+                                            "nombre": "Destinos",
+                                            "item": {
+                                                "identificador": "BOE-A-2005-70",
+                                                "titulo": "Orden MAM\/4320\/2004, de 7 de diciembre, por la que se resuelve la convocatoria efectuada por Orden MAM\/674\/2004, de 8 de marzo, para la provisi\u00f3n, por el sistema de libre designaci\u00f3n, de puestos de trabajo en el Departamento.",
+                                                "url_pdf": {
+                                                    "szBytes": "40399",
+                                                    "szKBytes": "39",
+                                                    "pagina_inicial": "121",
+                                                    "pagina_final": "121",
+                                                    "texto": "https:\/\/www.boe.es\/boe\/dias\/2005\/01\/03\/pdfs\/A00121-00121.pdf"
+                                                },
+                                                "url_html": "https:\/\/www.boe.es\/diario_boe\/txt.php?id=BOE-A-2005-70",
+                                                "url_xml": "https:\/\/www.boe.es\/diario_boe\/xml.php?id=BOE-A-2005-70"
+                                            }
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "codigo": "2B",
+                            "nombre": "II. Autoridades y personal. - B. Oposiciones y concursos",
+                            "departamento": [
+                                {
+                                    "codigo": "1820",
+                                    "nombre": "CONSEJO GENERAL DEL PODER JUDICIAL",
+                                    "epigrafe": [
+                                        {
+                                            "nombre": "Letrados al servicio del Tribunal Supremo",
+                                            "item": {
+                                                "identificador": "BOE-A-2005-71",
+                                                "titulo": "Acuerdo de 21 de diciembre de 2004, de la Comisi\u00f3n Permanente del Consejo General del Poder Judicial, por el que se aprueba la relaci\u00f3n provisional de aspirantes admitidos y excluidos para participar en el concurso convocado para provisi\u00f3n de cuatro plazas de Letrado al servicio del Tribunal Supremo.",
+                                                "url_pdf": {
+                                                    "szBytes": "32941",
+                                                    "szKBytes": "32",
+                                                    "pagina_inicial": "122",
+                                                    "pagina_final": "122",
+                                                    "texto": "https:\/\/www.boe.es\/boe\/dias\/2005\/01\/03\/pdfs\/A00122-00122.pdf"
+                                                },
+                                                "url_html": "https:\/\/www.boe.es\/diario_boe\/txt.php?id=BOE-A-2005-71",
+                                                "url_xml": "https:\/\/www.boe.es\/diario_boe\/xml.php?id=BOE-A-2005-71"
+                                            }
+                                        },
+                                        {
+                                            "nombre": "Carrera Judicial",
+                                            "item": {
+                                                "identificador": "BOE-A-2005-72",
+                                                "titulo": "Acuerdo de 29 de diciembre de 2004, de la Comisi\u00f3n Permanente del Consejo General del Poder Judicial, por el que se anuncia concurso para la provisi\u00f3n de determinados cargos judiciales entre miembros de la Carrera Judicial, con categor\u00eda de Juez.",
+                                                "url_pdf": {
+                                                    "szBytes": "102726",
+                                                    "szKBytes": "100",
+                                                    "pagina_inicial": "122",
+                                                    "pagina_final": "124",
+                                                    "texto": "https:\/\/www.boe.es\/boe\/dias\/2005\/01\/03\/pdfs\/A00122-00124.pdf"
+                                                },
+                                                "url_html": "https:\/\/www.boe.es\/diario_boe\/txt.php?id=BOE-A-2005-72",
+                                                "url_xml": "https:\/\/www.boe.es\/diario_boe\/xml.php?id=BOE-A-2005-72"
+                                            }
+                                        }
+                                    ]
+                                },
+                                {
+                                    "codigo": "4230",
+                                    "nombre": "MINISTERIO DE EDUCACI\u00d3N Y CIENCIA",
+                                    "epigrafe": [
+                                        {
+                                            "nombre": "Personal laboral",
+                                            "item": {
+                                                "identificador": "BOE-A-2005-73",
+                                                "titulo": "Orden ECI\/4321\/2004, de 29 de noviembre, por la que se publica la lista de aspirantes que han superado el procedimiento selectivo de consolidaci\u00f3n de empleo temporal de operario de limpieza convocado por Orden ECD\/417\/2004, de 9 de febrero.",
+                                                "url_pdf": {
+                                                    "szBytes": "80290",
+                                                    "szKBytes": "78",
+                                                    "pagina_inicial": "124",
+                                                    "pagina_final": "125",
+                                                    "texto": "https:\/\/www.boe.es\/boe\/dias\/2005\/01\/03\/pdfs\/A00124-00125.pdf"
+                                                },
+                                                "url_html": "https:\/\/www.boe.es\/diario_boe\/txt.php?id=BOE-A-2005-73",
+                                                "url_xml": "https:\/\/www.boe.es\/diario_boe\/xml.php?id=BOE-A-2005-73"
+                                            }
+                                        }
+                                    ]
+                                },
+                                {
+                                    "codigo": "4110",
+                                    "nombre": "MINISTERIO DE CULTURA",
+                                    "epigrafe": [
+                                        {
+                                            "nombre": "Personal laboral",
+                                            "item": {
+                                                "identificador": "BOE-A-2005-74",
+                                                "titulo": "Orden CUL\/4322\/2004, de 29 de noviembre, por la que se resuelven las pruebas selectivas convocadas por Orden ECD\/417\/2004, de 9 de febrero, en el marco del proceso de consolidaci\u00f3n de empleo temporal en la categor\u00eda profesional de Operario de Limpieza en el extinguido Ministerio de Educaci\u00f3n, Cultura y Deporte.",
+                                                "url_pdf": {
+                                                    "szBytes": "40047",
+                                                    "szKBytes": "39",
+                                                    "pagina_inicial": "125",
+                                                    "pagina_final": "125",
+                                                    "texto": "https:\/\/www.boe.es\/boe\/dias\/2005\/01\/03\/pdfs\/A00125-00125.pdf"
+                                                },
+                                                "url_html": "https:\/\/www.boe.es\/diario_boe\/txt.php?id=BOE-A-2005-74",
+                                                "url_xml": "https:\/\/www.boe.es\/diario_boe\/xml.php?id=BOE-A-2005-74"
+                                            }
+                                        }
+                                    ]
+                                },
+                                {
+                                    "codigo": "310",
+                                    "nombre": "UNIVERSIDADES",
+                                    "epigrafe": [
+                                        {
+                                            "nombre": "Cuerpos docentes universitarios",
+                                            "item": {
+                                                "identificador": "BOE-A-2005-75",
+                                                "titulo": "Resoluci\u00f3n de 18 de diciembre de 2004, de la Secretar\u00eda General del Consejo de Coordinaci\u00f3n Universitaria, por la que se aprueba la relaci\u00f3n definitiva de admitidos y excluidos a las pruebas de habilitaci\u00f3n nacional, que facultan para participar en concursos de acceso a Cuerpos de Catedr\u00e1ticos de Universidad, Profesores Titulares de Universidad, Catedr\u00e1ticos de Escuelas Universitarias y Profesores Titulares de Escuelas Universitarias y se se\u00f1ala fecha y lugar de celebraci\u00f3n de los sorteos p\u00fablicos para la composici\u00f3n de las comisiones de las pruebas de habilitaci\u00f3n convocadas mediante Resoluci\u00f3n de 5 de julio de 2004.",
+                                                "url_pdf": {
+                                                    "szBytes": "239699",
+                                                    "szKBytes": "234",
+                                                    "pagina_inicial": "125",
+                                                    "pagina_final": "135",
+                                                    "texto": "https:\/\/www.boe.es\/boe\/dias\/2005\/01\/03\/pdfs\/A00125-00135.pdf"
+                                                },
+                                                "url_html": "https:\/\/www.boe.es\/diario_boe\/txt.php?id=BOE-A-2005-75",
+                                                "url_xml": "https:\/\/www.boe.es\/diario_boe\/xml.php?id=BOE-A-2005-75"
+                                            }
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "codigo": "3",
+                            "nombre": "III. Otras disposiciones",
+                            "departamento": [
+                                {
+                                    "codigo": "4810",
+                                    "nombre": "MINISTERIO DE JUSTICIA",
+                                    "epigrafe": [
+                                        {
+                                            "nombre": "Recursos",
+                                            "item": [
+                                                {
+                                                    "identificador": "BOE-A-2005-76",
+                                                    "titulo": "Resoluci\u00f3n de 29 de noviembre de 2004, de la Direcci\u00f3n General de los Registros y del Notariado, en el recurso gubernativo interpuesto por don C\u00e9sar y don Mariano Alonso Mor\u00e1is, frente a la negativa de la registradora de la propiedad de Valladolid n\u00famero 5, do\u00f1a Mar\u00eda Jos\u00e9 Triana \u00c1lvarez, a inscribir el fallo de una sentencia judicial.",
+                                                    "url_pdf": {
+                                                        "szBytes": "123126",
+                                                        "szKBytes": "120",
+                                                        "pagina_inicial": "136",
+                                                        "pagina_final": "138",
+                                                        "texto": "https:\/\/www.boe.es\/boe\/dias\/2005\/01\/03\/pdfs\/A00136-00138.pdf"
+                                                    },
+                                                    "url_html": "https:\/\/www.boe.es\/diario_boe\/txt.php?id=BOE-A-2005-76",
+                                                    "url_xml": "https:\/\/www.boe.es\/diario_boe\/xml.php?id=BOE-A-2005-76"
+                                                },
+                                                {
+                                                    "identificador": "BOE-A-2005-77",
+                                                    "titulo": "Resoluci\u00f3n de 30 de noviembre de 2004, de la Direcci\u00f3n General de los Registros y del Notariado, en el recurso gubernativo interpuesto por la Agencia Estatal de la Administraci\u00f3n Tributaria, contra la negativa del registrador de la propiedad de Vilanova i la Geltr\u00fa, don Jos\u00e9 Antonio Miquel Calatayud, a practicar una anotaci\u00f3n de ampliaci\u00f3n de embargo.",
+                                                    "url_pdf": {
+                                                        "szBytes": "124341",
+                                                        "szKBytes": "121",
+                                                        "pagina_inicial": "138",
+                                                        "pagina_final": "140",
+                                                        "texto": "https:\/\/www.boe.es\/boe\/dias\/2005\/01\/03\/pdfs\/A00138-00140.pdf"
+                                                    },
+                                                    "url_html": "https:\/\/www.boe.es\/diario_boe\/txt.php?id=BOE-A-2005-77",
+                                                    "url_xml": "https:\/\/www.boe.es\/diario_boe\/xml.php?id=BOE-A-2005-77"
+                                                },
+                                                {
+                                                    "identificador": "BOE-A-2005-78",
+                                                    "titulo": "Resoluci\u00f3n de 1 de diciembre de 2004, de la Direcci\u00f3n General de los Registros y del Notariado, en el recurso gubernativo interpuesto por don Jos\u00e9 Mart\u00ednez Mart\u00edn, contra la negativa del registrador de la propiedad, n\u00famero diez de Madrid, don Jos\u00e9 Miguel Masa Burgos, a inscribir una escritura de compraventa.",
+                                                    "url_pdf": {
+                                                        "szBytes": "90956",
+                                                        "szKBytes": "89",
+                                                        "pagina_inicial": "140",
+                                                        "pagina_final": "141",
+                                                        "texto": "https:\/\/www.boe.es\/boe\/dias\/2005\/01\/03\/pdfs\/A00140-00141.pdf"
+                                                    },
+                                                    "url_html": "https:\/\/www.boe.es\/diario_boe\/txt.php?id=BOE-A-2005-78",
+                                                    "url_xml": "https:\/\/www.boe.es\/diario_boe\/xml.php?id=BOE-A-2005-78"
+                                                },
+                                                {
+                                                    "identificador": "BOE-A-2005-79",
+                                                    "titulo": "Resoluci\u00f3n de 2 de diciembre de 2004, de la Direcci\u00f3n General de los Registros y del Notariado, en el recurso gubernativo interpuesto por don Antonio Pe\u00f1a Requena, contra la negativa de la registradora de la propiedad de Almu\u00f1\u00e9car, do\u00f1a Mar\u00eda Cristina Palma L\u00f3pez, a practicar la cancelaci\u00f3n de ciertas inscripciones y anotaciones de embargo.",
+                                                    "url_pdf": {
+                                                        "szBytes": "116673",
+                                                        "szKBytes": "114",
+                                                        "pagina_inicial": "141",
+                                                        "pagina_final": "143",
+                                                        "texto": "https:\/\/www.boe.es\/boe\/dias\/2005\/01\/03\/pdfs\/A00141-00143.pdf"
+                                                    },
+                                                    "url_html": "https:\/\/www.boe.es\/diario_boe\/txt.php?id=BOE-A-2005-79",
+                                                    "url_xml": "https:\/\/www.boe.es\/diario_boe\/xml.php?id=BOE-A-2005-79"
+                                                },
+                                                {
+                                                    "identificador": "BOE-A-2005-80",
+                                                    "titulo": "Resoluci\u00f3n de 3 de diciembre de 2004, de la Direcci\u00f3n General de los Registros y del Notariado, en el recurso gubernativo interpuesto por el notario de Torrevieja, don Jos\u00e9 Julio Barrenechea Garc\u00eda, contra la negativa del Registrador de la Propiedad n\u00famero dos de Torrevieja, don Ventura M\u00e1rquez de Prado y Noriega, a inscribir una escritura de compraventa.",
+                                                    "url_pdf": {
+                                                        "szBytes": "91409",
+                                                        "szKBytes": "89",
+                                                        "pagina_inicial": "143",
+                                                        "pagina_final": "144",
+                                                        "texto": "https:\/\/www.boe.es\/boe\/dias\/2005\/01\/03\/pdfs\/A00143-00144.pdf"
+                                                    },
+                                                    "url_html": "https:\/\/www.boe.es\/diario_boe\/txt.php?id=BOE-A-2005-80",
+                                                    "url_xml": "https:\/\/www.boe.es\/diario_boe\/xml.php?id=BOE-A-2005-80"
+                                                },
+                                                {
+                                                    "identificador": "BOE-A-2005-81",
+                                                    "titulo": "Resoluci\u00f3n de 4 de diciembre de 2004, de la Direcci\u00f3n General de los Registros y del Notariado, en el recurso gubernativo interpuesto por el notario de Sevilla, don Victorio Magari\u00f1os Blanco, contra la negativa del registrador de la propiedad, n\u00famero cinco de Sevilla, don Ram\u00f3n Men\u00e9ndez Felipe, a inscribir una escritura en la que se establecen las reglas de funcionamiento de la comunidad sobre una determinada finca.",
+                                                    "url_pdf": {
+                                                        "szBytes": "134322",
+                                                        "szKBytes": "131",
+                                                        "pagina_inicial": "144",
+                                                        "pagina_final": "146",
+                                                        "texto": "https:\/\/www.boe.es\/boe\/dias\/2005\/01\/03\/pdfs\/A00144-00146.pdf"
+                                                    },
+                                                    "url_html": "https:\/\/www.boe.es\/diario_boe\/txt.php?id=BOE-A-2005-81",
+                                                    "url_xml": "https:\/\/www.boe.es\/diario_boe\/xml.php?id=BOE-A-2005-81"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                {
+                                    "codigo": "5130",
+                                    "nombre": "MINISTERIO DE ECONOM\u00cdA Y HACIENDA",
+                                    "epigrafe": [
+                                        {
+                                            "nombre": "Deuda del Estado",
+                                            "item": [
+                                                {
+                                                    "identificador": "BOE-A-2005-82",
+                                                    "titulo": "Resoluci\u00f3n de 21 de diciembre de 2004, de la Direcci\u00f3n General del Tesoro y Pol\u00edtica Financiera, por la que se disponen determinadas emisiones de Bonos y Obligaciones del Estado en el mes de enero de 2005 y se convocan las correspondientes subastas.",
+                                                    "url_pdf": {
+                                                        "szBytes": "125548",
+                                                        "szKBytes": "123",
+                                                        "pagina_inicial": "146",
+                                                        "pagina_final": "148",
+                                                        "texto": "https:\/\/www.boe.es\/boe\/dias\/2005\/01\/03\/pdfs\/A00146-00148.pdf"
+                                                    },
+                                                    "url_html": "https:\/\/www.boe.es\/diario_boe\/txt.php?id=BOE-A-2005-82",
+                                                    "url_xml": "https:\/\/www.boe.es\/diario_boe\/xml.php?id=BOE-A-2005-82"
+                                                },
+                                                {
+                                                    "identificador": "BOE-A-2005-83",
+                                                    "titulo": "Resoluci\u00f3n de 23 de diciembre de 2004, de la Direcci\u00f3n General del Tesoro y Pol\u00edtica Financiera, por la que se otorga un mandato a determinadas entidades para que lideren la emisi\u00f3n del primer tramo de una nueva referencia de Obligaciones del Estado a treinta a\u00f1os mediante el procedimiento de sindicaci\u00f3n.",
+                                                    "url_pdf": {
+                                                        "szBytes": "37995",
+                                                        "szKBytes": "37",
+                                                        "pagina_inicial": "148",
+                                                        "pagina_final": "148",
+                                                        "texto": "https:\/\/www.boe.es\/boe\/dias\/2005\/01\/03\/pdfs\/A00148-00148.pdf"
+                                                    },
+                                                    "url_html": "https:\/\/www.boe.es\/diario_boe\/txt.php?id=BOE-A-2005-83",
+                                                    "url_xml": "https:\/\/www.boe.es\/diario_boe\/xml.php?id=BOE-A-2005-83"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "nombre": "Fondos de pensiones",
+                                            "item": [
+                                                {
+                                                    "identificador": "BOE-A-2005-84",
+                                                    "titulo": "Resoluci\u00f3n de 30 de noviembre de 2004, de la Direcci\u00f3n General de Seguros y Fondos de Pensiones, por la que se autoriza la sustituci\u00f3n de la Entidad Gestora del Fondo Promofondo 2, Fondo de Pensiones.",
+                                                    "url_pdf": {
+                                                        "szBytes": "74224",
+                                                        "szKBytes": "72",
+                                                        "pagina_inicial": "148",
+                                                        "pagina_final": "149",
+                                                        "texto": "https:\/\/www.boe.es\/boe\/dias\/2005\/01\/03\/pdfs\/A00148-00149.pdf"
+                                                    },
+                                                    "url_html": "https:\/\/www.boe.es\/diario_boe\/txt.php?id=BOE-A-2005-84",
+                                                    "url_xml": "https:\/\/www.boe.es\/diario_boe\/xml.php?id=BOE-A-2005-84"
+                                                },
+                                                {
+                                                    "identificador": "BOE-A-2005-85",
+                                                    "titulo": "Resoluci\u00f3n de 30 de noviembre de 2004, de la Direcci\u00f3n General de Seguros y Fondos de Pensiones, por la que se autoriza la sustituci\u00f3n de la Entidad Gestora del Fondo Promofondo, Fondo de Pensiones.",
+                                                    "url_pdf": {
+                                                        "szBytes": "36927",
+                                                        "szKBytes": "36",
+                                                        "pagina_inicial": "149",
+                                                        "pagina_final": "149",
+                                                        "texto": "https:\/\/www.boe.es\/boe\/dias\/2005\/01\/03\/pdfs\/A00149-00149.pdf"
+                                                    },
+                                                    "url_html": "https:\/\/www.boe.es\/diario_boe\/txt.php?id=BOE-A-2005-85",
+                                                    "url_xml": "https:\/\/www.boe.es\/diario_boe\/xml.php?id=BOE-A-2005-85"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "nombre": "Loter\u00eda Nacional",
+                                            "item": {
+                                                "identificador": "BOE-A-2005-86",
+                                                "titulo": "Resoluci\u00f3n de 23 de diciembre de 2004, de Loter\u00edas y Apuestas del Estado, por la que se hace p\u00fablico el programa de premios para el Sorteo Extraordinario que se ha de celebrar el d\u00eda 6 de enero de 2005.",
+                                                "url_pdf": {
+                                                    "szBytes": "81199",
+                                                    "szKBytes": "79",
+                                                    "pagina_inicial": "149",
+                                                    "pagina_final": "150",
+                                                    "texto": "https:\/\/www.boe.es\/boe\/dias\/2005\/01\/03\/pdfs\/A00149-00150.pdf"
+                                                },
+                                                "url_html": "https:\/\/www.boe.es\/diario_boe\/txt.php?id=BOE-A-2005-86",
+                                                "url_xml": "https:\/\/www.boe.es\/diario_boe\/xml.php?id=BOE-A-2005-86"
+                                            }
+                                        }
+                                    ]
+                                },
+                                {
+                                    "codigo": "4230",
+                                    "nombre": "MINISTERIO DE EDUCACI\u00d3N Y CIENCIA",
+                                    "epigrafe": [
+                                        {
+                                            "nombre": "Ense\u00f1anzas deportivas",
+                                            "item": {
+                                                "identificador": "BOE-A-2005-87",
+                                                "titulo": "Resoluci\u00f3n de 29 de noviembre de 2004, de la Presidencia del Consejo Superior de Deportes, por la que se otorga el reconocimiento al que se refiere el art\u00edculo 42.2 del Real Decreto 1913\/1997, de 19 de diciembre, a determinadas formaciones deportivas impartidas por la Real Federaci\u00f3n Espa\u00f1ola de Atletismo y por las Federaciones deportivas auton\u00f3micas de la citada modalidad, as\u00ed como por la Escuela Catalana del Deporte, con anterioridad a la entrada en vigor de la Orden de 5 de julio de 1999.",
+                                                "url_pdf": {
+                                                    "szBytes": "566709",
+                                                    "szKBytes": "553",
+                                                    "pagina_inicial": "150",
+                                                    "pagina_final": "166",
+                                                    "texto": "https:\/\/www.boe.es\/boe\/dias\/2005\/01\/03\/pdfs\/A00150-00166.pdf"
+                                                },
+                                                "url_html": "https:\/\/www.boe.es\/diario_boe\/txt.php?id=BOE-A-2005-87",
+                                                "url_xml": "https:\/\/www.boe.es\/diario_boe\/xml.php?id=BOE-A-2005-87"
+                                            }
+                                        }
+                                    ]
+                                },
+                                {
+                                    "codigo": "4430",
+                                    "nombre": "MINISTERIO DE TRABAJO Y ASUNTOS SOCIALES",
+                                    "epigrafe": [
+                                        {
+                                            "nombre": "Subvenciones",
+                                            "item": {
+                                                "identificador": "BOE-A-2005-88",
+                                                "titulo": "Resoluci\u00f3n de 22 de diciembre de 2004, del Servicio P\u00fablico de Empleo Estatal, por la que se establece un plazo extraordinario de presentaci\u00f3n de solicitudes de subvenciones p\u00fablicas, reguladas en la Orden del Ministerio de Trabajo y Asuntos Sociales de 19 de diciembre de 1997, en el \u00e1mbito de colaboraci\u00f3n con \u00f3rganos de la Administraci\u00f3n General del Estado y sus Organismos Aut\u00f3nomos que contraten trabajadores desempleados para la realizaci\u00f3n de obras y servicios de inter\u00e9s general y social.",
+                                                "url_pdf": {
+                                                    "szBytes": "37289",
+                                                    "szKBytes": "36",
+                                                    "pagina_inicial": "166",
+                                                    "pagina_final": "166",
+                                                    "texto": "https:\/\/www.boe.es\/boe\/dias\/2005\/01\/03\/pdfs\/A00166-00166.pdf"
+                                                },
+                                                "url_html": "https:\/\/www.boe.es\/diario_boe\/txt.php?id=BOE-A-2005-88",
+                                                "url_xml": "https:\/\/www.boe.es\/diario_boe\/xml.php?id=BOE-A-2005-88"
+                                            }
+                                        }
+                                    ]
+                                },
+                                {
+                                    "codigo": "5251",
+                                    "nombre": "MINISTERIO DE INDUSTRIA, TURISMO Y COMERCIO",
+                                    "epigrafe": [
+                                        {
+                                            "nombre": "Comunidad Aut\u00f3noma de Andaluc\u00eda. Convenio",
+                                            "item": {
+                                                "identificador": "BOE-A-2005-89",
+                                                "titulo": "Resoluci\u00f3n de 9 de diciembre de 2004, de la Secretar\u00eda General de Industria, por la que se da publicidad al Convenio de colaboraci\u00f3n entre el Ministerio de Industria, Turismo y Comercio, la Comunidad Aut\u00f3noma de Andaluc\u00eda a trav\u00e9s de la Consejer\u00eda de Innovaci\u00f3n, Ciencia y Empresa y la Mancomunidad de Municipios de la Comarca del Campo de Gibraltar para actuaciones de reindustrializaci\u00f3n reguladas por la Orden ITC\/3086\/2004, de 14 de septiembre.",
+                                                "url_pdf": {
+                                                    "szBytes": "83278",
+                                                    "szKBytes": "81",
+                                                    "pagina_inicial": "167",
+                                                    "pagina_final": "168",
+                                                    "texto": "https:\/\/www.boe.es\/boe\/dias\/2005\/01\/03\/pdfs\/A00167-00168.pdf"
+                                                },
+                                                "url_html": "https:\/\/www.boe.es\/diario_boe\/txt.php?id=BOE-A-2005-89",
+                                                "url_xml": "https:\/\/www.boe.es\/diario_boe\/xml.php?id=BOE-A-2005-89"
+                                            }
+                                        },
+                                        {
+                                            "nombre": "Homologaciones",
+                                            "item": {
+                                                "identificador": "BOE-A-2005-90",
+                                                "titulo": "Resoluci\u00f3n de 29 de noviembre de 2004, de la Direcci\u00f3n General de Pol\u00edtica Energ\u00e9tica y Minas, por la que se aprueba el tipo de aparato radiactivo del generador de rayos X, marca PHOENIX, modelo BENCH\/MATE.",
+                                                "url_pdf": {
+                                                    "szBytes": "83022",
+                                                    "szKBytes": "81",
+                                                    "pagina_inicial": "168",
+                                                    "pagina_final": "169",
+                                                    "texto": "https:\/\/www.boe.es\/boe\/dias\/2005\/01\/03\/pdfs\/A00168-00169.pdf"
+                                                },
+                                                "url_html": "https:\/\/www.boe.es\/diario_boe\/txt.php?id=BOE-A-2005-90",
+                                                "url_xml": "https:\/\/www.boe.es\/diario_boe\/xml.php?id=BOE-A-2005-90"
+                                            }
+                                        }
+                                    ]
+                                },
+                                {
+                                    "codigo": "4110",
+                                    "nombre": "MINISTERIO DE CULTURA",
+                                    "epigrafe": [
+                                        {
+                                            "nombre": "Fundaciones",
+                                            "item": {
+                                                "identificador": "BOE-A-2005-91",
+                                                "titulo": "Orden CUL\/4323\/2004, de 3 de diciembre, por la que se inscribe en el Registro de Fundaciones la Fundaci\u00f3n Avepa: veterinarios y sociedad.",
+                                                "url_pdf": {
+                                                    "szBytes": "90236",
+                                                    "szKBytes": "88",
+                                                    "pagina_inicial": "169",
+                                                    "pagina_final": "170",
+                                                    "texto": "https:\/\/www.boe.es\/boe\/dias\/2005\/01\/03\/pdfs\/A00169-00170.pdf"
+                                                },
+                                                "url_html": "https:\/\/www.boe.es\/diario_boe\/txt.php?id=BOE-A-2005-91",
+                                                "url_xml": "https:\/\/www.boe.es\/diario_boe\/xml.php?id=BOE-A-2005-91"
+                                            }
+                                        }
+                                    ]
+                                },
+                                {
+                                    "codigo": "4310",
+                                    "nombre": "MINISTERIO DE SANIDAD Y CONSUMO",
+                                    "epigrafe": [
+                                        {
+                                            "nombre": "Comunidad Aut\u00f3noma de Arag\u00f3n. Convenio",
+                                            "item": {
+                                                "identificador": "BOE-A-2005-92",
+                                                "titulo": "Resoluci\u00f3n de 3 de diciembre de 2004, de la Secretar\u00eda General de Sanidad, por la que se da publicidad al Convenio espec\u00edfico para el a\u00f1o 2004, del protocolo general de colaboraci\u00f3n entre la Delegaci\u00f3n del Gobierno para el Plan Nacional sobre Drogas y la Consejer\u00eda de Salud y Consumo de la Comunidad Aut\u00f3noma de Arag\u00f3n.",
+                                                "url_pdf": {
+                                                    "szBytes": "45151",
+                                                    "szKBytes": "44",
+                                                    "pagina_inicial": "170",
+                                                    "pagina_final": "170",
+                                                    "texto": "https:\/\/www.boe.es\/boe\/dias\/2005\/01\/03\/pdfs\/A00170-00170.pdf"
+                                                },
+                                                "url_html": "https:\/\/www.boe.es\/diario_boe\/txt.php?id=BOE-A-2005-92",
+                                                "url_xml": "https:\/\/www.boe.es\/diario_boe\/xml.php?id=BOE-A-2005-92"
+                                            }
+                                        },
+                                        {
+                                            "nombre": "Comunidad Aut\u00f3noma de Galicia. Convenio",
+                                            "item": {
+                                                "identificador": "BOE-A-2005-93",
+                                                "titulo": "Resoluci\u00f3n de 3 de diciembre de 2004, de la Secretar\u00eda General de Sanidad, por la que se da publicidad al Convenio espec\u00edfico para el a\u00f1o 2004, del protocolo general de colaboraci\u00f3n entre la Delegaci\u00f3n del Gobierno para el Plan Nacional sobre Drogas y la Consejer\u00eda de Sanidad de la Comunidad Aut\u00f3noma de Galicia.",
+                                                "url_pdf": {
+                                                    "szBytes": "89386",
+                                                    "szKBytes": "87",
+                                                    "pagina_inicial": "170",
+                                                    "pagina_final": "171",
+                                                    "texto": "https:\/\/www.boe.es\/boe\/dias\/2005\/01\/03\/pdfs\/A00170-00171.pdf"
+                                                },
+                                                "url_html": "https:\/\/www.boe.es\/diario_boe\/txt.php?id=BOE-A-2005-93",
+                                                "url_xml": "https:\/\/www.boe.es\/diario_boe\/xml.php?id=BOE-A-2005-93"
+                                            }
+                                        },
+                                        {
+                                            "nombre": "Comunidad Foral de Navarra. Convenio",
+                                            "item": {
+                                                "identificador": "BOE-A-2005-94",
+                                                "titulo": "Resoluci\u00f3n de 3 de diciembre de 2004, de la Secretar\u00eda General de Sanidad, por la que se da publicidad al Convenio espec\u00edfico para el a\u00f1o 2004, del protocolo general de colaboraci\u00f3n entre la Delegaci\u00f3n del Gobierno para el Plan Nacional sobre Drogas y el Departamento de Salud de la Comunidad Foral de Navarra.",
+                                                "url_pdf": {
+                                                    "szBytes": "44933",
+                                                    "szKBytes": "44",
+                                                    "pagina_inicial": "171",
+                                                    "pagina_final": "171",
+                                                    "texto": "https:\/\/www.boe.es\/boe\/dias\/2005\/01\/03\/pdfs\/A00171-00171.pdf"
+                                                },
+                                                "url_html": "https:\/\/www.boe.es\/diario_boe\/txt.php?id=BOE-A-2005-94",
+                                                "url_xml": "https:\/\/www.boe.es\/diario_boe\/xml.php?id=BOE-A-2005-94"
+                                            }
+                                        },
+                                        {
+                                            "nombre": "Recursos",
+                                            "item": [
+                                                {
+                                                    "identificador": "BOE-A-2005-95",
+                                                    "titulo": "Resoluci\u00f3n de 2 de diciembre de 2004, de la Secretar\u00eda General T\u00e9cnica, por la que se emplaza a los interesados en el procedimiento ordinario n\u00famero 1894\/2002, interpuesto por do\u00f1a Mar\u00eda del Carmen Jim\u00e9nez L\u00f3pez.",
+                                                    "url_pdf": {
+                                                        "szBytes": "79996",
+                                                        "szKBytes": "78",
+                                                        "pagina_inicial": "171",
+                                                        "pagina_final": "172",
+                                                        "texto": "https:\/\/www.boe.es\/boe\/dias\/2005\/01\/03\/pdfs\/A00171-00172.pdf"
+                                                    },
+                                                    "url_html": "https:\/\/www.boe.es\/diario_boe\/txt.php?id=BOE-A-2005-95",
+                                                    "url_xml": "https:\/\/www.boe.es\/diario_boe\/xml.php?id=BOE-A-2005-95"
+                                                },
+                                                {
+                                                    "identificador": "BOE-A-2005-96",
+                                                    "titulo": "Resoluci\u00f3n de 2 de diciembre de 2004, de la Secretar\u00eda General T\u00e9cnica, por la que se emplaza a los interesados en el procedimiento ordinario n\u00famero 456\/2004, interpuesto por do\u00f1a Mar\u00eda Bego\u00f1a Mart\u00ednez S\u00e1nchez, sobre consolidaci\u00f3n de empleo para acceso a plazas de Matronas.",
+                                                    "url_pdf": {
+                                                        "szBytes": "35761",
+                                                        "szKBytes": "35",
+                                                        "pagina_inicial": "172",
+                                                        "pagina_final": "172",
+                                                        "texto": "https:\/\/www.boe.es\/boe\/dias\/2005\/01\/03\/pdfs\/A00172-00172.pdf"
+                                                    },
+                                                    "url_html": "https:\/\/www.boe.es\/diario_boe\/txt.php?id=BOE-A-2005-96",
+                                                    "url_xml": "https:\/\/www.boe.es\/diario_boe\/xml.php?id=BOE-A-2005-96"
+                                                },
+                                                {
+                                                    "identificador": "BOE-A-2005-97",
+                                                    "titulo": "Resoluci\u00f3n de 2 de diciembre de 2004, de la Secretar\u00eda General T\u00e9cnica, por la que se emplaza a los interesados en el procedimiento ordinario n\u00famero 467\/2004, interpuesto por don Jos\u00e9 Joaqu\u00edn P\u00e9rez Calvo, sobre consolidaci\u00f3n de empleo para acceso a plazas de Facultativo Especialista de \u00c1rea de Urolog\u00eda.",
+                                                    "url_pdf": {
+                                                        "szBytes": "35761",
+                                                        "szKBytes": "35",
+                                                        "pagina_inicial": "172",
+                                                        "pagina_final": "172",
+                                                        "texto": "https:\/\/www.boe.es\/boe\/dias\/2005\/01\/03\/pdfs\/A00172-00172.pdf"
+                                                    },
+                                                    "url_html": "https:\/\/www.boe.es\/diario_boe\/txt.php?id=BOE-A-2005-97",
+                                                    "url_xml": "https:\/\/www.boe.es\/diario_boe\/xml.php?id=BOE-A-2005-97"
+                                                },
+                                                {
+                                                    "identificador": "BOE-A-2005-98",
+                                                    "titulo": "Resoluci\u00f3n de 2 de diciembre de 2004, de la Secretar\u00eda General T\u00e9cnica, por la que se emplaza a los interesados en el procedimiento ordinario n\u00famero 496\/2004, interpuesto por don Amable Panero Panero, sobre consolidaci\u00f3n de empleo para acceso a plazas de Planchadores.",
+                                                    "url_pdf": {
+                                                        "szBytes": "35761",
+                                                        "szKBytes": "35",
+                                                        "pagina_inicial": "172",
+                                                        "pagina_final": "172",
+                                                        "texto": "https:\/\/www.boe.es\/boe\/dias\/2005\/01\/03\/pdfs\/A00172-00172.pdf"
+                                                    },
+                                                    "url_html": "https:\/\/www.boe.es\/diario_boe\/txt.php?id=BOE-A-2005-98",
+                                                    "url_xml": "https:\/\/www.boe.es\/diario_boe\/xml.php?id=BOE-A-2005-98"
+                                                },
+                                                {
+                                                    "identificador": "BOE-A-2005-99",
+                                                    "titulo": "Resoluci\u00f3n de 2 de diciembre de 2004, de la Secretar\u00eda General T\u00e9cnica, por la que se emplaza a los interesados en el procedimiento ordinario n\u00famero 509\/2004, interpuesto por don Miguel Fern\u00e1ndez Bermejo y otro, contra la Orden SCO\/2146\/2004, de 29 de junio.",
+                                                    "url_pdf": {
+                                                        "szBytes": "35761",
+                                                        "szKBytes": "35",
+                                                        "pagina_inicial": "172",
+                                                        "pagina_final": "172",
+                                                        "texto": "https:\/\/www.boe.es\/boe\/dias\/2005\/01\/03\/pdfs\/A00172-00172.pdf"
+                                                    },
+                                                    "url_html": "https:\/\/www.boe.es\/diario_boe\/txt.php?id=BOE-A-2005-99",
+                                                    "url_xml": "https:\/\/www.boe.es\/diario_boe\/xml.php?id=BOE-A-2005-99"
+                                                },
+                                                {
+                                                    "identificador": "BOE-A-2005-100",
+                                                    "titulo": "Resoluci\u00f3n de 2 de diciembre de 2004, de la Secretar\u00eda General T\u00e9cnica, por la que se emplaza a los interesados en el procedimiento ordinario n\u00famero 518\/2004, interpuesto por do\u00f1a Mar\u00eda Guadalupe Iv\u00e1\u00f1ez Giron\u00e9s, sobre consolidaci\u00f3n de empleo para acceso a plazas de Facultativo Especialista en Pediatr\u00eda, Puericultura de \u00c1rea y en Equipos de Atenci\u00f3n Primaria.",
+                                                    "url_pdf": {
+                                                        "szBytes": "70414",
+                                                        "szKBytes": "69",
+                                                        "pagina_inicial": "172",
+                                                        "pagina_final": "173",
+                                                        "texto": "https:\/\/www.boe.es\/boe\/dias\/2005\/01\/03\/pdfs\/A00172-00173.pdf"
+                                                    },
+                                                    "url_html": "https:\/\/www.boe.es\/diario_boe\/txt.php?id=BOE-A-2005-100",
+                                                    "url_xml": "https:\/\/www.boe.es\/diario_boe\/xml.php?id=BOE-A-2005-100"
+                                                },
+                                                {
+                                                    "identificador": "BOE-A-2005-101",
+                                                    "titulo": "Resoluci\u00f3n de 2 de diciembre de 2004, de la Secretar\u00eda General T\u00e9cnica, por la que se emplaza a los interesados en el procedimiento ordinario n\u00famero 522\/2004, interpuesto por don Juan Carlos Hern\u00e1ndez Mart\u00ednez, sobre consolidaci\u00f3n de empleo para acceso a plazas de Facultativo Especialista en Pediatr\u00eda, Puericultura de \u00c1rea y en Equipos de Atenci\u00f3n Primaria.",
+                                                    "url_pdf": {
+                                                        "szBytes": "35351",
+                                                        "szKBytes": "35",
+                                                        "pagina_inicial": "173",
+                                                        "pagina_final": "173",
+                                                        "texto": "https:\/\/www.boe.es\/boe\/dias\/2005\/01\/03\/pdfs\/A00173-00173.pdf"
+                                                    },
+                                                    "url_html": "https:\/\/www.boe.es\/diario_boe\/txt.php?id=BOE-A-2005-101",
+                                                    "url_xml": "https:\/\/www.boe.es\/diario_boe\/xml.php?id=BOE-A-2005-101"
+                                                },
+                                                {
+                                                    "identificador": "BOE-A-2005-102",
+                                                    "titulo": "Resoluci\u00f3n de 2 de diciembre de 2004, de la Secretar\u00eda General T\u00e9cnica, por la que se emplaza a los interesados en el procedimiento ordinario n\u00famero 523\/2004, interpuesto por don Emilio Andrea Blanco, sobre consolidaci\u00f3n de empleo para acceso a plazas de Ingenieros Superiores.",
+                                                    "url_pdf": {
+                                                        "szBytes": "35351",
+                                                        "szKBytes": "35",
+                                                        "pagina_inicial": "173",
+                                                        "pagina_final": "173",
+                                                        "texto": "https:\/\/www.boe.es\/boe\/dias\/2005\/01\/03\/pdfs\/A00173-00173.pdf"
+                                                    },
+                                                    "url_html": "https:\/\/www.boe.es\/diario_boe\/txt.php?id=BOE-A-2005-102",
+                                                    "url_xml": "https:\/\/www.boe.es\/diario_boe\/xml.php?id=BOE-A-2005-102"
+                                                },
+                                                {
+                                                    "identificador": "BOE-A-2005-103",
+                                                    "titulo": "Resoluci\u00f3n de 2 de diciembre de 2004, de la Secretar\u00eda General T\u00e9cnica, por la que se emplaza a los interesados en el procedimiento ordinario n\u00famero 541\/2004, interpuesto por don Lorenzo Carlos Boira Sanz, sobre consolidaci\u00f3n de empleo para acceso a plazas de Pediatr\u00eda, Puericultura de \u00c1rea y en Equipos de Atenci\u00f3n Primaria.",
+                                                    "url_pdf": {
+                                                        "szBytes": "35351",
+                                                        "szKBytes": "35",
+                                                        "pagina_inicial": "173",
+                                                        "pagina_final": "173",
+                                                        "texto": "https:\/\/www.boe.es\/boe\/dias\/2005\/01\/03\/pdfs\/A00173-00173.pdf"
+                                                    },
+                                                    "url_html": "https:\/\/www.boe.es\/diario_boe\/txt.php?id=BOE-A-2005-103",
+                                                    "url_xml": "https:\/\/www.boe.es\/diario_boe\/xml.php?id=BOE-A-2005-103"
+                                                },
+                                                {
+                                                    "identificador": "BOE-A-2005-104",
+                                                    "titulo": "Resoluci\u00f3n de 2 de diciembre de 2004, de la Secretar\u00eda General T\u00e9cnica, por la que se emplaza a los interesados en el procedimiento ordinario n\u00famero 573\/2004, interpuesto por don Jacinto Diego Acedo Regalado, sobre consolidaci\u00f3n de empleo para acceso a plazas de Facultativo Especialista en Pediatr\u00eda, Puericultura de \u00c1rea y en Equipos de Atenci\u00f3n Primaria.",
+                                                    "url_pdf": {
+                                                        "szBytes": "35351",
+                                                        "szKBytes": "35",
+                                                        "pagina_inicial": "173",
+                                                        "pagina_final": "173",
+                                                        "texto": "https:\/\/www.boe.es\/boe\/dias\/2005\/01\/03\/pdfs\/A00173-00173.pdf"
+                                                    },
+                                                    "url_html": "https:\/\/www.boe.es\/diario_boe\/txt.php?id=BOE-A-2005-104",
+                                                    "url_xml": "https:\/\/www.boe.es\/diario_boe\/xml.php?id=BOE-A-2005-104"
+                                                },
+                                                {
+                                                    "identificador": "BOE-A-2005-105",
+                                                    "titulo": "Resoluci\u00f3n de 2 de diciembre de 2004, de la Secretar\u00eda General T\u00e9cnica, por la que se emplaza a los interesados en el procedimiento ordinario n\u00famero 575\/2004, interpuesto por do\u00f1a Mar\u00eda Balbina Reques Llorente, sobre consolidaci\u00f3n de empleo para acceso a plazas de Facultativo Especialista en Pediatr\u00eda, Puericultura de \u00c1rea y en Equipos de Atenci\u00f3n Primaria.",
+                                                    "url_pdf": {
+                                                        "szBytes": "71814",
+                                                        "szKBytes": "70",
+                                                        "pagina_inicial": "173",
+                                                        "pagina_final": "174",
+                                                        "texto": "https:\/\/www.boe.es\/boe\/dias\/2005\/01\/03\/pdfs\/A00173-00174.pdf"
+                                                    },
+                                                    "url_html": "https:\/\/www.boe.es\/diario_boe\/txt.php?id=BOE-A-2005-105",
+                                                    "url_xml": "https:\/\/www.boe.es\/diario_boe\/xml.php?id=BOE-A-2005-105"
+                                                },
+                                                {
+                                                    "identificador": "BOE-A-2005-106",
+                                                    "titulo": "Resoluci\u00f3n de 2 de diciembre de 2004, de la Secretar\u00eda General T\u00e9cnica, por la que se emplaza a los interesados en el procedimiento ordinario n\u00famero 594\/2004, interpuesto por don Seraf\u00edn Ra\u00fal Olivas Garc\u00eda.",
+                                                    "url_pdf": {
+                                                        "szBytes": "37161",
+                                                        "szKBytes": "36",
+                                                        "pagina_inicial": "174",
+                                                        "pagina_final": "174",
+                                                        "texto": "https:\/\/www.boe.es\/boe\/dias\/2005\/01\/03\/pdfs\/A00174-00174.pdf"
+                                                    },
+                                                    "url_html": "https:\/\/www.boe.es\/diario_boe\/txt.php?id=BOE-A-2005-106",
+                                                    "url_xml": "https:\/\/www.boe.es\/diario_boe\/xml.php?id=BOE-A-2005-106"
+                                                },
+                                                {
+                                                    "identificador": "BOE-A-2005-107",
+                                                    "titulo": "Resoluci\u00f3n de 2 de diciembre de 2004, de la Secretar\u00eda General T\u00e9cnica, por la que se emplaza a los interesados en el procedimiento ordinario n\u00famero 607\/2004, interpuesto por do\u00f1a Mar\u00eda Soledad D\u00edaz Villaescusa, sobre consolidaci\u00f3n de empleo para acceso a plazas de Facultativo Especialista en Pediatr\u00eda, Puericultura de \u00c1rea y en Equipos de Atenci\u00f3n Primaria.",
+                                                    "url_pdf": {
+                                                        "szBytes": "37161",
+                                                        "szKBytes": "36",
+                                                        "pagina_inicial": "174",
+                                                        "pagina_final": "174",
+                                                        "texto": "https:\/\/www.boe.es\/boe\/dias\/2005\/01\/03\/pdfs\/A00174-00174.pdf"
+                                                    },
+                                                    "url_html": "https:\/\/www.boe.es\/diario_boe\/txt.php?id=BOE-A-2005-107",
+                                                    "url_xml": "https:\/\/www.boe.es\/diario_boe\/xml.php?id=BOE-A-2005-107"
+                                                },
+                                                {
+                                                    "identificador": "BOE-A-2005-108",
+                                                    "titulo": "Resoluci\u00f3n de 2 de diciembre de 2004, de la Secretar\u00eda General T\u00e9cnica, por la que se emplaza a los interesados en el procedimiento ordinario n\u00famero 667\/2004, interpuesto por do\u00f1a Francisca Garc\u00eda Andr\u00e9s, sobre consolidaci\u00f3n de empleo para acceso a plazas de M\u00e9dicos de Admisi\u00f3n y Documentaci\u00f3n Cl\u00ednica.",
+                                                    "url_pdf": {
+                                                        "szBytes": "37161",
+                                                        "szKBytes": "36",
+                                                        "pagina_inicial": "174",
+                                                        "pagina_final": "174",
+                                                        "texto": "https:\/\/www.boe.es\/boe\/dias\/2005\/01\/03\/pdfs\/A00174-00174.pdf"
+                                                    },
+                                                    "url_html": "https:\/\/www.boe.es\/diario_boe\/txt.php?id=BOE-A-2005-108",
+                                                    "url_xml": "https:\/\/www.boe.es\/diario_boe\/xml.php?id=BOE-A-2005-108"
+                                                },
+                                                {
+                                                    "identificador": "BOE-A-2005-109",
+                                                    "titulo": "Resoluci\u00f3n de 2 de diciembre de 2004, de la Secretar\u00eda General T\u00e9cnica, por la que se emplaza a los interesados en el procedimiento ordinario n\u00famero 681\/2004, interpuesto por don Carlos Barrera Bl\u00e1zquez, sobre consolidaci\u00f3n de empleo para acceso a plazas de Facultativo Especialista de \u00c1rea de Otorrinolaringolog\u00eda.",
+                                                    "url_pdf": {
+                                                        "szBytes": "37161",
+                                                        "szKBytes": "36",
+                                                        "pagina_inicial": "174",
+                                                        "pagina_final": "174",
+                                                        "texto": "https:\/\/www.boe.es\/boe\/dias\/2005\/01\/03\/pdfs\/A00174-00174.pdf"
+                                                    },
+                                                    "url_html": "https:\/\/www.boe.es\/diario_boe\/txt.php?id=BOE-A-2005-109",
+                                                    "url_xml": "https:\/\/www.boe.es\/diario_boe\/xml.php?id=BOE-A-2005-109"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                {
+                                    "codigo": "8100",
+                                    "nombre": "COMUNIDAD AUT\u00d3NOMA DE LA REGI\u00d3N DE MURCIA",
+                                    "epigrafe": [
+                                        {
+                                            "nombre": "Bienes de inter\u00e9s cultural",
+                                            "item": {
+                                                "identificador": "BOE-A-2005-110",
+                                                "titulo": "Resoluci\u00f3n de 24 de noviembre de 2004, de la Direcci\u00f3n General de Cultura de la Consejer\u00eda de Educaci\u00f3n y Cultura, por la que se incoa expediente de declaraci\u00f3n de bien de inter\u00e9s cultural, con categor\u00eda de monumento, a favor de la Iglesia de Nuestra Se\u00f1ora de la Asunci\u00f3n, en Villanueva del R\u00edo Segura.",
+                                                "url_pdf": {
+                                                    "szBytes": "190753",
+                                                    "szKBytes": "186",
+                                                    "pagina_inicial": "174",
+                                                    "pagina_final": "176",
+                                                    "texto": "https:\/\/www.boe.es\/boe\/dias\/2005\/01\/03\/pdfs\/A00174-00176.pdf"
+                                                },
+                                                "url_html": "https:\/\/www.boe.es\/diario_boe\/txt.php?id=BOE-A-2005-110",
+                                                "url_xml": "https:\/\/www.boe.es\/diario_boe\/xml.php?id=BOE-A-2005-110"
+                                            }
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "codigo": "4",
+                            "nombre": "IV. Administraci\u00f3n de Justicia",
+                            "departamento": [
+                                {
+                                    "codigo": "9546",
+                                    "nombre": "JUZGADOS DE PRIMERA INSTANCIA E INSTRUCCI\u00d3N",
+                                    "item": [
+                                        {
+                                            "identificador": "BOE-B-2005-502000",
+                                            "titulo": "ALCAL\u00c1 DE HENARES",
+                                            "url_pdf": {
+                                                "szBytes": "28647",
+                                                "szKBytes": "28",
+                                                "pagina_inicial": "15",
+                                                "pagina_final": "15",
+                                                "texto": "https:\/\/www.boe.es\/boe\/dias\/2005\/01\/03\/pdfs\/B00015-00015.pdf"
+                                            }
+                                        },
+                                        {
+                                            "identificador": "BOE-B-2005-502001",
+                                            "titulo": "ARGANDA DEL REY",
+                                            "url_pdf": {
+                                                "szBytes": "28647",
+                                                "szKBytes": "28",
+                                                "pagina_inicial": "15",
+                                                "pagina_final": "15",
+                                                "texto": "https:\/\/www.boe.es\/boe\/dias\/2005\/01\/03\/pdfs\/B00015-00015.pdf"
+                                            }
+                                        },
+                                        {
+                                            "identificador": "BOE-B-2005-502002",
+                                            "titulo": "HARO",
+                                            "url_pdf": {
+                                                "szBytes": "28647",
+                                                "szKBytes": "28",
+                                                "pagina_inicial": "15",
+                                                "pagina_final": "15",
+                                                "texto": "https:\/\/www.boe.es\/boe\/dias\/2005\/01\/03\/pdfs\/B00015-00015.pdf"
+                                            }
+                                        },
+                                        {
+                                            "identificador": "BOE-B-2005-502003",
+                                            "titulo": "LORCA",
+                                            "url_pdf": {
+                                                "szBytes": "28647",
+                                                "szKBytes": "28",
+                                                "pagina_inicial": "15",
+                                                "pagina_final": "15",
+                                                "texto": "https:\/\/www.boe.es\/boe\/dias\/2005\/01\/03\/pdfs\/B00015-00015.pdf"
+                                            }
+                                        },
+                                        {
+                                            "identificador": "BOE-B-2005-502004",
+                                            "titulo": "LUGO",
+                                            "url_pdf": {
+                                                "szBytes": "28647",
+                                                "szKBytes": "28",
+                                                "pagina_inicial": "15",
+                                                "pagina_final": "15",
+                                                "texto": "https:\/\/www.boe.es\/boe\/dias\/2005\/01\/03\/pdfs\/B00015-00015.pdf"
+                                            }
+                                        },
+                                        {
+                                            "identificador": "BOE-B-2005-502005",
+                                            "titulo": "LUGO",
+                                            "url_pdf": {
+                                                "szBytes": "28647",
+                                                "szKBytes": "28",
+                                                "pagina_inicial": "15",
+                                                "pagina_final": "15",
+                                                "texto": "https:\/\/www.boe.es\/boe\/dias\/2005\/01\/03\/pdfs\/B00015-00015.pdf"
+                                            }
+                                        },
+                                        {
+                                            "identificador": "BOE-B-2005-502006",
+                                            "titulo": "TARRAGONA",
+                                            "url_pdf": {
+                                                "szBytes": "28647",
+                                                "szKBytes": "28",
+                                                "pagina_inicial": "15",
+                                                "pagina_final": "15",
+                                                "texto": "https:\/\/www.boe.es\/boe\/dias\/2005\/01\/03\/pdfs\/B00015-00015.pdf"
+                                            }
+                                        },
+                                        {
+                                            "identificador": "BOE-B-2005-502007",
+                                            "titulo": "MADRID",
+                                            "url_pdf": {
+                                                "szBytes": "46897",
+                                                "szKBytes": "46",
+                                                "pagina_inicial": "15",
+                                                "pagina_final": "16",
+                                                "texto": "https:\/\/www.boe.es\/boe\/dias\/2005\/01\/03\/pdfs\/B00015-00016.pdf"
+                                            }
+                                        }
+                                    ]
+                                },
+                                {
+                                    "codigo": "9547",
+                                    "nombre": "JUZGADOS DE LO MERCANTIL",
+                                    "item": [
+                                        {
+                                            "identificador": "BOE-B-2005-502008",
+                                            "titulo": "BARCELONA",
+                                            "url_pdf": {
+                                                "szBytes": "23937",
+                                                "szKBytes": "23",
+                                                "pagina_inicial": "16",
+                                                "pagina_final": "16",
+                                                "texto": "https:\/\/www.boe.es\/boe\/dias\/2005\/01\/03\/pdfs\/B00016-00016.pdf"
+                                            }
+                                        },
+                                        {
+                                            "identificador": "BOE-B-2005-502009",
+                                            "titulo": "BARCELONA",
+                                            "url_pdf": {
+                                                "szBytes": "23937",
+                                                "szKBytes": "23",
+                                                "pagina_inicial": "16",
+                                                "pagina_final": "16",
+                                                "texto": "https:\/\/www.boe.es\/boe\/dias\/2005\/01\/03\/pdfs\/B00016-00016.pdf"
+                                            }
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "codigo": "5A",
+                            "nombre": "V. Anuncios. - A. Subastas y concursos de obras y servicios",
+                            "departamento": [
+                                {
+                                    "codigo": "5130",
+                                    "nombre": "MINISTERIO DE ECONOM\u00cdA Y HACIENDA",
+                                    "item": [
+                                        {
+                                            "identificador": "BOE-B-2005-2000",
+                                            "titulo": "Resoluci\u00f3n de la Agencia Estatal de Administraci\u00f3n Tributaria por la que se anuncia concurso, por procedimiento abierto, para la contrataci\u00f3n del servicio de edici\u00f3n de ejemplares de la revista \u00abLa ventana de la Agencia\u00bb.",
+                                            "url_pdf": {
+                                                "szBytes": "35387",
+                                                "szKBytes": "35",
+                                                "pagina_inicial": "17",
+                                                "pagina_final": "17",
+                                                "texto": "https:\/\/www.boe.es\/boe\/dias\/2005\/01\/03\/pdfs\/B00017-00017.pdf"
+                                            },
+                                            "url_html": "https:\/\/www.boe.es\/diario_boe\/txt.php?id=BOE-B-2005-2000",
+                                            "url_xml": "https:\/\/www.boe.es\/diario_boe\/xml.php?id=BOE-B-2005-2000"
+                                        },
+                                        {
+                                            "identificador": "BOE-B-2005-2001",
+                                            "titulo": "Resoluci\u00f3n de la Agencia Estatal de Administraci\u00f3n Tributaria por la que se anuncia concurso, por el procedimiento, abierto para la contrataci\u00f3n del suministro de 200 unidades edici\u00f3n Estad\u00edstica de Comercio Exterior de Espa\u00f1a.",
+                                            "url_pdf": {
+                                                "szBytes": "35387",
+                                                "szKBytes": "35",
+                                                "pagina_inicial": "17",
+                                                "pagina_final": "17",
+                                                "texto": "https:\/\/www.boe.es\/boe\/dias\/2005\/01\/03\/pdfs\/B00017-00017.pdf"
+                                            },
+                                            "url_html": "https:\/\/www.boe.es\/diario_boe\/txt.php?id=BOE-B-2005-2001",
+                                            "url_xml": "https:\/\/www.boe.es\/diario_boe\/xml.php?id=BOE-B-2005-2001"
+                                        },
+                                        {
+                                            "identificador": "BOE-B-2005-2002",
+                                            "titulo": "Resoluci\u00f3n de la Agencia Estatal de Administraci\u00f3n Tributaria por la que se anuncia concurso, por el procedimiento abierto, para la contrataci\u00f3n del suministro de cuarenta mil ejemplares del Manual del Impuesto de Sociedades 2004.",
+                                            "url_pdf": {
+                                                "szBytes": "70434",
+                                                "szKBytes": "69",
+                                                "pagina_inicial": "17",
+                                                "pagina_final": "18",
+                                                "texto": "https:\/\/www.boe.es\/boe\/dias\/2005\/01\/03\/pdfs\/B00017-00018.pdf"
+                                            },
+                                            "url_html": "https:\/\/www.boe.es\/diario_boe\/txt.php?id=BOE-B-2005-2002",
+                                            "url_xml": "https:\/\/www.boe.es\/diario_boe\/xml.php?id=BOE-B-2005-2002"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "codigo": "4230",
+                                    "nombre": "MINISTERIO DE EDUCACI\u00d3N Y CIENCIA",
+                                    "item": {
+                                        "identificador": "BOE-B-2005-2003",
+                                        "titulo": "Resoluci\u00f3n del Instituto de Astrof\u00edsica de Canarias por el que se anuncia la adjudicaci\u00f3n del expediente C31\/04.",
+                                        "url_pdf": {
+                                            "szBytes": "35743",
+                                            "szKBytes": "35",
+                                            "pagina_inicial": "18",
+                                            "pagina_final": "18",
+                                            "texto": "https:\/\/www.boe.es\/boe\/dias\/2005\/01\/03\/pdfs\/B00018-00018.pdf"
+                                        },
+                                        "url_html": "https:\/\/www.boe.es\/diario_boe\/txt.php?id=BOE-B-2005-2003",
+                                        "url_xml": "https:\/\/www.boe.es\/diario_boe\/xml.php?id=BOE-B-2005-2003"
+                                    }
+                                },
+                                {
+                                    "codigo": "3410",
+                                    "nombre": "MINISTERIO DE MEDIO AMBIENTE",
+                                    "item": {
+                                        "identificador": "BOE-B-2005-2004",
+                                        "titulo": "Resoluci\u00f3n del Instituto Nacional de Meteorolog\u00eda por la que se adjudica un concurso de suministro e instalaci\u00f3n del equipamiento meteorol\u00f3gico en el aeropuerto de Vitoria.",
+                                        "url_pdf": {
+                                            "szBytes": "35743",
+                                            "szKBytes": "35",
+                                            "pagina_inicial": "18",
+                                            "pagina_final": "18",
+                                            "texto": "https:\/\/www.boe.es\/boe\/dias\/2005\/01\/03\/pdfs\/B00018-00018.pdf"
+                                        },
+                                        "url_html": "https:\/\/www.boe.es\/diario_boe\/txt.php?id=BOE-B-2005-2004",
+                                        "url_xml": "https:\/\/www.boe.es\/diario_boe\/xml.php?id=BOE-B-2005-2004"
+                                    }
+                                },
+                                {
+                                    "codigo": "111",
+                                    "nombre": "ENTE P\u00daBLICO RADIOTELEVISI\u00d3N ESPA\u00d1OLA",
+                                    "item": [
+                                        {
+                                            "identificador": "BOE-B-2005-2005",
+                                            "titulo": "Resoluci\u00f3n de la Direcci\u00f3n General de RTVE, por la que se convoca concurso p\u00fablico para la ejecuci\u00f3n de las obras de suministro e instalaci\u00f3n de conductos de chapa de acero galvanizado con aislamiento en el sistema de impulsi\u00f3n y retorno de aire acondicionado en los estudios 1, 2 y 3 de Prado del Rey (CPA-2002: 45331).",
+                                            "url_pdf": {
+                                                "szBytes": "35743",
+                                                "szKBytes": "35",
+                                                "pagina_inicial": "18",
+                                                "pagina_final": "18",
+                                                "texto": "https:\/\/www.boe.es\/boe\/dias\/2005\/01\/03\/pdfs\/B00018-00018.pdf"
+                                            },
+                                            "url_html": "https:\/\/www.boe.es\/diario_boe\/txt.php?id=BOE-B-2005-2005",
+                                            "url_xml": "https:\/\/www.boe.es\/diario_boe\/xml.php?id=BOE-B-2005-2005"
+                                        },
+                                        {
+                                            "identificador": "BOE-B-2005-2006",
+                                            "titulo": "Resoluci\u00f3n de la Direcci\u00f3n General de RTVE por la que se convoca concurso p\u00fablico para la ejecuci\u00f3n de las obras de remodelaci\u00f3n cerramiento C\/ Siroco y nuevo acceso de mercanc\u00edas a Prado del Rey (CPA-2002: 4522).",
+                                            "url_pdf": {
+                                                "szBytes": "71603",
+                                                "szKBytes": "70",
+                                                "pagina_inicial": "18",
+                                                "pagina_final": "19",
+                                                "texto": "https:\/\/www.boe.es\/boe\/dias\/2005\/01\/03\/pdfs\/B00018-00019.pdf"
+                                            },
+                                            "url_html": "https:\/\/www.boe.es\/diario_boe\/txt.php?id=BOE-B-2005-2006",
+                                            "url_xml": "https:\/\/www.boe.es\/diario_boe\/xml.php?id=BOE-B-2005-2006"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "codigo": "8070",
+                                    "nombre": "COMUNIDAD AUT\u00d3NOMA DE CATALU\u00d1A",
+                                    "item": {
+                                        "identificador": "BOE-B-2005-2007",
+                                        "titulo": "Resoluci\u00f3n del Departamento de Justicia por la que se anuncia la licitaci\u00f3n de un contrato de suminstro de vestuario para los internos de los centros penitenciarios de Catalu\u00f1a (JU-24\/05).",
+                                        "url_pdf": {
+                                            "szBytes": "36556",
+                                            "szKBytes": "36",
+                                            "pagina_inicial": "19",
+                                            "pagina_final": "19",
+                                            "texto": "https:\/\/www.boe.es\/boe\/dias\/2005\/01\/03\/pdfs\/B00019-00019.pdf"
+                                        },
+                                        "url_html": "https:\/\/www.boe.es\/diario_boe\/txt.php?id=BOE-B-2005-2007",
+                                        "url_xml": "https:\/\/www.boe.es\/diario_boe\/xml.php?id=BOE-B-2005-2007"
+                                    }
+                                },
+                                {
+                                    "codigo": "8150",
+                                    "nombre": "COMUNIDAD AUT\u00d3NOMA DEL PRINCIPADO DE ASTURIAS",
+                                    "item": {
+                                        "identificador": "BOE-B-2005-2008",
+                                        "titulo": "Anuncio de la Consejer\u00eda de Cultura, Comunicaci\u00f3n Social y Turismo de licitaci\u00f3n, mediante el sistema de concurso por el procedimiento abierto y tr\u00e1mite ordinario, de la redacci\u00f3n del proyecto y ejecuci\u00f3n de las obras de rehabilitaci\u00f3n y adecuaci\u00f3n de las \u00e1reas destinadas a fines universitarios en la Universidad laboral de Gij\u00f3n.",
+                                        "url_pdf": {
+                                            "szBytes": "72533",
+                                            "szKBytes": "71",
+                                            "pagina_inicial": "19",
+                                            "pagina_final": "20",
+                                            "texto": "https:\/\/www.boe.es\/boe\/dias\/2005\/01\/03\/pdfs\/B00019-00020.pdf"
+                                        },
+                                        "url_html": "https:\/\/www.boe.es\/diario_boe\/txt.php?id=BOE-B-2005-2008",
+                                        "url_xml": "https:\/\/www.boe.es\/diario_boe\/xml.php?id=BOE-B-2005-2008"
+                                    }
+                                },
+                                {
+                                    "codigo": "8030",
+                                    "nombre": "COMUNIDAD AUT\u00d3NOMA DE CANARIAS",
+                                    "item": {
+                                        "identificador": "BOE-B-2005-2009",
+                                        "titulo": "Anuncio de la Direcci\u00f3n Gerencia del Hospital de Gran Canaria Dr. Negr\u00edn, por el que se convoca procedimiento abierto mediante concurso y tramitaci\u00f3n anticipada: 2005-0-47\/48 (suministro de material de Hemodin\u00e1mica).",
+                                        "url_pdf": {
+                                            "szBytes": "36673",
+                                            "szKBytes": "36",
+                                            "pagina_inicial": "20",
+                                            "pagina_final": "20",
+                                            "texto": "https:\/\/www.boe.es\/boe\/dias\/2005\/01\/03\/pdfs\/B00020-00020.pdf"
+                                        },
+                                        "url_html": "https:\/\/www.boe.es\/diario_boe\/txt.php?id=BOE-B-2005-2009",
+                                        "url_xml": "https:\/\/www.boe.es\/diario_boe\/xml.php?id=BOE-B-2005-2009"
+                                    }
+                                },
+                                {
+                                    "codigo": "8131",
+                                    "nombre": "COMUNIDAD DE MADRID",
+                                    "item": {
+                                        "identificador": "BOE-B-2005-2010",
+                                        "titulo": "Resoluci\u00f3n de 14 de diciembre de 2004, de la Secretaria General T\u00e9cnica de la Vicepresidencia Segunda y Consejer\u00eda de Justicia e Interior, por la que se hace p\u00fablica convocatoria de concurso por procedimiento abierto para la adjduciaci\u00f3n del contrato de suministro de \u00abArrendamiento con opci\u00f3n a compra de dieciocho autobombas rurales ligeras todo terreno con destino al Cuerpo de Bomberos de la Comunidad de Madrid\u00bb.",
+                                        "url_pdf": {
+                                            "szBytes": "70650",
+                                            "szKBytes": "69",
+                                            "pagina_inicial": "20",
+                                            "pagina_final": "21",
+                                            "texto": "https:\/\/www.boe.es\/boe\/dias\/2005\/01\/03\/pdfs\/B00020-00021.pdf"
+                                        },
+                                        "url_html": "https:\/\/www.boe.es\/diario_boe\/txt.php?id=BOE-B-2005-2010",
+                                        "url_xml": "https:\/\/www.boe.es\/diario_boe\/xml.php?id=BOE-B-2005-2010"
+                                    }
+                                },
+                                {
+                                    "codigo": "9531",
+                                    "nombre": "COMUNIDAD DE CASTILLA Y LE\u00d3N",
+                                    "item": {
+                                        "identificador": "BOE-B-2005-2011",
+                                        "titulo": "Resoluci\u00f3n de 17 de diciembre de 2004, de la Secretar\u00eda General de la Consejer\u00eda de Fomento, por la que se anuncia la contrataci\u00f3n de los siguientes expedientes:1.3-SG-1.",
+                                        "url_pdf": {
+                                            "szBytes": "34673",
+                                            "szKBytes": "34",
+                                            "pagina_inicial": "21",
+                                            "pagina_final": "21",
+                                            "texto": "https:\/\/www.boe.es\/boe\/dias\/2005\/01\/03\/pdfs\/B00021-00021.pdf"
+                                        },
+                                        "url_html": "https:\/\/www.boe.es\/diario_boe\/txt.php?id=BOE-B-2005-2011",
+                                        "url_xml": "https:\/\/www.boe.es\/diario_boe\/xml.php?id=BOE-B-2005-2011"
+                                    }
+                                },
+                                {
+                                    "codigo": "9525",
+                                    "nombre": "ADMINISTRACI\u00d3N LOCAL",
+                                    "item": {
+                                        "identificador": "BOE-B-2005-2012",
+                                        "titulo": "Resoluci\u00f3n del Consorcio Palacio de Congresos de Valencia por la que se anuncia la adjudicaci\u00f3n del concurso relativo a la contrataci\u00f3n del servicio de publicidad y promoci\u00f3n del Palacio de Congresos de Valencia.",
+                                        "url_pdf": {
+                                            "szBytes": "34673",
+                                            "szKBytes": "34",
+                                            "pagina_inicial": "21",
+                                            "pagina_final": "21",
+                                            "texto": "https:\/\/www.boe.es\/boe\/dias\/2005\/01\/03\/pdfs\/B00021-00021.pdf"
+                                        },
+                                        "url_html": "https:\/\/www.boe.es\/diario_boe\/txt.php?id=BOE-B-2005-2012",
+                                        "url_xml": "https:\/\/www.boe.es\/diario_boe\/xml.php?id=BOE-B-2005-2012"
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            "codigo": "5B",
+                            "nombre": "V. Anuncios. - B. Otros anuncios oficiales",
+                            "departamento": [
+                                {
+                                    "codigo": "3410",
+                                    "nombre": "MINISTERIO DE MEDIO AMBIENTE",
+                                    "item": [
+                                        {
+                                            "identificador": "BOE-B-2005-2013",
+                                            "titulo": "Anuncio de la Confederaci\u00f3n Hidrogr\u00e1fica del Norte, en el que se se\u00f1alan fechas para el levantamiento de actas previas a la ocupaci\u00f3n de los bienes afectados por las obras del \u00abProyecto de ordenaci\u00f3n de m\u00e1rgenes de los r\u00edos Burbia y Valcarce, en Villafranca del Bierzo. T\u00e9rmino municipal de Villafranca del Bierzo (Le\u00f3n).",
+                                            "url_pdf": {
+                                                "szBytes": "35171",
+                                                "szKBytes": "34",
+                                                "pagina_inicial": "22",
+                                                "pagina_final": "22",
+                                                "texto": "https:\/\/www.boe.es\/boe\/dias\/2005\/01\/03\/pdfs\/B00022-00022.pdf"
+                                            },
+                                            "url_html": "https:\/\/www.boe.es\/diario_boe\/txt.php?id=BOE-B-2005-2013",
+                                            "url_xml": "https:\/\/www.boe.es\/diario_boe\/xml.php?id=BOE-B-2005-2013"
+                                        },
+                                        {
+                                            "identificador": "BOE-B-2005-2014",
+                                            "titulo": "Resoluci\u00f3n de la Confederaci\u00f3n Hidrogr\u00e1fica del Tajo sobre publicaci\u00f3n de Resoluciones sancionatorias por la Confederaci\u00f3n Hidrogr\u00e1fica del Tajo (IP4\/60).",
+                                            "url_pdf": {
+                                                "szBytes": "35171",
+                                                "szKBytes": "34",
+                                                "pagina_inicial": "22",
+                                                "pagina_final": "22",
+                                                "texto": "https:\/\/www.boe.es\/boe\/dias\/2005\/01\/03\/pdfs\/B00022-00022.pdf"
+                                            },
+                                            "url_html": "https:\/\/www.boe.es\/diario_boe\/txt.php?id=BOE-B-2005-2014",
+                                            "url_xml": "https:\/\/www.boe.es\/diario_boe\/xml.php?id=BOE-B-2005-2014"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "codigo": "8121",
+                                    "nombre": "COMUNIDAD AUT\u00d3NOMA DE LAS ILLES BALEARS",
+                                    "item": {
+                                        "identificador": "BOE-B-2005-2015",
+                                        "titulo": "Resoluci\u00f3n del Director General de Industria del Govern de les Illes Balears de la Conselleria de Comer\u00e7, Industria i Energia de autorizaci\u00f3n del establecimiento de una instalaci\u00f3n el\u00e9ctrica, expediente UP 16\/2002, y la declaraci\u00f3n, en concreto, de utilidad p\u00fablica.",
+                                        "url_pdf": {
+                                            "szBytes": "74785",
+                                            "szKBytes": "73",
+                                            "pagina_inicial": "22",
+                                            "pagina_final": "23",
+                                            "texto": "https:\/\/www.boe.es\/boe\/dias\/2005\/01\/03\/pdfs\/B00022-00023.pdf"
+                                        },
+                                        "url_html": "https:\/\/www.boe.es\/diario_boe\/txt.php?id=BOE-B-2005-2015",
+                                        "url_xml": "https:\/\/www.boe.es\/diario_boe\/xml.php?id=BOE-B-2005-2015"
+                                    }
+                                },
+                                {
+                                    "codigo": "310",
+                                    "nombre": "UNIVERSIDADES",
+                                    "item": [
+                                        {
+                                            "identificador": "BOE-B-2005-2016",
+                                            "titulo": "Anuncio de la Facultad de Filosof\u00eda y Letras de la Universidad Aut\u00f3noma de Madrid sobre extrav\u00edo de t\u00edtulo.",
+                                            "url_pdf": {
+                                                "szBytes": "40310",
+                                                "szKBytes": "39",
+                                                "pagina_inicial": "23",
+                                                "pagina_final": "23",
+                                                "texto": "https:\/\/www.boe.es\/boe\/dias\/2005\/01\/03\/pdfs\/B00023-00023.pdf"
+                                            },
+                                            "url_html": "https:\/\/www.boe.es\/diario_boe\/txt.php?id=BOE-B-2005-2016",
+                                            "url_xml": "https:\/\/www.boe.es\/diario_boe\/xml.php?id=BOE-B-2005-2016"
+                                        },
+                                        {
+                                            "identificador": "BOE-B-2005-2017",
+                                            "titulo": "Resoluci\u00f3n de la Facultat de Formaci\u00f3n del Profesorado de la Universitat de Barcelona anunciando p\u00e9rdida del t\u00edtulo de Diplomada.",
+                                            "url_pdf": {
+                                                "szBytes": "40310",
+                                                "szKBytes": "39",
+                                                "pagina_inicial": "23",
+                                                "pagina_final": "23",
+                                                "texto": "https:\/\/www.boe.es\/boe\/dias\/2005\/01\/03\/pdfs\/B00023-00023.pdf"
+                                            },
+                                            "url_html": "https:\/\/www.boe.es\/diario_boe\/txt.php?id=BOE-B-2005-2017",
+                                            "url_xml": "https:\/\/www.boe.es\/diario_boe\/xml.php?id=BOE-B-2005-2017"
+                                        },
+                                        {
+                                            "identificador": "BOE-B-2005-2018",
+                                            "titulo": "Resoluci\u00f3n de la Facultad de Formaci\u00f3n del Profesorado de la Universitat de Barcelona anunciando p\u00e9rdida del t\u00edtulo de Maestra.",
+                                            "url_pdf": {
+                                                "szBytes": "40310",
+                                                "szKBytes": "39",
+                                                "pagina_inicial": "23",
+                                                "pagina_final": "23",
+                                                "texto": "https:\/\/www.boe.es\/boe\/dias\/2005\/01\/03\/pdfs\/B00023-00023.pdf"
+                                            },
+                                            "url_html": "https:\/\/www.boe.es\/diario_boe\/txt.php?id=BOE-B-2005-2018",
+                                            "url_xml": "https:\/\/www.boe.es\/diario_boe\/xml.php?id=BOE-B-2005-2018"
+                                        },
+                                        {
+                                            "identificador": "BOE-B-2005-2019",
+                                            "titulo": "Resoluci\u00f3n de la Universidad de C\u00e1diz sobre extrav\u00edo de t\u00edtulo.",
+                                            "url_pdf": {
+                                                "szBytes": "40310",
+                                                "szKBytes": "39",
+                                                "pagina_inicial": "23",
+                                                "pagina_final": "23",
+                                                "texto": "https:\/\/www.boe.es\/boe\/dias\/2005\/01\/03\/pdfs\/B00023-00023.pdf"
+                                            },
+                                            "url_html": "https:\/\/www.boe.es\/diario_boe\/txt.php?id=BOE-B-2005-2019",
+                                            "url_xml": "https:\/\/www.boe.es\/diario_boe\/xml.php?id=BOE-B-2005-2019"
+                                        },
+                                        {
+                                            "identificador": "BOE-B-2005-2020",
+                                            "titulo": "Resoluci\u00f3n de la Universidad de C\u00e1diz sobre extrav\u00edo de t\u00edtulo.",
+                                            "url_pdf": {
+                                                "szBytes": "40310",
+                                                "szKBytes": "39",
+                                                "pagina_inicial": "23",
+                                                "pagina_final": "23",
+                                                "texto": "https:\/\/www.boe.es\/boe\/dias\/2005\/01\/03\/pdfs\/B00023-00023.pdf"
+                                            },
+                                            "url_html": "https:\/\/www.boe.es\/diario_boe\/txt.php?id=BOE-B-2005-2020",
+                                            "url_xml": "https:\/\/www.boe.es\/diario_boe\/xml.php?id=BOE-B-2005-2020"
+                                        },
+                                        {
+                                            "identificador": "BOE-B-2005-2021",
+                                            "titulo": "Resoluci\u00f3n de la Universidad de Cantabria por la que se anuncia el extrav\u00edo del t\u00edtulo oficial universitario.",
+                                            "url_pdf": {
+                                                "szBytes": "40310",
+                                                "szKBytes": "39",
+                                                "pagina_inicial": "23",
+                                                "pagina_final": "23",
+                                                "texto": "https:\/\/www.boe.es\/boe\/dias\/2005\/01\/03\/pdfs\/B00023-00023.pdf"
+                                            },
+                                            "url_html": "https:\/\/www.boe.es\/diario_boe\/txt.php?id=BOE-B-2005-2021",
+                                            "url_xml": "https:\/\/www.boe.es\/diario_boe\/xml.php?id=BOE-B-2005-2021"
+                                        },
+                                        {
+                                            "identificador": "BOE-B-2005-2022",
+                                            "titulo": "Resoluci\u00f3n de la Universidad de La Laguna sobre extrav\u00edo de t\u00edtulo oficial.",
+                                            "url_pdf": {
+                                                "szBytes": "40310",
+                                                "szKBytes": "39",
+                                                "pagina_inicial": "23",
+                                                "pagina_final": "23",
+                                                "texto": "https:\/\/www.boe.es\/boe\/dias\/2005\/01\/03\/pdfs\/B00023-00023.pdf"
+                                            },
+                                            "url_html": "https:\/\/www.boe.es\/diario_boe\/txt.php?id=BOE-B-2005-2022",
+                                            "url_xml": "https:\/\/www.boe.es\/diario_boe\/xml.php?id=BOE-B-2005-2022"
+                                        },
+                                        {
+                                            "identificador": "BOE-B-2005-2023",
+                                            "titulo": "Anuncio de la Universidad de Santiago de Compostela sobre extrav\u00edo de t\u00edtulo.",
+                                            "url_pdf": {
+                                                "szBytes": "40310",
+                                                "szKBytes": "39",
+                                                "pagina_inicial": "23",
+                                                "pagina_final": "23",
+                                                "texto": "https:\/\/www.boe.es\/boe\/dias\/2005\/01\/03\/pdfs\/B00023-00023.pdf"
+                                            },
+                                            "url_html": "https:\/\/www.boe.es\/diario_boe\/txt.php?id=BOE-B-2005-2023",
+                                            "url_xml": "https:\/\/www.boe.es\/diario_boe\/xml.php?id=BOE-B-2005-2023"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "codigo": "5C",
+                            "nombre": "V. Anuncios. - C. Anuncios particulares",
+                            "departamento": {
+                                "codigo": "9202",
+                                "nombre": "Anuncios particulares",
+                                "texto": {
+                                    "item": [
+                                        {
+                                            "identificador": "BOE-B-2005-2024",
+                                            "titulo": "AGUAS DE LAS CUENCAS MEDITERR\u00c1NEAS, S. A.",
+                                            "url_pdf": {
+                                                "szBytes": "32627",
+                                                "szKBytes": "32",
+                                                "pagina_inicial": "24",
+                                                "pagina_final": "24",
+                                                "texto": "https:\/\/www.boe.es\/boe\/dias\/2005\/01\/03\/pdfs\/B00024-00024.pdf"
+                                            },
+                                            "url_html": "https:\/\/www.boe.es\/diario_boe\/txt.php?id=BOE-B-2005-2024",
+                                            "url_xml": "https:\/\/www.boe.es\/diario_boe\/xml.php?id=BOE-B-2005-2024"
+                                        },
+                                        {
+                                            "identificador": "BOE-B-2005-2025",
+                                            "titulo": "EMPRESA MUNICIPAL CAMPO DE LAS NACIONES, SOCIEDAD AN\u00d3NIMA",
+                                            "url_pdf": {
+                                                "szBytes": "32627",
+                                                "szKBytes": "32",
+                                                "pagina_inicial": "24",
+                                                "pagina_final": "24",
+                                                "texto": "https:\/\/www.boe.es\/boe\/dias\/2005\/01\/03\/pdfs\/B00024-00024.pdf"
+                                            },
+                                            "url_html": "https:\/\/www.boe.es\/diario_boe\/txt.php?id=BOE-B-2005-2025",
+                                            "url_xml": "https:\/\/www.boe.es\/diario_boe\/xml.php?id=BOE-B-2005-2025"
+                                        },
+                                        {
+                                            "identificador": "BOE-B-2005-2026",
+                                            "titulo": "FUNDACI\u00d3N COLECCI\u00d3N THYSSEN-BORNEMISZA",
+                                            "url_pdf": {
+                                                "szBytes": "32627",
+                                                "szKBytes": "32",
+                                                "pagina_inicial": "24",
+                                                "pagina_final": "24",
+                                                "texto": "https:\/\/www.boe.es\/boe\/dias\/2005\/01\/03\/pdfs\/B00024-00024.pdf"
+                                            },
+                                            "url_html": "https:\/\/www.boe.es\/diario_boe\/txt.php?id=BOE-B-2005-2026",
+                                            "url_xml": "https:\/\/www.boe.es\/diario_boe\/xml.php?id=BOE-B-2005-2026"
+                                        },
+                                        {
+                                            "identificador": "BOE-B-2005-2027",
+                                            "titulo": "FUNDACI\u00d3N HOSPITAL ALCORC\u00d3N",
+                                            "url_pdf": {
+                                                "szBytes": "32627",
+                                                "szKBytes": "32",
+                                                "pagina_inicial": "24",
+                                                "pagina_final": "24",
+                                                "texto": "https:\/\/www.boe.es\/boe\/dias\/2005\/01\/03\/pdfs\/B00024-00024.pdf"
+                                            },
+                                            "url_html": "https:\/\/www.boe.es\/diario_boe\/txt.php?id=BOE-B-2005-2027",
+                                            "url_xml": "https:\/\/www.boe.es\/diario_boe\/xml.php?id=BOE-B-2005-2027"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}

@@ -538,3 +538,28 @@ def test_D43_las_sanciones_compound():
         l.amount for b in pub.blocks for l in b.sanctions
         if l.amount
     ) == Decimal("250000")
+
+
+def test_D44_sumario_pre2005_shape():
+    """Pre-2005 sumarios put 'item' directly under 'departamento'
+    (no 'epigrafe'). parse_sumario must yield items for BOTH shapes —
+    a 2000-2004 enumeration can never silently return zero again."""
+    from datetime import date
+    from cnmv_enforcement.sources.boe.sumario import (
+        cnmv_items,
+        parse_sumario,
+    )
+
+    s2000 = parse_sumario(
+        Path("tests/fixtures/sumario/20000301.json").read_bytes(),
+        date(2000, 3, 1),
+    )
+    s2005 = parse_sumario(
+        Path("tests/fixtures/sumario/20050103.json").read_bytes(),
+        date(2005, 1, 3),
+    )
+    assert len(s2000.items) > 0, "pre-2005 shape lost all items"
+    assert len(s2005.items) > 0, "epigrafe shape lost all items"
+    # dept-1040 exists in the pre-2005 era — the CNMV filter works on
+    # the flat departamento→item shape (2005-01-03 had no CNMV day item)
+    assert len(cnmv_items(s2000)) >= 1

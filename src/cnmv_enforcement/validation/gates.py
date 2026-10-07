@@ -588,4 +588,30 @@ def run_gates(corpus_dir: Path, extra_dirs: list[Path] | None = None) -> dict:
         f"{len(unbound)} evidence rows without artifact sha",
     )
 
+    # G30 SUMARIO_SHAPE_COVERAGE — a pre-2005 sumario (departamento→
+    # item, no epigrafe) must never enumerate to zero: the frozen
+    # fixtures prove both shapes parse. This is the regression gate
+    # for the silent-zero-items coverage bug found in H3.
+    fixture_dir = Path("tests/fixtures/sumario")
+    shape_failures: list[str] = []
+    for fixture, day in (("20000301.json", "2000-03-01"),
+                         ("20050103.json", "2005-01-03")):
+        f = fixture_dir / fixture
+        if not f.exists():
+            shape_failures.append(f"missing fixture {fixture}")
+            continue
+        from datetime import date as _date
+
+        from cnmv_enforcement.sources.boe.sumario import parse_sumario
+
+        y, m, d = day.split("-")
+        s = parse_sumario(f.read_bytes(), _date(int(y), int(m), int(d)))
+        if not s.items:
+            shape_failures.append(f"{fixture}: parsed 0 items")
+    gate(
+        "G30 sumario shape coverage",
+        not shape_failures,
+        "; ".join(shape_failures) if shape_failures else "both shapes yield items",
+    )
+
     return report.to_dict()
