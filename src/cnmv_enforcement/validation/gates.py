@@ -7,7 +7,6 @@ a warning: the ledger must never silently degrade.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from datetime import UTC
 from pathlib import Path
 
 from cnmv_enforcement.domain.enums import SanctionType, Severity
@@ -245,7 +244,9 @@ def run_gates(corpus_dir: Path) -> dict:
     else:
         gate("G16 review regression coverage", False, "registry missing")
 
-    # G17 REVIEW_STALENESS — no incompatible review still ACCEPTED
+    # G17 REVIEW_STALENESS — independent oracle: compute the expected
+    # stale-set WITHOUT apply_staleness, then verify the ledger's
+    # output matches it (a regression inside apply_staleness fails here)
     from cnmv_enforcement.review.ledger import load_ledger
     from cnmv_enforcement.review.model import (
         REVIEW_COMPAT_VERSION,
@@ -260,19 +261,31 @@ def run_gates(corpus_dir: Path) -> dict:
             for p in result.publications
             if p.boe_id
         }
-        items = apply_staleness(
-            load_ledger(lpath), REVIEW_COMPAT_VERSION, raw_sha
-        )
-        bad = [
+        raw_items = load_ledger(lpath)
+        expected_stale = {
             r.review_id
-            for r in items
-            if r.status in (ReviewStatus.ACCEPTED, ReviewStatus.CORRECTED)
-            and r.staleness_reason(REVIEW_COMPAT_VERSION, raw_sha.get(r.document_id, ""))
+            for r in raw_items
+            if (
+                r.review_compat_version != REVIEW_COMPAT_VERSION
+                or r.raw_sha256 != raw_sha.get(r.document_id, "")
+            )
+        }
+        out = {r.review_id: r.status for r in apply_staleness(
+            raw_items, REVIEW_COMPAT_VERSION, raw_sha
+        )}
+        wrong = [
+            rid
+            for rid in expected_stale
+            if out.get(rid) != ReviewStatus.STALE
+        ] + [
+            rid
+            for rid, st in out.items()
+            if rid not in expected_stale and st == ReviewStatus.STALE
         ]
         gate(
             "G17 review staleness",
-            not bad,
-            f"{len(bad)} reviews should be STALE but aren't",
+            not wrong,
+            f"{len(wrong)} reviews in wrong staleness state",
         )
     else:
         gate("G17 review staleness", True, "no ledger yet")
@@ -308,39 +321,60 @@ def run_gates(corpus_dir: Path) -> dict:
         f"{len(dishonest)} VB_PROVEN without locator/sha",
     )
 
-    # G20 COVERAGE_NEGATIVE_CLAIMS — every strong negative has a basis
-    # (appeal states already carry coverage_basis or are OBSERVED)
-    from cnmv_enforcement.coverage.epistemic import CoverageStatus
+    # G20 COVERAGE_NEGATIVE_CLAIMS — recompute appeal status from the
+    # pdf-status manifest with the same helper flatten() uses; every
+    # NOT_OBSERVED must come from a retrieval-verified entry
+    import json
 
-    unbased = [
-        b.case.case_id
-        for b in result.bundles
-        if getattr(b.case, "appeal_observation_status", None)
-        == CoverageStatus.NOT_OBSERVED_WITHIN_VERIFIED_COVERAGE
-        and not getattr(b.case, "coverage_basis_id", None)
-    ]
+    pstatus_path = Path("data/runtime/cnmv_pdf_status.json")
+    pstatus = (
+        json.loads(pstatus_path.read_text(encoding="utf-8"))
+        if pstatus_path.exists()
+        else {}
+    )
+    from cnmv_enforcement.storage.tables import _appeal_status, _pdf_basis_id
+
+    basis = _pdf_basis_id(pstatus) if pstatus else None
+    unbased = []
+    unverified_neg = []
+    for b in result.bundles:
+        obs = pstatus.get(b.case.canonical_boe_id or "")
+        st = _appeal_status(obs)
+        if st == "NOT_OBSERVED_WITHIN_VERIFIED_COVERAGE" and not basis:
+            unbased.append(b.case.case_id)
+        if st == "NOT_OBSERVED_WITHIN_VERIFIED_COVERAGE" and (
+            not obs or obs.get("retrieval") != "OK"
+        ):
+            unverified_neg.append(b.case.case_id)
     gate(
         "G20 coverage negative claims",
-        not unbased,
-        f"{len(unbased)} negatives without basis",
+        not unbased and not unverified_neg,
+        f"unbased={len(unbased)} unverified={len(unverified_neg)}",
     )
 
-    # G21 AS_KNOWN_AT_NO_FUTURE_LEAKAGE — evidence observed_at filter
-    leaks = []
-    from datetime import datetime
+    # G21 AS_KNOWN_AT_NO_FUTURE_LEAKAGE — no observation timestamp may
+    # postdate the build itself (evidence dated into the future would be
+    # invisible to every AS_KNOWN_AT query); end-to-end leakage is
+    # covered by tests/test_known_at.py + API tests
 
-    cutoff = datetime(2020, 1, 1, tzinfo=UTC)
-    for b in result.bundles:
-        for e in b.evidence:
-            if e.observed_at and e.observed_at > cutoff:
-                leaks.append(e.entity_id)
-    # informational — the build timestamps evidence at build time;
-    # leakage means AS_KNOWN_AT queries would see them
+    built = result.built_at
+    future = [
+        e.entity_id
+        for b in result.bundles
+        for e in b.evidence
+        if e.observed_at
+        and abs(
+            (
+                e.observed_at.replace(tzinfo=None)
+                - built.replace(tzinfo=None)
+            ).total_seconds()
+        )
+        > 3600
+    ]
     gate(
         "G21 known_at no future leakage",
-        True,
-        f"{len(leaks)} evidence records post-2020 (expected — observation "
-        "axis is build-time, not publication-time)",
+        not future,
+        f"{len(future)} evidence records >1h outside the build instant",
     )
 
     # G22 REPRODUCIBLE_DATASET — golden fixture integrity

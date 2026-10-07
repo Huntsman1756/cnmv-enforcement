@@ -85,9 +85,18 @@ def test_S8_cross_month_conduct_dates():
 
 
 def test_S9_respondents_dedup():
-    pub = _pub("BOE-A-2026-16921")
-    subs = [s.subject_raw for b in pub.blocks for s in b.sanctions]
-    assert len(subs) == len(set(subs)) or len(set(subs)) <= len(subs)
+    """Duplicate respondent_id rows must never reach the respondents
+    table — build over a small fixture subset and assert PK uniqueness."""
+    from cnmv_enforcement.pipeline.build import build_corpus
+    from cnmv_enforcement.storage.tables import flatten
+
+    result = build_corpus(REG)
+    tables = flatten(result)
+    ids = [r["respondent_id"] for r in tables["respondents"]]
+    assert len(ids) == len(set(ids)), (
+        f"duplicate respondent_id rows: {len(ids)} rows, "
+        f"{len(set(ids))} unique"
+    )
 
 
 def test_F1_el_article_cross_month():

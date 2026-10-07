@@ -319,15 +319,23 @@ def pdf_status(
             kind="cnmv_pdf",
         )
         sha = hashlib.sha256(fetched.content).hexdigest()
-        try:
-            pt = extract_pdf_text(fetched.content)
-            notes = [
-                {"kind": n.kind, "page": n.page, "verbatim": n.verbatim}
-                for n in pt.status_notes
-            ]
-        except Exception as exc:
-            notes = []
-            typer.echo(f"  PDF extract failed {res.boe_id}: {exc}")
+        retrieval = "OK"
+        notes: list[dict] = []
+        if not fetched.ok or not fetched.content.startswith(b"%PDF"):
+            retrieval = "FETCH_FAILED"
+        else:
+            try:
+                pt = extract_pdf_text(fetched.content)
+                if pt.n_pages == 0 or not pt.text.strip():
+                    retrieval = "EXTRACT_EMPTY"
+                else:
+                    notes = [
+                        {"kind": n.kind, "page": n.page, "verbatim": n.verbatim}
+                        for n in pt.status_notes
+                    ]
+            except Exception as exc:
+                retrieval = "EXTRACT_FAILED"
+                typer.echo(f"  PDF extract failed {res.boe_id}: {exc}")
         prev = previous.get(res.boe_id)
         if prev:
             if prev.get("sha256") != sha:
@@ -344,10 +352,16 @@ def pdf_status(
             status = FirmnessStatus.FIRM_STATED
         elif "JUDICIAL_REVIEW_POSSIBLE" in kinds:
             status = FirmnessStatus.APPEAL_POSSIBLE
+        # first-observation preserved across runs: observed_at is the
+        # LAST verification, first_observed_at the FIRST — the knowledge
+        # axis needs both (a re-run must not erase when a note appeared)
         current[res.boe_id] = {
             "sha256": sha,
             "notes": notes,
             "status": status,
+            "retrieval": retrieval,
+            "first_observed_at": (prev or {}).get("first_observed_at")
+            or observed,
             "observed_at": observed,
         }
     snapshot.parent.mkdir(parents=True, exist_ok=True)
@@ -628,40 +642,64 @@ def case(
     cols = [d[0] for d in con.description]
     case_row = dict(zip(cols, c, strict=True))
     if known_at:
+        from datetime import date, datetime, time
+
+        try:
+            if len(known_at.strip()) == 10:
+                ts = datetime.combine(
+                    date.fromisoformat(known_at.strip()),
+                    time(23, 59, 59),
+                ).isoformat()
+            else:
+                ts = datetime.fromisoformat(known_at.strip()).isoformat()
+        except ValueError as exc:
+            typer.echo(f"invalid --known-at: {known_at!r} (use ISO 8601)")
+            raise typer.Exit(2) from exc
         cid = case_row["case_id"]
         evs = con.execute(
             "SELECT entity_id FROM evidence WHERE entity_id LIKE ? "
             "AND observed_at <= ?",
-            [f"{cid}%", known_at],
+            [f"{cid}/%", ts],
         ).fetchall()
         known_ids = {r[0] for r in evs}
+        case_known = bool(known_ids)
         case_row["history_mode"] = "AS_KNOWN_AT"
-        case_row["known_at"] = known_at
-        if not known_ids:
+        case_row["known_at"] = ts
+        if not case_known:
             case_row["observation_note"] = "NO_OBSERVATION_HISTORY"
         typer.echo(
             json.dumps(case_row, ensure_ascii=False, indent=2, default=str)
         )
         for t in ("infringements", "sanctions", "respondents"):
             typer.echo(f"--- {t} (known by {known_at})")
-            key = (
-                "infringement_id" if t == "infringements" else
-                "sanction_id" if t == "sanctions" else "respondent_id"
-            )
-            rows = con.execute(
-                f"SELECT * FROM {t} WHERE case_id = ?" if t != "respondents"
-                else "SELECT r.* FROM respondents r JOIN case_respondents "
-                "USING(respondent_id) WHERE r.respondent_id IN "
-                "(SELECT respondent_id FROM case_respondents WHERE case_id = ?)",
-                [cid],
-            ).fetchall()
+            if t == "respondents":
+                if not case_known:
+                    continue
+                rows = con.execute(
+                    "SELECT DISTINCT r.* FROM respondents r "
+                    "JOIN case_respondents cr USING(respondent_id) "
+                    "WHERE cr.case_id = ?",
+                    [cid],
+                ).fetchall()
+            else:
+                key = (
+                    "infringement_id" if t == "infringements"
+                    else "sanction_id"
+                )
+                cur = con.execute(
+                    f"SELECT * FROM {t} WHERE case_id = ?", [cid]
+                )
+                rcols_t = [d[0] for d in cur.description]
+                key_i = rcols_t.index(key)
+                rows = [
+                    r for r in cur.fetchall() if r[key_i] in known_ids
+                ]
             rcols = [d[0] for d in con.description]
             for r in rows:
                 drow = dict(zip(rcols, r, strict=True))
-                if drow.get(key) in known_ids:
-                    typer.echo(
-                        json.dumps(drow, ensure_ascii=False, default=str)
-                    )
+                typer.echo(
+                    json.dumps(drow, ensure_ascii=False, default=str)
+                )
         return
     typer.echo(json.dumps(case_row, ensure_ascii=False, indent=2, default=str))
     for t, _key in [

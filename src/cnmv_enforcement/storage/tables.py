@@ -33,6 +33,30 @@ def _verify_proof(ev: Any, pub: Any) -> str:
     return verify_binding(ev, pub)
 
 
+def _appeal_status(obs: dict | None) -> str:
+    """Epistemic appeal state from a pdf-status observation entry.
+
+    A strong negative (NOT_OBSERVED_WITHIN_VERIFIED_COVERAGE) requires a
+    VERIFIED enumeration of the PDF content — a failed fetch or empty
+    extraction is INCONCLUSIVE, never a negative claim.
+    """
+    if not obs:
+        return "INCONCLUSIVE"
+    # snapshots without 'retrieval' (pre-v0.5) cannot prove the PDF was
+    # enumerated — a missing field is INCONCLUSIVE, not a negative claim
+    retrieval = obs.get("retrieval")
+    if retrieval != "OK":
+        return "INCONCLUSIVE"
+    kinds = {n.get("kind") for n in obs.get("notes", [])}
+    if kinds & {
+        "JUDICIAL_APPEAL_OBSERVED",
+        "JUDGMENT_OBSERVED",
+        "RENUNCIATION_TO_APPEAL",
+    }:
+        return "OBSERVED"
+    return "NOT_OBSERVED_WITHIN_VERIFIED_COVERAGE"
+
+
 def _pdf_basis_id(pdf_status: dict[str, dict] | None) -> str | None:
     """Coverage basis for the CNMV-PDF status run — identifies the
     verified surface (manifest hash + observed bounds)."""
@@ -93,17 +117,7 @@ def flatten(
         c = bundle.case
         pub = meta.get(c.canonical_boe_id or "")
         obs = (pdf_status or {}).get(c.canonical_boe_id or "")
-        note_kinds = {n.get("kind") for n in obs.get("notes", [])} if obs else set()
-        if obs and note_kinds & {
-            "JUDICIAL_APPEAL_OBSERVED",
-            "JUDGMENT_OBSERVED",
-            "RENUNCIATION_TO_APPEAL",
-        }:
-            appeal_status = "OBSERVED"
-        elif obs:
-            appeal_status = "NOT_OBSERVED_WITHIN_VERIFIED_COVERAGE"
-        else:
-            appeal_status = "INCONCLUSIVE"
+        appeal_status = _appeal_status(obs)
         tables["cases"].append(
             {
                 "case_id": c.case_id,
@@ -142,6 +156,8 @@ def flatten(
                     "firmness_status": obs.get("status"),
                     "n_cnmv_notes": len(obs.get("notes", [])),
                     "pdf_sha256": obs.get("sha256"),
+                    "first_observed_at": obs.get("first_observed_at")
+                    or obs.get("observed_at"),
                     "observed_at": obs.get("observed_at"),
                 }
             )
@@ -158,11 +174,17 @@ def flatten(
                     "JUDICIAL_APPEAL_OBSERVED",
                     "JUDGMENT_OBSERVED",
                 }:
+                    from cnmv_enforcement.normalize.ids import content_hash
+
                     tables["events"].append(
                         {
                             "event_id": (
-                                f"{c.case_id}/PDF-{note['kind'][:4]}-"
-                                f"{len(tables['events'])}"
+                                f"{c.case_id}/PDF-"
+                                f"{content_hash(
+                                    note.get('kind'),
+                                    str(note.get('page')),
+                                    (note.get('verbatim') or '')[:120],
+                                )[:12]}"
                             ),
                             "case_id": c.case_id,
                             "event_type": (

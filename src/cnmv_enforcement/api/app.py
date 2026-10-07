@@ -38,6 +38,18 @@ def _con() -> duckdb.DuckDBPyConnection:
     return duckdb.connect(str(_DB), read_only=True)
 
 
+def _column_exists(con, table: str, col: str) -> bool:
+    try:
+        return col in {
+            d[1]
+            for d in con.execute(
+                "PRAGMA table_info(" + table + ")"
+            ).fetchall()
+        }
+    except Exception:
+        return False
+
+
 def _one(con, sql: str, params: list | None = None):
     row = con.execute(sql, params or []).fetchone()
     return row[0] if row else None
@@ -183,6 +195,20 @@ def list_cases(
 # evidence/observation axes (observed_at), never on effective dates.
 # A case is visible at T only if some observation of it existed by then.
 
+def _parse_known_at(raw: str) -> str:
+    """Normalize known_at to an ISO instant — date-only input means
+    end-of-day (the knowledge existing *by* that date)."""
+    from datetime import date, datetime, time
+
+    try:
+        if len(raw.strip()) == 10:
+            d = date.fromisoformat(raw.strip())
+            return datetime.combine(d, time(23, 59, 59)).isoformat()
+        return datetime.fromisoformat(raw.strip()).isoformat()
+    except ValueError:
+        raise HTTPException(400, f"invalid known_at: {raw!r} (use ISO 8601)") from None
+
+
 @app.get("/cases/{case_id}")
 def get_case(case_id: str, known_at: str | None = None) -> dict:
     con = _con()
@@ -197,7 +223,7 @@ def get_case(case_id: str, known_at: str | None = None) -> dict:
         cid = c[0]["case_id"]
         out = dict(c[0])
         if known_at:
-            ts = known_at
+            ts = _parse_known_at(known_at)
             # AS_KNOWN_AT — only observations with observed_at <= T
             evs = _rows(
                 con,
@@ -205,9 +231,10 @@ def get_case(case_id: str, known_at: str | None = None) -> dict:
                 "proof_level, artifact_sha256, observed_at FROM evidence "
                 "WHERE entity_id LIKE ? AND observed_at <= ? "
                 "ORDER BY entity_id",
-                [f"{cid}%", ts],
+                [f"{cid}/%", ts],
             )
             evs_ids = {e["entity_id"] for e in evs}
+            case_known = bool(evs)
             out["events"] = _rows(
                 con,
                 "SELECT * FROM events WHERE case_id = ? "
@@ -219,10 +246,11 @@ def get_case(case_id: str, known_at: str | None = None) -> dict:
                     con,
                     "SELECT sn.* FROM status_notes sn "
                     "JOIN case_status cs ON sn.case_id = cs.case_id "
-                    "WHERE sn.case_id = ? AND cs.observed_at <= ?",
+                    "WHERE sn.case_id = ? AND cs.first_observed_at <= ?",
                     [cid, ts],
                 )
                 if _table_exists(con, "status_notes")
+                and _column_exists(con, "case_status", "first_observed_at")
                 else []
             )
             out["evidence"] = evs
@@ -247,16 +275,46 @@ def get_case(case_id: str, known_at: str | None = None) -> dict:
                 )
                 if i["infringement_id"] in evs_ids
             ]
-            out["respondents"] = [
-                r for r in _rows(
+            # respondents are observed when the case document was — no
+            # separate observation event exists for them
+            out["respondents"] = (
+                _rows(
                     con,
                     "SELECT r.*, cr.role case_role FROM respondents r "
                     "JOIN case_respondents cr USING(respondent_id) "
                     "WHERE cr.case_id = ?",
                     [cid],
                 )
-                if r["respondent_id"] in evs_ids
-            ]
+                if case_known
+                else []
+            )
+            # derived/epistemic fields reflect knowledge state — a T-view
+            # must not leak post-T observations (a later appeal note must
+            # not surface as OBSERVED inside an earlier view)
+            out["n_sanctions"] = len(out["sanctions"])
+            out["n_infringements"] = len(out["infringements"])
+            out["n_respondents"] = len(out["respondents"])
+            for field in (
+                "appeal_observation_status",
+                "coverage_basis_id",
+                "administrative_appeal_observed",
+                "administrative_finality_observed",
+                "judicial_review_mentioned",
+            ):
+                out[field] = None
+            if case_known and _table_exists(con, "case_status"):
+                st = _rows(
+                    con,
+                    "SELECT c.appeal_observation_status, c.coverage_basis_id "
+                    "FROM cases c JOIN case_status cs USING(case_id) "
+                    "WHERE c.case_id = ? AND cs.first_observed_at <= ?",
+                    [cid, ts],
+                )
+                if st:
+                    out["appeal_observation_status"] = st[0][
+                        "appeal_observation_status"
+                    ]
+                    out["coverage_basis_id"] = st[0]["coverage_basis_id"]
             out["history_mode"] = "AS_KNOWN_AT"
             out["known_at"] = ts
             if not evs:

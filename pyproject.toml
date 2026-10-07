@@ -67,6 +67,7 @@ ignore = [
 "src/cnmv_enforcement/parsing/**" = ["RUF001", "RUF002", "RUF003"]
 "src/cnmv_enforcement/sources/**" = ["RUF001", "RUF002", "RUF003"]
 "src/cnmv_enforcement/cli/**" = ["PLC0415", "ISC004"]
+"src/cnmv_enforcement/api/**" = ["PLC0415"]
 "src/cnmv_enforcement/coverage/**" = ["ISC004", "PLC0415"]
 "src/cnmv_enforcement/evidence/**" = ["PLC0415"]
 "src/cnmv_enforcement/review/**" = ["PLC0415"]
