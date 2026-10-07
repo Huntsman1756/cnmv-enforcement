@@ -1294,8 +1294,9 @@ def parse_publication_xml(
         ):
             para_items.append((p0, seg))
 
-    for para, t in para_items:
+    for para, t_raw in para_items:
         # normalize historical comision phrasings to the canonical form
+        t = t_raw
         t = _PRE_COMISION_NORM.sub(r"\g<1>Por la comisión de ", t)
         t = _PRE_RESPONSABLE_NORM.sub("por la comisión", t)
         t = _PRE_COMISION_SIN_LA.sub("por la comisión", t)

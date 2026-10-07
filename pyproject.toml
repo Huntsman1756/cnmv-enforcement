@@ -60,12 +60,15 @@ ignore = [
     "PLR0913",  # domain constructors have many fields
     "PLR0915",  # parser functions legitimately have many statements
     "DTZ007",   # strptime without tz is correct for legal dates
+    "E741",     # 'l'/'i' are idiomatic sanction-line/item names in the parser
 ]
 [tool.ruff.lint.per-file-ignores]
 # The parser deliberately matches Unicode bullet/dash/nbsp variants —
 # the ambiguity IS the point (BOE text uses all of them).
 "src/cnmv_enforcement/parsing/**" = ["RUF001", "RUF002", "RUF003"]
 "src/cnmv_enforcement/sources/**" = ["RUF001", "RUF002", "RUF003"]
+# scripts quote real Spanish BOE text — accented chars are data
+"scripts/**" = ["RUF001", "RUF002", "RUF003"]
 "src/cnmv_enforcement/cli/**" = ["PLC0415", "ISC004"]
 "src/cnmv_enforcement/api/**" = ["PLC0415"]
 "src/cnmv_enforcement/coverage/**" = ["ISC004", "PLC0415"]
@@ -74,7 +77,8 @@ ignore = [
 "src/cnmv_enforcement/storage/**" = ["PLC0415"]
 "src/cnmv_enforcement/validation/**" = ["PLC0415"]
 "src/cnmv_enforcement/pipeline/**" = ["PLC0415"]
-"tests/**" = ["N802", "C416", "PLC0415"]
+# tests quote real Spanish BOE text — accented chars are data
+"tests/**" = ["N802", "C416", "PLC0415", "RUF001", "RUF002", "RUF003"]
 
 [tool.mypy]
 python_version = "3.12"

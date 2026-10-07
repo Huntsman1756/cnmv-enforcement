@@ -30,8 +30,8 @@ if __name__ == "__main__":
         for it in json.loads(ln).get("items", []):
             if it.get("sanction_like"):
                 by_year.setdefault(it["boe_id"][6:10], []).append(it["boe_id"])
-    for y in by_year:
-        by_year[y] = sorted(set(b for b in by_year[y] if (stage_dir / f"{b}.xml").exists()))
+    for y, ids in by_year.items():
+        by_year[y] = sorted({b for b in ids if (stage_dir / f"{b}.xml").exists()})
     dev, holdout = stratified_split(by_year)
     for y in sorted(by_year):
         print(f"{y}: total={len(by_year[y])} dev={len(dev[y])} holdout={len(holdout[y])}")

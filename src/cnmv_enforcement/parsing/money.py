@@ -31,10 +31,11 @@ def parse_es_number(text: str) -> Decimal | None:
         # 1–2-digit final group is a decimal ('…con cinco céntimos'),
         # not another thousands group
         m = re.fullmatch(r"(\d{1,3}(?:\.\d{3})+)\.(\d{1,2})", t)
-        if m:
-            t = f"{m.group(1).replace('.', '')}.{m.group(2)}"
-        else:
-            t = t.replace(".", "")
+        t = (
+            f"{m.group(1).replace('.', '')}.{m.group(2)}"
+            if m
+            else t.replace(".", "")
+        )
     try:
         return Decimal(t)
     except InvalidOperation:
