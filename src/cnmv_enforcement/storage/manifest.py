@@ -92,8 +92,12 @@ def _git_commit() -> str | None:
 
 
 def _release_tag(path: Path) -> str | None:
-    m = re.search(r"v?\d+\.\d+\.\d+(?:-rc\d+)?", path.name)
-    return m.group(0) if m else None
+    # the parquet subdir lives inside the release dir — check both levels
+    for name in (path.name, path.parent.name):
+        m = re.fullmatch(r"v?\d+\.\d+\.\d+(?:-rc\d+)?", name)
+        if m:
+            return m.group(0)
+    return None
 
 
 def build_manifest(
