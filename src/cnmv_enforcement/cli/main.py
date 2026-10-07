@@ -462,6 +462,14 @@ def build(
         )
     written = write_parquet(tables, exports_dir / "parquet")
     counts = build_duckdb(exports_dir / "parquet", db_path)
+    # ship the queryable DuckDB inside the export — a release carries
+    # both the authoritative Parquet AND the query surface (marked
+    # non-authoritative in the manifest, hash-pinned in SHA256SUMS)
+    import shutil
+
+    export_db = exports_dir / "cnmv-enforcement.duckdb"
+    if db_path != export_db and db_path.exists():
+        shutil.copyfile(db_path, export_db)
 
     ledger = CoverageLedger(generated_at=result.built_at.isoformat())
     ledger.case_count = len(result.bundles)

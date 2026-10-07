@@ -173,6 +173,11 @@ def write_release(
         # the coverage basis for negative appeal claims is a release
         # artifact — it must be hash-pinned like the tables
         lines.append(f"{file_sha256(pdfm)}  pdf_status_manifest.json")
+    dbq = parquet_dir.parent / "cnmv-enforcement.duckdb"
+    if dbq.exists():
+        # non-authoritative query surface, still hash-pinned for
+        # reproducible verification of the shipped bytes
+        lines.append(f"{file_sha256(dbq)}  cnmv-enforcement.duckdb")
     lines.append(f"{file_sha256(mpath)}  dataset_manifest.json")
     sums_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
     return mpath

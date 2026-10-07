@@ -85,7 +85,7 @@ appeals:      28 OBSERVED / 59 NOT_OBSERVED_VERIFIED / 73 INCONCLUSIVE
               firmness_status=APPEAL_OBSERVED — a mutually-exclusive
               firmness class. Note-level counts: 23 appeal-filed notes,
               28 renunciation notes, judgments included.)
-corpus:       8e8446796b0f (v0.4: f50c4d336e09 — diff explained above)
+corpus:       ee4f5515e9dd (v0.4: f50c4d336e09 — diff explained above)
 clean-checkout: 136 tests + 21/21 gates from frozen inputs
 ```
 
