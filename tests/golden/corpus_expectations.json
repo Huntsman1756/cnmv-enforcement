@@ -182,21 +182,20 @@
  {
   "boe_id": "BOE-A-2022-17410",
   "blocks": 2,
-  "sanctions": 3,
+  "sanctions": 2,
   "severities": [
    "VERY_SERIOUS"
   ],
   "articles": [
-   "80"
+   "80.o"
   ],
   "statutes": [
    "Ley 35/2003"
   ],
-  "total_fine_eur": 35000,
+  "total_fine_eur": 25000,
   "subjects": [
    "Javier Carrasco Martín",
-   "Rafael Grau San Martín",
-   "Siegfried Marissens"
+   "Rafael Grau San Martín"
   ],
   "non_monetary": [],
   "conduct_dates": 0,
@@ -210,7 +209,8 @@
    "VERY_SERIOUS"
   ],
   "articles": [
-   "80"
+   "80.b",
+   "80.i"
   ],
   "statutes": [
    "Ley 35/2003"

@@ -14,7 +14,7 @@ from __future__ import annotations
 import re
 
 _WORD_SUFFIX = (
-    r"bis|ter|quater|quinquies|sexies|septies|octies|nonies|decies|"
+    r"bis|ter|qu[aá]ter|quinquies|sexies|septies|octies|nonies|decies|"
     r"undecies|duodecies|tredecies"
 )
 
@@ -22,29 +22,67 @@ _WORD_SUFFIX = (
 # letters (a, ñ, o, bis, ter…) or digits (13.2, 92.1, 115.5, 99.bis.1).
 _BODY = r"\d{1,3}(?:\.[A-Za-z\u00f1\u00d10-9]{1,10})*"
 
+# word/letter suffixes: '94 bis', '83 ter', '107 quáter', '99 z'.
+# Space-separated single letters exclude a/e/i/o/u/y — those are
+# conjunctions in article lists ('67 y 71', '45 y 48')
+_WORDS = rf"(?:{_WORD_SUFFIX}|[b-df-hj-np-tv-xzñ](?![a-záéíóúñ]))"
+# apartado digit + optional letter: '83 ter 1', '107 quáter 3.c'
+_APART = r"(?:\s+\d(?:\.[A-Za-z\u00f1])?)?"
+
 _ARTICLE_TOKEN_RE = re.compile(
-    rf"(?P<body>{_BODY})(?P<words>(?:\s+(?:{_WORD_SUFFIX}))*)",
+    rf"(?P<body>{_BODY})(?P<words>(?:\s+{_WORDS})*)(?P<apart>{_APART})",
     re.IGNORECASE,
 )
 
 _ARTICLE_FULL_RE = re.compile(
-    rf"^\s*\)?\s*(?P<body>{_BODY})(?P<words>(?:\s+(?:{_WORD_SUFFIX}))*)\s*\)?\s*$",
+    rf"^\s*\)?\s*(?P<body>{_BODY})(?P<words>(?:\s+{_WORDS})*)"
+    rf"(?P<apart>{_APART})\s*\)?\s*$",
     re.IGNORECASE,
 )
+
+
+_WORD_SUFFIX_NORM = {
+    "quáter": "quater",
+}
 
 
 def _normalized_from_match(m: re.Match[str]) -> str:
     out = m.group("body").strip()
     words = re.sub(r"\s+", " ", (m.group("words") or "").strip()).lower()
     if words:
-        out += "." + words.replace(" ", ".")
+        out += "." + ".".join(
+            _WORD_SUFFIX_NORM.get(w, w) for w in words.split()
+        )
+    apart = re.sub(r"\s+", " ", (m.groupdict().get("apart") or "").strip())
+    if apart:
+        out += "." + apart.replace(" ", ".")
     return out
 
 
 def normalize_article(raw: str) -> str | None:
-    """'93.a)' → '93.a'; '94 bis' → '94.bis'; '13.2' → '13.2'; '94.o)' → '94.o'."""
+    """'93.a)' → '93.a'; '94 bis' → '94.bis'; '13.2' → '13.2'; '94.o)' → '94.o';
+    '99, letra o)' → '99.o'; '83 ter 1' → '83.ter.1'."""
     m = _ARTICLE_FULL_RE.match(raw)
-    return _normalized_from_match(m) if m else None
+    if m:
+        return _normalized_from_match(m)
+    # '99, letra o)' / '99, letra o) bis' — comma-letter style
+    lm = re.match(
+        rf"^\s*(?P<body>{_BODY})(?P<words>(?:\s+(?:{_WORD_SUFFIX}))*)\s*,?\s*"
+        r"letra\s+(?P<letter>[a-zñ])\s*\)?\s*$",
+        raw,
+        re.IGNORECASE,
+    )
+    if lm:
+        words = re.sub(
+            r"\s+", " ", (lm.group("words") or "").strip()
+        ).lower()
+        out = lm.group("body")
+        if words:
+            out += "." + ".".join(
+                _WORD_SUFFIX_NORM.get(w, w) for w in words.split()
+            )
+        return f"{out}.{lm.group('letter').lower()}"
+    return None
 
 
 def extract_article(fragment: str) -> str | None:

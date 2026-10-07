@@ -99,7 +99,8 @@ _SUBJECT_FIRST2_RE = re.compile(
     rf"^[{_BULLETS}\s]*A\s+(.+?)\s*"
     r"(?:,\s*)?(?=(?:una\s+|dos\s+|tres\s+|cuatro\s+|cinco\s+|seis\s+|"
     r"siete\s+|ocho\s+|nueve\s+|diez\s+|"
-    r"multa|sanci[oó]n|inhabilitaci|amonestaci|suspensi|restitu|comiso)|"
+    r"multa|sanci[oó]n|inhabilitaci|amonestaci|suspensi|restitu|comiso|"
+    r"separaci)|"
     r"por\s+importe\s+de|\d[\d.]*\s+euros?)\s*"
     r"((?:una|dos|tres|cuatro|cinco|seis|siete|ocho|nueve|diez)\s+)?"
     r"(.*)$",
@@ -144,7 +145,9 @@ _COUNT_RE = "|".join(_COUNT_WORDS)
 _COMISION_RE = re.compile(
     rf"por\s+la\s+comisi[oó]n\s*,?\s*"
     rf"(?:cada\s+uno\s+de\s+ellos\s*,?\s*|respectivamente\s*,?\s*|"
-    rf"(?:en|por|como)\s+[^,]{{1,90}},\s*)?de\s+"
+    rf"(?:en|como)\s+[^,]{{1,90}},\s*|"
+    rf"por\s+parte\s+de\s+[^,]{{1,120}}?|"
+    rf"por\s+[^,]{{1,90}},\s*)?de\s+"
     rf"(?P<count>{_COUNT_RE}|\d{{1,2}})\s+infracci[oó]n(?:es)?"
     rf"(?P<cont>\s+continuada)?",
     re.IGNORECASE,
@@ -184,14 +187,17 @@ _TYPIFY_ART_RE = re.compile(
 )
 _ARTICLE_TOKEN_RE = re.compile(
     r"\d{1,3}(?:\.[A-Za-z\u00f1\u00d10-9]{1,10})*"
-    r"(?:\s+(?:bis|ter|quater|quinquies|sexies|septies|octies|nonies|decies))*"
+    r"(?:\s+(?:bis|ter|qu[aá]ter|quinquies|sexies|septies|octies|nonies|"
+    r"decies|[b-df-hj-np-tv-xzñ](?![a-záéíóúñ])))*(?:\s+\d(?:\.[A-Za-z\u00f1])?)?"
+    r"(?:,?\s*letra\s+[a-zñ]\s*\)?)?"
 )
 _RELACION_RE = re.compile(r"en\s+relaci[oó]n\s+con\s+", re.IGNORECASE)
 _CONDUCT_SPLIT_RE = re.compile(
     r"[,;.]\s*(?:y\s+)?(?:por\s+(?!la\s+que\b|el\s+que\b|los\s+que\b|"
     r"las\s+que\b|lo\s+que\b|l[ao]s?\s+cual\b|tanto\b|consiguiente\b|ello\b|"
     r"ejemplo\b)|al\s+(?:haber|incumplir|realizar|utilizar|no|vulnerar|"
-    r"adquirir|comunicar|disponer|transmitir|eludir|omitir))",
+    r"adquirir|comunicar|disponer|transmitir|eludir|omitir|carecer|"
+    r"presentar|efectuar|ejecutar|contratar|facilitar|remitir))",
     re.IGNORECASE,
 )
 # sanction clause at the end of an impose/por-comisión sentence
@@ -228,10 +234,20 @@ _WORDS_EUROS_RE = re.compile(
 )
 _DATE_ES = r"\d{1,2}\s+de\s+[a-záéíóúñ]+\s+de\s+\d{4}"
 _SANCTIONING_RES_RE = re.compile(
-    r"Resoluci[oó]n(?:es)?\s+del\s+Consejo\s+de\s+la\s+"
+    r"Resoluci[oó]n(?:es)?\s+"
+    r"(?:del\s+Consejo\s+de\s+la\s+"
     r"(?:CNMV|Comisi[oó]n\s+Nacional\s+del\s+Mercado\s+de\s+Valores"
-    r"(?:\s*\(CNMV\))?)\s*,?\s*de\s+fecha\s+"
+    r"(?:\s*\(CNMV\))?)\s*,?\s*)?"
+    r"de\s+fecha\s+"
     r"((?:" + _DATE_ES + r")(?:\s+y\s+(?:" + _DATE_ES + r"))?)",
+    re.IGNORECASE,
+)
+# 'las sanciones impuestas mediante Resolución de fecha X' — the Consejo
+# qualifier is optional; require the 'mediante/impuestas' context to avoid
+# matching the publication resolution's own 'Resolución de fecha' (title)
+_SANCTIONING_RES_CTX_RE = re.compile(
+    r"impuestas?\s+mediante\s+Resoluci[oó]n|impuestas?\s+por\s+(?:la\s+)?"
+    r"(?:Comisi[oó]n|Consejo)",
     re.IGNORECASE,
 )
 _FINALITY_RES = [
@@ -432,6 +448,25 @@ def split_subjects(raw: str) -> list[str]:
         masked,
         flags=re.IGNORECASE,
     )
+    # 'su Presidente, don X' is ONE subject (role + name) — merge when a
+    # chunk ends in a role word and the next starts with a name marker
+    _role_end = re.compile(
+        r"(?:presidente|vicepresidente|consejer[oa]s?|delegad[oa]s?|"
+        r"director[ae]?s?|administrador[ae]?s?|secretari[oa]s?|"
+        r"apoderad[oa]s?|comisari[oa]s?|presidenta)\s*$",
+        re.IGNORECASE,
+    )
+    merged: list[str] = []
+    for part in parts:
+        if (
+            merged
+            and re.match(r"(?i)(?:don\b|doña\b|d\.\s|dña\b)", part)
+            and _role_end.search(merged[-1].rstrip(","))
+        ):
+            merged[-1] = merged[-1].rstrip(",") + ", " + part
+        else:
+            merged.append(part)
+    parts = merged
     out: list[str] = []
     for part in parts:
         # ' y ' between two multi-word chunks is a list boundary
@@ -444,6 +479,9 @@ def split_subjects(raw: str) -> list[str]:
                 # a comma on the left = role/company-form text already
                 # present ('Alcalde, Presidente y Consejero Delegado')
                 and "," not in left
+                # 'y de|y la|y los…' continues an entity name
+                # ('Banco Financiero y de Ahorro, S.A.')
+                and right[:1].isupper()
             ):
                 subparts = [left, *subparts[1:]]
                 subparts.extend(re.split(r"\s+y\s+(?=[A-ZÁÉÍÓÚÑ])", right))
@@ -514,6 +552,10 @@ def parse_sanction_tail(
     """
     lines: list[ParsedSanctionLine] = []
     ord_ = ordinal_start
+    # 'respectivamente' = positional pairing: clause/amount k applies to
+    # subject k — never a cross-product
+    resp = bool(re.search(r"\brespectivamente\b", zone, re.IGNORECASE))
+    pos_i = 0
     for raw_seg in _SANCTION_SPLIT_RE.split(zone):
         seg = raw_seg.strip().lstrip(",;").strip()
         if not seg:
@@ -539,6 +581,43 @@ def parse_sanction_tail(
         line_subjects = subjects
         if sm and sm.group(1).strip():
             line_subjects = [sm.group(1).strip()]
+        if resp and subjects:
+            # positional pairing: collect every amount in this clause and
+            # pair them in order with the header subjects
+            amounts: list[tuple[Decimal | None, str | None]] = []
+            for am in re.finditer(
+                r"(\d[\d.]*(?:,\d+)?)\s*(?:\([^)]*\)\s*)?(?:de\s+)?euros?",
+                tail,
+                re.IGNORECASE,
+            ):
+                n = parse_es_number(am.group(1))
+                if n is not None:
+                    amounts.append((n, am.group(0).strip()))
+            if not amounts:
+                amounts = [(amount, amount_raw)]
+            for amt, amt_raw in amounts:
+                subj = (
+                    subjects[pos_i]
+                    if pos_i < len(subjects)
+                    else subjects[-1]
+                )
+                pos_i += 1
+                ord_ += 1
+                lines.append(
+                    ParsedSanctionLine(
+                        subject_raw=subj,
+                        sanction_raw=raw,
+                        sanction_type=st,
+                        amount=amt,
+                        currency="EUR" if amt is not None else None,
+                        amount_raw=amt_raw,
+                        paragraph_index=paragraph_index,
+                        excerpt=excerpt,
+                        ordinal=ord_,
+                        duration_raw=duration_raw,
+                    )
+                )
+            continue
         n_subj = max(1, len(line_subjects))
         per = count // n_subj if count % n_subj == 0 else count
         for subj in line_subjects or [""]:
@@ -585,18 +664,29 @@ def _related_refs(
     or nothing (inherit).
     """
     refs: list[LegalReference] = []
-    stat_norm = normalize_statute(segment)
-    if _SAME_STATUTE_RE.search(segment):
-        stat_raw, stat_n = default_statute
-        stat_norm = stat_n
-        stat_raw_use = stat_raw or segment
-    else:
-        stat_raw_use = segment if stat_norm else (default_statute[0] or segment)
-        stat_norm = stat_norm or default_statute[1]
-    # anchored extraction: articles only after 'artículo(s)' — dates and law
-    # numbers elsewhere in the segment must never become provisions.
-    for anchor in re.finditer(r"art[ií]culo(?:s)?\s+", segment, re.IGNORECASE):
+    anchors = list(re.finditer(r"art[ií]culo(?:s)?\s+", segment, re.IGNORECASE))
+    seg_norm = normalize_statute(segment)
+    # anchored extraction: articles only after 'artículo(s)' — dates and
+    # law numbers elsewhere must never become provisions. The statute is
+    # resolved PER CHUNK (from this anchor to the next 'artículo') —
+    # 'del mismo texto legal' binds only the article it follows.
+    for i, anchor in enumerate(anchors):
         pos = anchor.end()
+        chunk_end = anchors[i + 1].start() if i + 1 < len(anchors) else len(segment)
+        chunk = segment[anchor.start() : chunk_end]
+        chunk_norm = normalize_statute(chunk)
+        stat_norm: str | None
+        stat_raw_use: str | None
+        if chunk_norm:
+            stat_norm, stat_raw_use = chunk_norm, chunk
+        elif _SAME_STATUTE_RE.search(chunk) or _SAME_STATUTE_RE.search(segment):
+            stat_norm = default_statute[1]
+            stat_raw_use = default_statute[0] or chunk
+        else:
+            stat_norm = seg_norm or default_statute[1]
+            stat_raw_use = segment if seg_norm else (
+                default_statute[0] or segment
+            )
         # consume an article list: '45, 47 y 48' / '13.2 y 45' / '240 bis'
         while True:
             m = _ARTICLE_TOKEN_RE.match(segment, pos)
@@ -710,8 +800,13 @@ def parse_comision(
         rel_parts = _RELACION_RE.split(after)
         first_seg = rel_parts[0]
         # cut at the conduct boundary BEFORE normalizing — a statute mention
-        # inside the conduct clause must never become the typifying statute
+        # inside the conduct clause must never become the typifying statute;
+        # mask '(en la actualidad, … RDL)' equivalents so the successor law
+        # is not mistaken for the typifying instrument
         stat_seg = _STATUTE_TAIL_CUT_RE.split(first_seg, maxsplit=1)[0]
+        stat_seg = re.sub(
+            r"\(en la actualidad[^)]*\)", "", stat_seg, flags=re.IGNORECASE
+        )
         sn = normalize_statute(stat_seg)
         if sn or not _SAME_STATUTE_RE.search(first_seg):
             statute_raw = stat_seg.strip().rstrip(",;.").strip() or None
@@ -802,7 +897,9 @@ def parse_publication_xml(
 
     full_text = "\n".join(p.text for p in pub.paragraphs)
     m = _SANCTIONING_RES_RE.search(full_text)
-    if m:
+    if m and (
+        "Consejo" in m.group(0) or _SANCTIONING_RES_CTX_RE.search(full_text)
+    ):
         # plural 'Resoluciones … de fecha A y B' — take the most recent
         last = list(re.finditer(r"\d{1,2}\s+de\s+\w+\s+de\s+\d{4}", m.group(1)))
         pub.sanctioning_resolution_date = parse_long_es(last[-1].group(0))
@@ -829,7 +926,9 @@ def parse_publication_xml(
     sanction_ord = 0
     impose_ord = 0
 
-    def new_blocks(para: ParsedParagraph, subjects: list[str]) -> list[ParsedBlock]:
+    def new_blocks(
+        para: ParsedParagraph, subjects: list[str], text: str | None = None
+    ) -> list[ParsedBlock]:
         nonlocal impose_ord, sanction_ord
         (
             sev,
@@ -840,7 +939,7 @@ def parse_publication_xml(
             related,
             conduct,
             tail,
-        ) = parse_comision(para.text)
+        ) = parse_comision(text if text is not None else para.text)
         c_start = c_end = None
         c_prec = None
         if conduct:
@@ -896,10 +995,12 @@ def parse_publication_xml(
             if cm:
                 subj_part = t[: cm.start()]
             else:
-                # 'Imponer a X:' / 'Imponer a X, por:' subjects-only header
+                # 'Imponer a X:' / 'Imponer a X, por:' / 'Imponer a X, por
+                # la comisión:' subjects-only headers
                 sm = re.match(
                     rf"^\s*(?:\d{{1,2}}\s*[.)]\s*)?[{_BULLETS}\s]*"
-                    r"Imponer\s+a\s+(.+?)(?:,?\s*por\s*)?[:.]?\s*$",
+                    r"Imponer\s+a\s+(.+?)"
+                    r"(?:,?\s*por\s+(?:la\s+comisi[oó]n\s*)?)?[:.]?\s*$",
                     t,
                     re.IGNORECASE,
                 )
@@ -920,7 +1021,7 @@ def parse_publication_xml(
             continue
         if _POR_COMISION_BULLET_RE.match(t):
             # standalone infringement+sanction bullet; inherits header subject
-            blocks = new_blocks(para, context_subjects)
+            blocks = new_blocks(para, context_subjects, t)
             pub.blocks.extend(blocks)
             current = blocks[-1]
             continue

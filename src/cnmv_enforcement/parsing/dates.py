@@ -85,7 +85,7 @@ _DAY_LIST_RE = re.compile(
 # y 23 de diciembre de 2021' — one shared year at the end
 _CROSS_MONTH_RE = re.compile(
     rf"(\d{{1,2}})\s+de\s+({_MONTH})\s*(?:,|y)\s*"
-    rf"(?:(\d{{1,2}})\s+de\s+({_MONTH})\s*(?:,|y)\s*)*"
+    rf"(?:el\s+)?(?:(\d{{1,2}})\s+de\s+({_MONTH})\s*(?:,|y)\s*(?:el\s+)?)*"
     r"(\d{1,2})\s+de\s+(" + _MONTH + r")\s+de\s+(\d{4})",
     re.IGNORECASE,
 )
