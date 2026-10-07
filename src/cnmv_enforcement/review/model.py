@@ -137,6 +137,10 @@ def seed_from_defect_registry(
     for d in doc["defects"]:
         for boe in d["fixtures"]:
             sha = raw_sha_by_boe.get(boe, "")
+            # a review bound to unknown bytes is meaningless — the
+            # fixture must be present in the built corpus to seed
+            if not sha:
+                continue
             rid = review_id_for(
                 "defect", d["defect_id"], boe, sha, REVIEW_COMPAT_VERSION
             )
